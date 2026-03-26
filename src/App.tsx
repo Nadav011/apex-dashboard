@@ -10,8 +10,10 @@ import { DispatchGuidePage } from "@/components/pages/DispatchGuidePage";
 import { FaqPage } from "@/components/pages/FaqPage";
 import { FleetPage } from "@/components/pages/FleetPage";
 import { HealthPage } from "@/components/pages/HealthPage";
+import { HooksDeepPage } from "@/components/pages/HooksDeepPage";
 import { HooksPage } from "@/components/pages/HooksPage";
 import { HydraPage } from "@/components/pages/HydraPage";
+import { McpGuidePage } from "@/components/pages/McpGuidePage";
 import { MemoryGuidePage } from "@/components/pages/MemoryGuidePage";
 import { MetricsPage } from "@/components/pages/MetricsPage";
 import { NotificationsPage } from "@/components/pages/NotificationsPage";
@@ -32,6 +34,7 @@ type Page =
 	| "health"
 	| "system"
 	| "hooks"
+	| "hooks-deep"
 	| "rules-explorer"
 	| "metrics"
 	| "control"
@@ -43,6 +46,7 @@ type Page =
 	| "skills-guide"
 	| "architecture"
 	| "memory-guide"
+	| "mcp-guide"
 	| "faq";
 
 const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
@@ -55,6 +59,7 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	health: () => <HealthPage />,
 	system: () => <SystemPage />,
 	hooks: () => <HooksPage />,
+	"hooks-deep": () => <HooksDeepPage />,
 	"rules-explorer": () => <RulesExplorerPage />,
 	metrics: () => <MetricsPage />,
 	control: () => <ControlPage />,
@@ -66,6 +71,7 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	"skills-guide": () => <SkillsGuidePage />,
 	architecture: () => <ArchitecturePage />,
 	"memory-guide": () => <MemoryGuidePage />,
+	"mcp-guide": () => <McpGuidePage />,
 	faq: () => <FaqPage />,
 };
 

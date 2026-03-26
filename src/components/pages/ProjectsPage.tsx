@@ -53,11 +53,13 @@ function stackBadgeColor(token: string): string {
 	return "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border-[var(--color-border)]";
 }
 
-function StackBadges({ stack }: { stack: string }) {
-	const tokens = stack
-		.split(/\s*[+·|]\s*/)
-		.map((s) => s.trim())
-		.filter(Boolean);
+function StackBadges({ stack }: { stack: string | string[] }) {
+	const tokens = Array.isArray(stack)
+		? stack
+		: stack
+				.split(/\s*[+·|]\s*/)
+				.map((s: string) => s.trim())
+				.filter(Boolean);
 	return (
 		<div className="flex flex-wrap gap-1">
 			{tokens.map((token) => (
@@ -500,10 +502,12 @@ export function ProjectsPage() {
 			const matchesSearch =
 				!q ||
 				p.name.toLowerCase().includes(q) ||
-				p.description.toLowerCase().includes(q) ||
-				p.stack.toLowerCase().includes(q) ||
-				p.platform.toLowerCase().includes(q) ||
-				p.github.toLowerCase().includes(q);
+				(p.description ?? "").toLowerCase().includes(q) ||
+				(Array.isArray(p.stack) ? p.stack.join(" ") : (p.stack ?? ""))
+					.toLowerCase()
+					.includes(q) ||
+				(p.platform ?? "").toLowerCase().includes(q) ||
+				(p.github ?? "").toLowerCase().includes(q);
 			return matchesFilter && matchesSearch;
 		});
 	}, [allProjects, filter, search]);

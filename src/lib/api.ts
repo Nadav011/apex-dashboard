@@ -44,6 +44,7 @@ export const api = {
 	ciStatus: () => fetchApi<CiStatusResponse>("/ci/status"),
 	ciSummary: () => fetchApi<CiSummaryResponse>("/ci/summary"),
 	ciTemplates: () => fetchApi<CiTemplatesResponse>("/ci/templates"),
+	ciDeep: () => fetchApi<CiDeepResponse>("/ci/deep"),
 
 	deploysStatus: () => fetchApi<DeploysStatusResponse>("/deploys/status"),
 	projects: () => fetchApi<ProjectsResponse>("/projects"),
@@ -356,6 +357,100 @@ export interface CiTemplatesResponse {
 	count: number;
 	path: string;
 }
+// /api/ci/deep
+export interface CiPipelineStage {
+	name: string;
+	jobs: string[];
+	duration_estimate?: string;
+}
+
+export interface CiTool {
+	name: string;
+	version?: string;
+	category: string;
+	command: string;
+	purpose: string;
+	blocking: boolean;
+	docs_url?: string;
+}
+
+export interface CiReusableWorkflow {
+	file: string;
+	name: string;
+	description: string;
+	triggers: string[];
+	jobs: string[];
+	secrets_required: string[];
+	repos_using: number;
+}
+
+export interface CiGithubApp {
+	name: string;
+	purpose: string;
+	installed_on: string[];
+	auto_pr: boolean;
+	webhook_events: string[];
+}
+
+export interface CiSecurityGate {
+	name: string;
+	tool: string;
+	blocking: boolean;
+	severity_threshold?: string;
+	notes?: string;
+}
+
+export interface CiRunner {
+	label: string;
+	machine: string;
+	ip: string;
+	cores: number;
+	ram_gb: number;
+	count: number;
+	status: string;
+	total?: number;
+}
+
+export interface CiProjectEntry {
+	name: string;
+	stack: string;
+	machine: string;
+	has_ci: boolean;
+	test_shards: number;
+	bundle_check: boolean;
+	security_scan: boolean;
+	deploy_gate: boolean;
+	branch: string;
+}
+
+export interface CiDeepStats {
+	total_repos: number;
+	repos_with_ci: number;
+	total_workflow_files: number;
+	total_tools: number;
+	total_security_gates: number;
+	total_runners: number;
+	total_reusable_workflows: number;
+	github_apps: number;
+	projects_with_ci: number;
+	projects_total: number;
+}
+
+export interface CiReusableWorkflowsWrapper {
+	workflows: CiReusableWorkflow[];
+	repo: string;
+}
+
+export interface CiDeepResponse {
+	pipeline: CiPipelineStage[];
+	tools: CiTool[];
+	reusable_workflows: CiReusableWorkflowsWrapper;
+	github_apps: CiGithubApp[];
+	security_gates: CiSecurityGate[];
+	runners: CiRunner[];
+	per_project: CiProjectEntry[];
+	stats: CiDeepStats;
+}
 
 // /api/deploys/status
 export interface DeploySite {
@@ -406,23 +501,73 @@ export interface ProjectLastCommit {
 	date: string;
 }
 
+export interface ProjectTesting {
+	framework: string;
+	e2e?: string;
+	mutation?: string;
+	coverage_target?: number;
+}
+
+export interface ProjectSecurity {
+	rls?: boolean;
+	csp?: boolean;
+	trivy: boolean;
+	semgrep: boolean;
+	gitleaks: boolean;
+}
+
+export interface ProjectScale {
+	pages?: number;
+	components?: number;
+	hooks?: number;
+	lib?: number;
+	migrations?: number;
+	edge_functions?: number;
+	tables?: number;
+}
+
 export interface ProjectInfo {
 	name: string;
+	display_name: string;
 	path: string;
-	stack: string;
-	github: string;
-	domain: string;
-	platform: string;
 	machine: "pop-os" | "MSI";
-	status: "active" | "archived";
-	description: string;
+	stack: string[];
+	github_repo: string;
+	github_url: string;
+	domain: string;
+	deploy_platform: string;
+	status: "active" | "archived" | "development";
+	description_he: string;
+	description_en: string;
+	default_branch: string;
+	package_manager: string;
+	ci_workflows: string[];
+	features: string[];
+	testing: ProjectTesting;
+	bundle_limit_kb?: number;
+	security: ProjectSecurity;
+	connections: string[];
+	supabase_project?: string;
+	related_projects: string[];
+	notes: string;
+	scale?: ProjectScale;
 	last_commit: ProjectLastCommit | null;
+	// Legacy fields (kept for compat)
+	github?: string;
+	platform?: string;
+	description?: string;
 }
 
 export interface ProjectsResponse {
 	projects: ProjectInfo[];
 	total: number;
 	active: number;
+	archived: number;
+	development: number;
 	by_machine: Record<string, number>;
 	by_platform: Record<string, number>;
+	by_stack_type: Record<string, number>;
+	with_github: number;
+	with_ci: number;
+	with_supabase: number;
 }

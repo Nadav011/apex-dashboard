@@ -40,6 +40,7 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "בריאות", icon: HeartPulse, page: "health" },
 	{ label: "מערכת", icon: Server, page: "system" },
 	{ label: "הוקים", icon: Webhook, page: "hooks" },
+	{ label: "הוקים מדריך", icon: BookOpen, page: "hooks-deep" },
 	{ label: "חוקים", icon: Shield, page: "rules-explorer" },
 	{ label: "מטריקות", icon: BarChart3, page: "metrics" },
 	{ label: "שליטה", icon: Settings, page: "control" },
@@ -51,6 +52,7 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "התראות", icon: Bell, page: "notifications" },
 	{ label: "ארכיטקטורה", icon: Network, page: "architecture" },
 	{ label: "זיכרון", icon: Brain, page: "memory-guide" },
+	{ label: "שרתי MCP", icon: Server, page: "mcp-guide" },
 	{ label: "מדריך", icon: BookOpen, page: "faq" },
 ];
 

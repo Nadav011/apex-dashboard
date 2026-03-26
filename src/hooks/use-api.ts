@@ -190,6 +190,15 @@ export function useCiTemplates() {
 	});
 }
 
+export function useCiDeep() {
+	return useQuery({
+		queryKey: ["ci", "deep"],
+		queryFn: api.ciDeep,
+		refetchInterval: 120_000,
+		staleTime: 60_000,
+	});
+}
+
 export function useDeploysStatus() {
 	return useQuery({
 		queryKey: ["deploys", "status"],
