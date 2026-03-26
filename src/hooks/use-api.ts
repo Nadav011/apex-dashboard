@@ -2,6 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ControlResponse } from "@/lib/api";
 import { api } from "@/lib/api";
 
+export function useProjects() {
+	return useQuery({
+		queryKey: ["projects"],
+		queryFn: api.projects,
+		refetchInterval: 60_000,
+	});
+}
+
 // ── Live data (2s refresh) ─────────────────────────────────────────
 export function useAgents() {
 	return useQuery({
@@ -170,6 +178,15 @@ export function useCiSummary() {
 		queryKey: ["ci", "summary"],
 		queryFn: api.ciSummary,
 		refetchInterval: 60_000,
+	});
+}
+
+export function useCiTemplates() {
+	return useQuery({
+		queryKey: ["ci", "templates"],
+		queryFn: api.ciTemplates,
+		refetchInterval: 120_000,
+		staleTime: 60_000,
 	});
 }
 

@@ -3,10 +3,13 @@ import {
 	Bell,
 	BookOpen,
 	ChevronLeft,
+	FileCode2,
+	FolderGit2,
 	GitBranch,
 	Globe,
 	HeartPulse,
 	LayoutDashboard,
+	Network,
 	Puzzle,
 	Server,
 	Settings,
@@ -26,6 +29,8 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
 	{ label: "סקירה כללית", icon: LayoutDashboard, page: "overview" },
 	{ label: "צי סוכנים", icon: Users, page: "fleet" },
+	{ label: "פרויקטים", icon: FolderGit2, page: "projects" },
+	{ label: "מדריך סוכנים", icon: BookOpen, page: "agent-guide" },
 	{ label: "הידרה", icon: Zap, page: "hydra" },
 	{ label: "בריאות", icon: HeartPulse, page: "health" },
 	{ label: "מערכת", icon: Server, page: "system" },
@@ -34,8 +39,10 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "שליטה", icon: Settings, page: "control" },
 	{ label: "Deploys", icon: Globe, page: "deploys" },
 	{ label: "CI/CD", icon: GitBranch, page: "cicd" },
+	{ label: "CI תבניות", icon: FileCode2, page: "ci-templates" },
 	{ label: "OpenClaw", icon: Puzzle, page: "openclaw", separator: true },
 	{ label: "התראות", icon: Bell, page: "notifications" },
+	{ label: "ארכיטקטורה", icon: Network, page: "architecture" },
 	{ label: "מדריך", icon: BookOpen, page: "faq" },
 ];
 

@@ -43,8 +43,10 @@ export const api = {
 	notificationsLog: () => fetchApi<NotificationEvent[]>("/notifications/log"),
 	ciStatus: () => fetchApi<CiStatusResponse>("/ci/status"),
 	ciSummary: () => fetchApi<CiSummaryResponse>("/ci/summary"),
+	ciTemplates: () => fetchApi<CiTemplatesResponse>("/ci/templates"),
 
 	deploysStatus: () => fetchApi<DeploysStatusResponse>("/deploys/status"),
+	projects: () => fetchApi<ProjectsResponse>("/projects"),
 
 	// ── POST control actions ───────────────────────────────────────────────────
 	startHydra: () => postApi<ControlResponse>("/control/start-hydra"),
@@ -342,6 +344,19 @@ export interface CiSummaryResponse {
 	last_check: string;
 }
 
+export interface CiTemplate {
+	file: string;
+	name: string;
+	size_kb: number;
+	lines: number;
+}
+
+export interface CiTemplatesResponse {
+	templates: CiTemplate[];
+	count: number;
+	path: string;
+}
+
 // /api/deploys/status
 export interface DeploySite {
 	name: string;
@@ -382,4 +397,32 @@ export interface NotificationEvent {
 	event: string;
 	message: string;
 	sent: boolean;
+}
+
+// /api/projects
+export interface ProjectLastCommit {
+	sha: string;
+	message: string;
+	date: string;
+}
+
+export interface ProjectInfo {
+	name: string;
+	path: string;
+	stack: string;
+	github: string;
+	domain: string;
+	platform: string;
+	machine: "pop-os" | "MSI";
+	status: "active" | "archived";
+	description: string;
+	last_commit: ProjectLastCommit | null;
+}
+
+export interface ProjectsResponse {
+	projects: ProjectInfo[];
+	total: number;
+	active: number;
+	by_machine: Record<string, number>;
+	by_platform: Record<string, number>;
 }
