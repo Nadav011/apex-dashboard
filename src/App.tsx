@@ -3,13 +3,16 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AgentGuidePage } from "@/components/pages/AgentGuidePage";
 import { ArchitecturePage } from "@/components/pages/ArchitecturePage";
 import { AutomationPage } from "@/components/pages/AutomationPage";
+import { BundlePage } from "@/components/pages/BundlePage";
 import { CiCdPage } from "@/components/pages/CiCdPage";
 import { CiTemplatesPage } from "@/components/pages/CiTemplatesPage";
 import { ControlPage } from "@/components/pages/ControlPage";
 import { DeploysPage } from "@/components/pages/DeploysPage";
 import { DispatchGuidePage } from "@/components/pages/DispatchGuidePage";
+import { DomainsPage } from "@/components/pages/DomainsPage";
 import { FaqPage } from "@/components/pages/FaqPage";
 import { FleetPage } from "@/components/pages/FleetPage";
+import { GsdGuidePage } from "@/components/pages/GsdGuidePage";
 import { HardwarePage } from "@/components/pages/HardwarePage";
 import { HealthPage } from "@/components/pages/HealthPage";
 import { HooksDeepPage } from "@/components/pages/HooksDeepPage";
@@ -25,6 +28,7 @@ import { OverviewPage } from "@/components/pages/OverviewPage";
 import { ProjectsPage } from "@/components/pages/ProjectsPage";
 import { RulesExplorerPage } from "@/components/pages/RulesExplorerPage";
 import { SkillsGuidePage } from "@/components/pages/SkillsGuidePage";
+import { SyncPage } from "@/components/pages/SyncPage";
 import { SystemPage } from "@/components/pages/SystemPage";
 import { TestingPage } from "@/components/pages/TestingPage";
 
@@ -38,6 +42,7 @@ type Page =
 	| "health"
 	| "system"
 	| "hardware"
+	| "sync"
 	| "hooks"
 	| "hooks-deep"
 	| "rules-explorer"
@@ -45,10 +50,13 @@ type Page =
 	| "logs"
 	| "control"
 	| "automation"
+	| "gsd-guide"
 	| "deploys"
+	| "domains"
 	| "cicd"
 	| "ci-templates"
 	| "testing"
+	| "bundles"
 	| "notifications"
 	| "openclaw"
 	| "skills-guide"
@@ -67,6 +75,7 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	health: () => <HealthPage />,
 	system: () => <SystemPage />,
 	hardware: () => <HardwarePage />,
+	sync: () => <SyncPage />,
 	hooks: () => <HooksPage />,
 	"hooks-deep": () => <HooksDeepPage />,
 	"rules-explorer": () => <RulesExplorerPage />,
@@ -74,10 +83,13 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	logs: () => <LogsPage />,
 	control: () => <ControlPage />,
 	automation: () => <AutomationPage />,
+	"gsd-guide": () => <GsdGuidePage />,
 	deploys: () => <DeploysPage />,
+	domains: () => <DomainsPage />,
 	cicd: () => <CiCdPage />,
 	"ci-templates": () => <CiTemplatesPage />,
 	testing: () => <TestingPage />,
+	bundles: () => <BundlePage />,
 	notifications: () => <NotificationsPage />,
 	openclaw: () => <OpenclawPage />,
 	"skills-guide": () => <SkillsGuidePage />,

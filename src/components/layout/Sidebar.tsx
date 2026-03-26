@@ -14,8 +14,12 @@ import {
 	LayoutDashboard,
 	MoreHorizontal,
 	Network,
+	Package,
 	Puzzle,
+	RefreshCw,
+	Rocket,
 	ScrollText,
+	Search,
 	Send,
 	Server,
 	Settings,
@@ -24,6 +28,7 @@ import {
 	TestTube2,
 	Users,
 	Webhook,
+	X,
 	Zap,
 } from "lucide-react";
 import { useState } from "react";
@@ -46,6 +51,7 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "בריאות", icon: HeartPulse, page: "health" },
 	{ label: "מערכת", icon: Server, page: "system" },
 	{ label: "חומרה", icon: Cpu, page: "hardware" },
+	{ label: "סנכרון", icon: RefreshCw, page: "sync" },
 	{ label: "הוקים", icon: Webhook, page: "hooks" },
 	{ label: "הוקים מדריך", icon: BookOpen, page: "hooks-deep" },
 	{ label: "חוקים", icon: Shield, page: "rules-explorer" },
@@ -53,10 +59,13 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "לוגים", icon: ScrollText, page: "logs" },
 	{ label: "שליטה", icon: Settings, page: "control" },
 	{ label: "אוטומציה", icon: Bot, page: "automation" },
+	{ label: "GSD", icon: Rocket, page: "gsd-guide" },
 	{ label: "Deploys", icon: Globe, page: "deploys" },
+	{ label: "דומיינים", icon: Globe, page: "domains" },
 	{ label: "CI/CD", icon: GitBranch, page: "cicd" },
 	{ label: "CI תבניות", icon: FileCode2, page: "ci-templates" },
 	{ label: "בדיקות", icon: TestTube2, page: "testing" },
+	{ label: "חבילות", icon: Package, page: "bundles" },
 	{ label: "OpenClaw", icon: Puzzle, page: "openclaw", separator: true },
 	{ label: "מיומנויות", icon: Sparkles, page: "skills-guide" },
 	{ label: "התראות", icon: Bell, page: "notifications" },
@@ -88,6 +97,13 @@ export function Sidebar({
 	isMobile,
 }: SidebarProps) {
 	const [moreOpen, setMoreOpen] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const filteredNavItems = searchQuery.trim()
+		? NAV_ITEMS.filter((item) =>
+				item.label.toLowerCase().includes(searchQuery.toLowerCase()),
+			)
+		: NAV_ITEMS;
 
 	// ── Mobile: Bottom Tab Bar ───────────────────────────────────────────
 	if (isMobile) {
@@ -116,42 +132,64 @@ export function Sidebar({
 								"py-3 px-2",
 							)}
 						>
+							{/* Mobile search */}
+							<div className="relative mb-2 mx-1">
+								<Search
+									size={13}
+									className="absolute inset-y-0 end-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
+									aria-hidden="true"
+								/>
+								<input
+									type="search"
+									placeholder="חיפוש..."
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+									className={cn(
+										"w-full text-xs rounded-lg pe-8 ps-3 py-2",
+										"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
+										"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
+										"focus:outline-none focus:border-[var(--color-accent-blue)]",
+										"transition-colors duration-150",
+									)}
+									dir="rtl"
+								/>
+							</div>
 							<div className="grid grid-cols-4 gap-1">
-								{NAV_ITEMS.filter(
-									(i) => !MOBILE_PRIMARY_PAGES.includes(i.page),
-								).map(({ label, icon: Icon, page }) => {
-									const isActive = activePage === page;
-									return (
-										<button
-											key={page}
-											type="button"
-											onClick={() => {
-												onNavigate(page);
-												setMoreOpen(false);
-											}}
-											aria-current={isActive ? "page" : undefined}
-											className={cn(
-												"flex flex-col items-center gap-1 rounded-xl",
-												"min-h-[64px] px-1 py-2",
-												"transition-all duration-150",
-												isActive
-													? "bg-accent-blue/15 text-accent-blue"
-													: "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary",
-											)}
-										>
-											<Icon
-												size={20}
+								{filteredNavItems
+									.filter((i) => !MOBILE_PRIMARY_PAGES.includes(i.page))
+									.map(({ label, icon: Icon, page }) => {
+										const isActive = activePage === page;
+										return (
+											<button
+												key={page}
+												type="button"
+												onClick={() => {
+													onNavigate(page);
+													setMoreOpen(false);
+												}}
+												aria-current={isActive ? "page" : undefined}
 												className={cn(
-													"shrink-0",
-													isActive ? "text-accent-blue" : "text-current",
+													"flex flex-col items-center gap-1 rounded-xl",
+													"min-h-[64px] px-1 py-2",
+													"transition-all duration-150",
+													isActive
+														? "bg-accent-blue/15 text-accent-blue"
+														: "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary",
 												)}
-											/>
-											<span className="text-[10px] font-medium text-center leading-tight line-clamp-2">
-												{label}
-											</span>
-										</button>
-									);
-								})}
+											>
+												<Icon
+													size={20}
+													className={cn(
+														"shrink-0",
+														isActive ? "text-accent-blue" : "text-current",
+													)}
+												/>
+												<span className="text-[10px] font-medium text-center leading-tight line-clamp-2">
+													{label}
+												</span>
+											</button>
+										);
+									})}
 							</div>
 						</div>
 					</>
@@ -285,12 +323,54 @@ export function Sidebar({
 				)}
 			</div>
 
+			{/* Desktop search — hidden when collapsed */}
+			{!collapsed && (
+				<div className="shrink-0 px-3 py-2 border-b border-border">
+					<div className="relative">
+						<Search
+							size={13}
+							className="absolute inset-y-0 end-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
+							aria-hidden="true"
+						/>
+						<input
+							type="search"
+							placeholder="חיפוש בתפריט..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className={cn(
+								"w-full text-xs rounded-lg pe-8 ps-3 py-2",
+								"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
+								"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
+								"focus:outline-none focus:border-[var(--color-accent-blue)]",
+								"transition-colors duration-150",
+							)}
+							dir="rtl"
+						/>
+						{searchQuery && (
+							<button
+								type="button"
+								onClick={() => setSearchQuery("")}
+								aria-label="נקה חיפוש"
+								className="absolute inset-y-0 start-2 my-auto flex items-center justify-center w-4 h-4 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+							>
+								<X size={10} />
+							</button>
+						)}
+					</div>
+				</div>
+			)}
+
 			{/* Navigation */}
 			<nav
 				className="flex-1 overflow-y-auto py-3 px-2 space-y-1"
 				aria-label="ניווט ראשי"
 			>
-				{NAV_ITEMS.map(({ label, icon: Icon, page, separator }) => {
+				{filteredNavItems.length === 0 && (
+					<p className="text-xs text-[var(--color-text-muted)] text-center py-6 px-2">
+						אין תוצאות עבור "{searchQuery}"
+					</p>
+				)}
+				{filteredNavItems.map(({ label, icon: Icon, page, separator }) => {
 					const isActive = activePage === page;
 					return (
 						<div key={page}>
