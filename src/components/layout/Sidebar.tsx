@@ -1,9 +1,13 @@
 import {
 	BarChart3,
+	Bell,
 	BookOpen,
 	ChevronLeft,
+	GitBranch,
+	Globe,
 	HeartPulse,
 	LayoutDashboard,
+	Puzzle,
 	Server,
 	Settings,
 	Users,
@@ -28,7 +32,11 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "הוקים", icon: Webhook, page: "hooks" },
 	{ label: "מטריקות", icon: BarChart3, page: "metrics" },
 	{ label: "שליטה", icon: Settings, page: "control" },
-	{ label: "מדריך", icon: BookOpen, page: "faq", separator: true },
+	{ label: "Deploys", icon: Globe, page: "deploys" },
+	{ label: "CI/CD", icon: GitBranch, page: "cicd" },
+	{ label: "OpenClaw", icon: Puzzle, page: "openclaw", separator: true },
+	{ label: "התראות", icon: Bell, page: "notifications" },
+	{ label: "מדריך", icon: BookOpen, page: "faq" },
 ];
 
 interface SidebarProps {

@@ -32,11 +32,19 @@ export const api = {
 	skills: () => fetchApi<SkillsResponse>("/skills"),
 	mcp: () => fetchApi<McpResponse>("/mcp"),
 	openclaw: () => fetchApi<OpenclawResponse>("/openclaw"),
+	openclawDetails: () => fetchApi<OpenclawDetailsResponse>("/openclaw/details"),
 	sync: () => fetchApi<SyncResponse>("/sync"),
 	msiStatus: () => fetchApi<MsiStatusResponse>("/msi/status"),
 	syncStatus: () => fetchApi<SyncStatusResponse>("/sync/status"),
 	crossSync: () => fetchApi<CrossSyncResponse>("/cross-sync"),
 	watcherAll: () => fetchApi<WatcherResponse>("/watcher/all"),
+	notificationsConfig: () =>
+		fetchApi<NotificationConfig>("/notifications/config"),
+	notificationsLog: () => fetchApi<NotificationEvent[]>("/notifications/log"),
+	ciStatus: () => fetchApi<CiStatusResponse>("/ci/status"),
+	ciSummary: () => fetchApi<CiSummaryResponse>("/ci/summary"),
+
+	deploysStatus: () => fetchApi<DeploysStatusResponse>("/deploys/status"),
 
 	// ── POST control actions ───────────────────────────────────────────────────
 	startHydra: () => postApi<ControlResponse>("/control/start-hydra"),
@@ -45,6 +53,13 @@ export const api = {
 	backup: () => postApi<ControlResponse>("/control/backup"),
 	cleanOrphans: () => postApi<ControlResponse>("/control/clean-orphans"),
 	syncMsi: () => postApi<ControlResponse>("/control/sync-msi"),
+	sendTestNotification: () => postApi<ControlResponse>("/notifications/test"),
+	configureNotifications: (rules: Partial<NotificationRules>) =>
+		fetch("/api/notifications/configure", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(rules),
+		}).then((r) => r.json() as Promise<ControlResponse>),
 } as const;
 
 // ── Response types ─────────────────────────────────────────────────────────────
@@ -247,6 +262,31 @@ export interface OpenclawResponse {
 	version?: string;
 }
 
+// /api/openclaw/details
+export interface OpenclawSkill {
+	name: string;
+	slug: string;
+	description: string;
+	version: string;
+	tags: string[];
+	file: string;
+	size_kb: number;
+}
+
+export interface OpenclawSubagent {
+	name: string;
+	path: string;
+}
+
+export interface OpenclawDetailsResponse {
+	skills: OpenclawSkill[];
+	skills_count: number;
+	subagents: OpenclawSubagent[];
+	subagents_count: number;
+	version: string;
+	path: string;
+}
+
 export interface SyncResponse {
 	synced: boolean;
 	last_sync?: string;
@@ -269,4 +309,77 @@ export interface CrossSyncResponse {
 	pop_os: Record<string, unknown>;
 	msi: Record<string, unknown>;
 	diff?: string[];
+}
+
+// ── CI/CD types ────────────────────────────────────────────────────────────────
+
+export interface CiRun {
+	status: string;
+	conclusion: string | null;
+	name: string;
+	createdAt: string;
+	headBranch: string;
+	url: string;
+}
+
+export interface CiRepo {
+	name: string;
+	full_name: string;
+	runs: CiRun[];
+	error?: string;
+}
+
+export interface CiStatusResponse {
+	repos: CiRepo[];
+	updated_at: string;
+}
+
+export interface CiSummaryResponse {
+	total: number;
+	passing: number;
+	failing: number;
+	unknown: number;
+	last_check: string;
+}
+
+// /api/deploys/status
+export interface DeploySite {
+	name: string;
+	url: string;
+	platform: "cloudflare" | "netlify";
+	status: "up" | "down";
+	http_status: number | null;
+	response_ms: number;
+	checked_at: string;
+	error: string | null;
+}
+
+export interface DeploysStatusResponse {
+	sites: DeploySite[];
+	total: number;
+	up_count: number;
+	down_count: number;
+	checked_at: string;
+}
+
+// /api/notifications/config
+export interface NotificationRules {
+	task_failed: boolean;
+	health_critical: boolean;
+	ram_high: boolean;
+	msi_unreachable: boolean;
+}
+
+export interface NotificationConfig {
+	token_set: boolean;
+	chat_id_set: boolean;
+	rules: NotificationRules;
+}
+
+// /api/notifications/log
+export interface NotificationEvent {
+	ts: string;
+	event: string;
+	message: string;
+	sent: boolean;
 }

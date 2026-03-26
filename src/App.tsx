@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { CiCdPage } from "@/components/pages/CiCdPage";
+import { DeploysPage } from "@/components/pages/DeploysPage";
 import { FaqPage } from "@/components/pages/FaqPage";
+import { NotificationsPage } from "@/components/pages/NotificationsPage";
+import { OpenclawPage } from "@/components/pages/OpenclawPage";
 
 // Page type — matches sidebar nav items
 type Page =
@@ -12,6 +16,10 @@ type Page =
 	| "hooks"
 	| "metrics"
 	| "control"
+	| "deploys"
+	| "cicd"
+	| "notifications"
+	| "openclaw"
 	| "faq";
 
 // Placeholder page — replace with real page components as they are built
@@ -36,6 +44,10 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	hooks: () => <PlaceholderPage name="הוקים" />,
 	metrics: () => <PlaceholderPage name="מטריקות" />,
 	control: () => <PlaceholderPage name="שליטה" />,
+	deploys: () => <DeploysPage />,
+	cicd: () => <CiCdPage />,
+	notifications: () => <NotificationsPage />,
+	openclaw: () => <OpenclawPage />,
 	faq: () => <FaqPage />,
 };
 

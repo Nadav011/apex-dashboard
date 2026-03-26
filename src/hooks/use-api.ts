@@ -108,6 +108,14 @@ export function useOpenclaw() {
 	});
 }
 
+export function useOpenclawDetails() {
+	return useQuery({
+		queryKey: ["openclaw", "details"],
+		queryFn: api.openclawDetails,
+		refetchInterval: 60_000,
+	});
+}
+
 export function useExternalAgents() {
 	return useQuery({
 		queryKey: ["agents", "external"],
@@ -148,6 +156,31 @@ export function useWatcherAll() {
 	});
 }
 
+// ── CI/CD data (60s refresh) ───────────────────────────────────────
+export function useCiStatus() {
+	return useQuery({
+		queryKey: ["ci", "status"],
+		queryFn: api.ciStatus,
+		refetchInterval: 60_000,
+	});
+}
+
+export function useCiSummary() {
+	return useQuery({
+		queryKey: ["ci", "summary"],
+		queryFn: api.ciSummary,
+		refetchInterval: 60_000,
+	});
+}
+
+export function useDeploysStatus() {
+	return useQuery({
+		queryKey: ["deploys", "status"],
+		queryFn: api.deploysStatus,
+		refetchInterval: 30_000,
+	});
+}
+
 // ── Control mutations ──────────────────────────────────────────────
 function useControlMutation(actionFn: () => Promise<ControlResponse>) {
 	const qc = useQueryClient();
@@ -182,4 +215,41 @@ export function useCleanOrphans() {
 
 export function useSyncMsi() {
 	return useControlMutation(api.syncMsi);
+}
+
+// ── Notification hooks ─────────────────────────────────────────────
+export function useNotificationsConfig() {
+	return useQuery({
+		queryKey: ["notifications", "config"],
+		queryFn: api.notificationsConfig,
+		refetchInterval: 30_000,
+	});
+}
+
+export function useNotificationsLog() {
+	return useQuery({
+		queryKey: ["notifications", "log"],
+		queryFn: api.notificationsLog,
+		refetchInterval: 10_000,
+	});
+}
+
+export function useSendTestNotification() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: api.sendTestNotification,
+		onSuccess: () => {
+			void qc.invalidateQueries({ queryKey: ["notifications"] });
+		},
+	});
+}
+
+export function useConfigureNotifications() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: api.configureNotifications,
+		onSuccess: () => {
+			void qc.invalidateQueries({ queryKey: ["notifications"] });
+		},
+	});
 }
