@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import {
+	useLenovoStatus,
 	useMcp,
-	useMsiStatus,
 	useSyncStatus,
 	useSystem,
 } from "@/hooks/use-api";
@@ -178,7 +178,7 @@ export function SystemPage() {
 	const { data: sys, isLoading: sysLoading } = useSystem();
 	const { data: mcp } = useMcp();
 	const { data: sync } = useSyncStatus();
-	const { data: msi } = useMsiStatus();
+	const { data: lenovo } = useLenovoStatus();
 
 	if (sysLoading || !sys) {
 		return (
@@ -286,10 +286,10 @@ export function SystemPage() {
 					</div>
 				</SectionCard>
 
-				{/* MSI status */}
-				<SectionCard title="מחשב MSI" icon={<Server size={16} />}>
+				{/* Lenovo status */}
+				<SectionCard title="מחשב Lenovo" icon={<Server size={16} />}>
 					<div className="flex items-center gap-3 mb-3">
-						{msi?.reachable ? (
+						{lenovo?.reachable ? (
 							<>
 								<Wifi
 									size={18}
@@ -309,13 +309,13 @@ export function SystemPage() {
 							</>
 						)}
 					</div>
-					{msi?.reachable ? (
+					{lenovo?.reachable ? (
 						<div className="space-y-0">
-							<InfoRow label="שם מארח" value={msi.hostname ?? "—"} mono />
-							{msi.load_avg && (
+							<InfoRow label="שם מארח" value={lenovo.hostname ?? "—"} mono />
+							{lenovo.load_avg && (
 								<InfoRow
 									label="עומס (1/5/15)"
-									value={msi.load_avg.map((v) => v.toFixed(2)).join(" / ")}
+									value={lenovo.load_avg.map((v) => v.toFixed(2)).join(" / ")}
 									mono
 								/>
 							)}

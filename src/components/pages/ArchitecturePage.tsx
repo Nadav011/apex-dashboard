@@ -207,7 +207,7 @@ function TopologyDiagram() {
 	return (
 		<div className="flex flex-col gap-0">
 			<MachineBox
-				name="pop-os"
+				name="Lenovo"
 				ip="100.82.33.122"
 				color="oklch(0.65 0.18 250)"
 				hardware="🖥 24 ליבות · 64GB RAM · RTX 5070 Ti · ZRAM 200GB · earlyoom פעיל · Pop!_OS"
@@ -287,7 +287,7 @@ function TopologyDiagram() {
 			<ConnectorArrow label="Tailscale SSH (100.x.x.x)" />
 
 			<MachineBox
-				name="MSI"
+				name="Lenovo"
 				ip="100.87.247.87"
 				color="oklch(0.72 0.19 155)"
 				hardware="🖥 30GB RAM · Pop!_OS · ROLLUP_NATIVE_THREADS=0"
@@ -299,7 +299,7 @@ function TopologyDiagram() {
 				/>
 				<ServiceRow
 					icon={<HardDrive size={12} />}
-					label="7 פרויקטים ייחודיים ל-MSI (Z, shifts, brain, vibechat...)"
+					label="7 פרויקטים ייחודיים ל-Lenovo (Z, shifts, brain, vibechat...)"
 					color="oklch(0.78 0.16 75)"
 					indent={1}
 				/>
@@ -1351,7 +1351,7 @@ export function ArchitecturePage() {
 					APEX Command Center
 				</span>{" "}
 				— מצב מערכת נכון ל-2026-03-26. 78+ skills · 45 agents · 128 hooks ·
-				pop-os + MSI via Tailscale.
+				Lenovo + Lenovo via Tailscale.
 			</div>
 		</div>
 	);

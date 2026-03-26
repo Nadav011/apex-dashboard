@@ -140,10 +140,10 @@ export function useSyncStatus() {
 	});
 }
 
-export function useMsiStatus() {
+export function useLenovoStatus() {
 	return useQuery({
-		queryKey: ["msi", "status"],
-		queryFn: api.msiStatus,
+		queryKey: ["lenovo", "status"],
+		queryFn: api.lenovoStatus,
 		refetchInterval: 15_000,
 	});
 }
@@ -240,7 +240,7 @@ export function useCleanOrphans() {
 }
 
 export function useSyncMsi() {
-	return useControlMutation(api.syncMsi);
+	return useControlMutation(api.syncLenovo);
 }
 
 // ── Notification hooks ─────────────────────────────────────────────

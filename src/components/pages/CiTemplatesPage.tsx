@@ -1272,7 +1272,7 @@ const FALLBACK_GATES: SecurityGate[] = [
 			"🚫 לעולם לא ubuntu-latest! גורם ל-cache miss, binaries שונים, שגיאות שקטות",
 		severity: "critical",
 		pin_required: true,
-		correct: "runs-on: [self-hosted, linux, x64, pop-os]",
+		correct: "runs-on: [self-hosted, linux, x64, Lenovo]",
 		wrong: "runs-on: ubuntu-latest",
 	},
 	{
@@ -1376,24 +1376,24 @@ interface RunnersData {
 	never_use: string;
 	note_he: string;
 	pop_os_count: number;
-	msi_count: number;
+	lenovo_count: number;
 	total: number;
 	pop_os_ip: string;
-	msi_ip: string;
-	note_msi: string;
+	lenovo_ip: string;
+	note_lenovo: string;
 }
 
 const FALLBACK_RUNNERS: RunnersData = {
-	label: "[self-hosted, linux, x64, pop-os]",
+	label: "[self-hosted, linux, x64, Lenovo]",
 	never_use: "ubuntu-latest",
 	note_he:
 		"לעולם לא ubuntu-latest! גורם ל-node_modules cache miss, binaries שונים ושגיאות שקטות",
 	pop_os_count: 17,
-	msi_count: 5,
+	lenovo_count: 5,
 	total: 22,
 	pop_os_ip: "100.82.33.122",
-	msi_ip: "100.87.247.87",
-	note_msi: "MSI runners: ROLLUP_NATIVE_THREADS=0 לכל build Vite/Rollup",
+	lenovo_ip: "100.87.247.87",
+	note_lenovo: "Lenovo runners: ROLLUP_NATIVE_THREADS=0 לכל build Vite/Rollup",
 };
 
 function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
@@ -1441,7 +1441,7 @@ function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
 					<div className="glass-card p-4 space-y-2">
 						<div className="flex items-center justify-between">
 							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
-								pop-os
+								Lenovo
 							</span>
 							<span
 								className="text-lg font-bold text-[var(--color-accent-blue)]"
@@ -1463,23 +1463,23 @@ function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
 					<div className="glass-card p-4 space-y-2">
 						<div className="flex items-center justify-between">
 							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
-								MSI
+								Lenovo
 							</span>
 							<span
 								className="text-lg font-bold text-[var(--color-accent-purple)]"
 								dir="ltr"
 							>
-								{runners.msi_count}
+								{runners.lenovo_count}
 							</span>
 						</div>
 						<code
 							className="text-xs font-mono text-[var(--color-text-muted)]"
 							dir="ltr"
 						>
-							{runners.msi_ip}
+							{runners.lenovo_ip}
 						</code>
 						<p className="text-xs text-[var(--color-accent-amber)]">
-							{runners.note_msi}
+							{runners.note_lenovo}
 						</p>
 					</div>
 				</div>

@@ -419,12 +419,12 @@ export function ControlPage() {
 					/>
 
 					<ActionCard
-						label="סנכרן MSI"
-						description="מריץ claude-sync push ומסנכרן hooks/rules/skills ל-MSI דרך Tailscale"
+						label="סנכרן Lenovo"
+						description="מריץ claude-sync push ומסנכרן hooks/rules/skills ל-Lenovo דרך Tailscale"
 						icon={<RefreshCw size={18} />}
 						variant="primary"
 						mutation={syncMsi}
-						lastResult={lastResults["סנכרן MSI"]}
+						lastResult={lastResults["סנכרן Lenovo"]}
 						onResult={handleResult}
 					/>
 				</div>

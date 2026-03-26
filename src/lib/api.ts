@@ -34,7 +34,7 @@ export const api = {
 	openclaw: () => fetchApi<OpenclawResponse>("/openclaw"),
 	openclawDetails: () => fetchApi<OpenclawDetailsResponse>("/openclaw/details"),
 	sync: () => fetchApi<SyncResponse>("/sync"),
-	msiStatus: () => fetchApi<MsiStatusResponse>("/msi/status"),
+	lenovoStatus: () => fetchApi<LenovoStatusResponse>("/lenovo/status"),
 	syncStatus: () => fetchApi<SyncStatusResponse>("/sync/status"),
 	crossSync: () => fetchApi<CrossSyncResponse>("/cross-sync"),
 	watcherAll: () => fetchApi<WatcherResponse>("/watcher/all"),
@@ -55,7 +55,7 @@ export const api = {
 	healthCheck: () => postApi<ControlResponse>("/control/health-check"),
 	backup: () => postApi<ControlResponse>("/control/backup"),
 	cleanOrphans: () => postApi<ControlResponse>("/control/clean-orphans"),
-	syncMsi: () => postApi<ControlResponse>("/control/sync-msi"),
+	syncLenovo: () => postApi<ControlResponse>("/control/sync-lenovo"),
 	sendTestNotification: () => postApi<ControlResponse>("/notifications/test"),
 	configureNotifications: (rules: Partial<NotificationRules>) =>
 		fetch("/api/notifications/configure", {
@@ -296,7 +296,7 @@ export interface SyncResponse {
 	drift?: string[];
 }
 
-export interface MsiStatusResponse {
+export interface LenovoStatusResponse {
 	reachable: boolean;
 	hostname?: string;
 	load_avg?: number[];
@@ -310,7 +310,7 @@ export interface SyncStatusResponse {
 
 export interface CrossSyncResponse {
 	pop_os: Record<string, unknown>;
-	msi: Record<string, unknown>;
+	lenovo: Record<string, unknown>;
 	diff?: string[];
 }
 
@@ -477,7 +477,7 @@ export interface NotificationRules {
 	task_failed: boolean;
 	health_critical: boolean;
 	ram_high: boolean;
-	msi_unreachable: boolean;
+	lenovo_unreachable: boolean;
 }
 
 export interface NotificationConfig {
@@ -530,7 +530,7 @@ export interface ProjectInfo {
 	name: string;
 	display_name: string;
 	path: string;
-	machine: "pop-os" | "MSI";
+	machine: "pop-os" | "Lenovo";
 	stack: string[];
 	github_repo: string;
 	github_url: string;

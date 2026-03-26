@@ -43,7 +43,7 @@ import { cn } from "@/lib/cn";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type MachineFilter = "all" | "pop-os" | "MSI";
+type MachineFilter = "all" | "pop-os" | "Lenovo";
 type StatusFilter = "all" | "active" | "archived" | "development";
 
 // ── Stack badge color map ─────────────────────────────────────────────────────
@@ -912,7 +912,7 @@ function SummaryStrip({
 	active,
 	archived,
 	development,
-	popOsCount,
+	lenovoCount,
 	msiCount,
 	withGithub,
 	byMachine,
@@ -921,7 +921,7 @@ function SummaryStrip({
 	active: number;
 	archived: number;
 	development: number;
-	popOsCount: number;
+	lenovoCount: number;
 	msiCount: number;
 	withGithub: number;
 	byMachine: Record<string, number>;
@@ -981,7 +981,7 @@ function SummaryStrip({
 		},
 		{
 			label: "pop-os",
-			value: popOsCount,
+			value: lenovoCount,
 			color: "oklch(0.72 0.18 250)",
 			icon: Monitor,
 		},
@@ -1058,7 +1058,7 @@ function MachineFilterTabs({
 	const tabs: { key: MachineFilter; label: string }[] = [
 		{ key: "all", label: "הכול" },
 		{ key: "pop-os", label: "pop-os" },
-		{ key: "MSI", label: "MSI" },
+		{ key: "Lenovo", label: "Lenovo" },
 	];
 	return (
 		<div className="flex items-center gap-1.5">
@@ -1569,7 +1569,7 @@ export function ProjectsPage() {
 		() => ({
 			all: allProjects.length,
 			"pop-os": allProjects.filter((p) => p.machine === "pop-os").length,
-			MSI: allProjects.filter((p) => p.machine === "MSI").length,
+			Lenovo: allProjects.filter((p) => p.machine === "Lenovo").length,
 		}),
 		[allProjects],
 	);
@@ -1636,8 +1636,8 @@ export function ProjectsPage() {
 					active={data.active}
 					archived={data.archived}
 					development={data.development}
-					popOsCount={data.by_machine?.["pop-os"] ?? 0}
-					msiCount={data.by_machine?.["MSI"] ?? 0}
+					lenovoCount={data.by_machine?.["pop-os"] ?? 0}
+					msiCount={data.by_machine?.["Lenovo"] ?? 0}
 					withGithub={data.with_github ?? 0}
 					byMachine={data.by_machine ?? {}}
 				/>

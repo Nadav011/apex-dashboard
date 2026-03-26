@@ -41,9 +41,9 @@ const RULE_META: RuleMeta[] = [
 		description: "קבל התראה כאשר שימוש ב-RAM עולה על 90%",
 	},
 	{
-		key: "msi_unreachable",
-		label: "MSI לא זמין",
-		description: "קבל התראה כאשר מכונת MSI לא מגיבה",
+		key: "lenovo_unreachable",
+		label: "Lenovo לא זמין",
+		description: "קבל התראה כאשר מכונת Lenovo לא מגיבה",
 	},
 ];
 

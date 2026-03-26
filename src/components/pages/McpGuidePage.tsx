@@ -1679,9 +1679,9 @@ export function McpGuidePage() {
 					<code className="text-[var(--color-accent-cyan)] font-mono" dir="ltr">
 						claude-sync push
 					</code>{" "}
-					לסנכרן בין pop-os ל-MSI. כל MCP settings נשמרים ב-~/.mcp.json (unified
-					profile) ובקבצים הספציפיים של כל agent (Gemini: settings.json +
-					antigravity, Codex: config.toml, Kimi: config.toml).
+					לסנכרן בין Lenovo ל-Lenovo. כל MCP settings נשמרים ב-~/.mcp.json
+					(unified profile) ובקבצים הספציפיים של כל agent (Gemini: settings.json
+					+ antigravity, Codex: config.toml, Kimi: config.toml).
 				</p>
 			</div>
 		</div>
