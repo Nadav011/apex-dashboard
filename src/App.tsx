@@ -6,16 +6,20 @@ import { CiCdPage } from "@/components/pages/CiCdPage";
 import { CiTemplatesPage } from "@/components/pages/CiTemplatesPage";
 import { ControlPage } from "@/components/pages/ControlPage";
 import { DeploysPage } from "@/components/pages/DeploysPage";
+import { DispatchGuidePage } from "@/components/pages/DispatchGuidePage";
 import { FaqPage } from "@/components/pages/FaqPage";
 import { FleetPage } from "@/components/pages/FleetPage";
 import { HealthPage } from "@/components/pages/HealthPage";
 import { HooksPage } from "@/components/pages/HooksPage";
 import { HydraPage } from "@/components/pages/HydraPage";
+import { MemoryGuidePage } from "@/components/pages/MemoryGuidePage";
 import { MetricsPage } from "@/components/pages/MetricsPage";
 import { NotificationsPage } from "@/components/pages/NotificationsPage";
 import { OpenclawPage } from "@/components/pages/OpenclawPage";
 import { OverviewPage } from "@/components/pages/OverviewPage";
 import { ProjectsPage } from "@/components/pages/ProjectsPage";
+import { RulesExplorerPage } from "@/components/pages/RulesExplorerPage";
+import { SkillsGuidePage } from "@/components/pages/SkillsGuidePage";
 import { SystemPage } from "@/components/pages/SystemPage";
 
 type Page =
@@ -24,9 +28,11 @@ type Page =
 	| "projects"
 	| "agent-guide"
 	| "hydra"
+	| "dispatch-guide"
 	| "health"
 	| "system"
 	| "hooks"
+	| "rules-explorer"
 	| "metrics"
 	| "control"
 	| "deploys"
@@ -34,7 +40,9 @@ type Page =
 	| "ci-templates"
 	| "notifications"
 	| "openclaw"
+	| "skills-guide"
 	| "architecture"
+	| "memory-guide"
 	| "faq";
 
 const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
@@ -43,9 +51,11 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	projects: () => <ProjectsPage />,
 	"agent-guide": () => <AgentGuidePage />,
 	hydra: () => <HydraPage />,
+	"dispatch-guide": () => <DispatchGuidePage />,
 	health: () => <HealthPage />,
 	system: () => <SystemPage />,
 	hooks: () => <HooksPage />,
+	"rules-explorer": () => <RulesExplorerPage />,
 	metrics: () => <MetricsPage />,
 	control: () => <ControlPage />,
 	deploys: () => <DeploysPage />,
@@ -53,7 +63,9 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	"ci-templates": () => <CiTemplatesPage />,
 	notifications: () => <NotificationsPage />,
 	openclaw: () => <OpenclawPage />,
+	"skills-guide": () => <SkillsGuidePage />,
 	architecture: () => <ArchitecturePage />,
+	"memory-guide": () => <MemoryGuidePage />,
 	faq: () => <FaqPage />,
 };
 
