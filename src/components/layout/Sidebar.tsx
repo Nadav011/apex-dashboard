@@ -2,6 +2,7 @@ import {
 	BarChart3,
 	Bell,
 	BookOpen,
+	Bot,
 	Brain,
 	ChevronLeft,
 	Cpu,
@@ -11,17 +12,21 @@ import {
 	Globe,
 	HeartPulse,
 	LayoutDashboard,
+	MoreHorizontal,
 	Network,
 	Puzzle,
+	ScrollText,
 	Send,
 	Server,
 	Settings,
 	Shield,
 	Sparkles,
+	TestTube2,
 	Users,
 	Webhook,
 	Zap,
 } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/cn";
 
 interface NavItem {
@@ -45,10 +50,13 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "הוקים מדריך", icon: BookOpen, page: "hooks-deep" },
 	{ label: "חוקים", icon: Shield, page: "rules-explorer" },
 	{ label: "מטריקות", icon: BarChart3, page: "metrics" },
+	{ label: "לוגים", icon: ScrollText, page: "logs" },
 	{ label: "שליטה", icon: Settings, page: "control" },
+	{ label: "אוטומציה", icon: Bot, page: "automation" },
 	{ label: "Deploys", icon: Globe, page: "deploys" },
 	{ label: "CI/CD", icon: GitBranch, page: "cicd" },
 	{ label: "CI תבניות", icon: FileCode2, page: "ci-templates" },
+	{ label: "בדיקות", icon: TestTube2, page: "testing" },
 	{ label: "OpenClaw", icon: Puzzle, page: "openclaw", separator: true },
 	{ label: "מיומנויות", icon: Sparkles, page: "skills-guide" },
 	{ label: "התראות", icon: Bell, page: "notifications" },
@@ -58,11 +66,18 @@ const NAV_ITEMS: NavItem[] = [
 	{ label: "מדריך", icon: BookOpen, page: "faq" },
 ];
 
+// Top 5 items shown in mobile bottom bar; rest go behind "more"
+const MOBILE_PRIMARY_PAGES = ["overview", "fleet", "hydra", "health", "system"];
+const MOBILE_PRIMARY = NAV_ITEMS.filter((i) =>
+	MOBILE_PRIMARY_PAGES.includes(i.page),
+);
+
 interface SidebarProps {
 	activePage: string;
 	onNavigate: (page: string) => void;
 	collapsed: boolean;
 	onToggleCollapse: () => void;
+	isMobile: boolean;
 }
 
 export function Sidebar({
@@ -70,7 +85,174 @@ export function Sidebar({
 	onNavigate,
 	collapsed,
 	onToggleCollapse,
+	isMobile,
 }: SidebarProps) {
+	const [moreOpen, setMoreOpen] = useState(false);
+
+	// ── Mobile: Bottom Tab Bar ───────────────────────────────────────────
+	if (isMobile) {
+		const isMoreActive =
+			!MOBILE_PRIMARY_PAGES.includes(activePage) && activePage !== "";
+
+		return (
+			<>
+				{/* "More" drawer — slides up from bottom */}
+				{moreOpen && (
+					<>
+						{/* Backdrop */}
+						<button
+							type="button"
+							aria-label="סגור תפריט"
+							className="fixed inset-0 z-40 bg-bg-primary/70 backdrop-blur-sm"
+							onClick={() => setMoreOpen(false)}
+						/>
+						{/* Drawer */}
+						<div
+							className={cn(
+								"fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+60px)] z-50",
+								"bg-bg-secondary border-t border-border",
+								"rounded-t-2xl shadow-[0_-8px_32px_oklch(0_0_0/0.5)]",
+								"max-h-[60dvh] overflow-y-auto",
+								"py-3 px-2",
+							)}
+						>
+							<div className="grid grid-cols-4 gap-1">
+								{NAV_ITEMS.filter(
+									(i) => !MOBILE_PRIMARY_PAGES.includes(i.page),
+								).map(({ label, icon: Icon, page }) => {
+									const isActive = activePage === page;
+									return (
+										<button
+											key={page}
+											type="button"
+											onClick={() => {
+												onNavigate(page);
+												setMoreOpen(false);
+											}}
+											aria-current={isActive ? "page" : undefined}
+											className={cn(
+												"flex flex-col items-center gap-1 rounded-xl",
+												"min-h-[64px] px-1 py-2",
+												"transition-all duration-150",
+												isActive
+													? "bg-accent-blue/15 text-accent-blue"
+													: "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary",
+											)}
+										>
+											<Icon
+												size={20}
+												className={cn(
+													"shrink-0",
+													isActive ? "text-accent-blue" : "text-current",
+												)}
+											/>
+											<span className="text-[10px] font-medium text-center leading-tight line-clamp-2">
+												{label}
+											</span>
+										</button>
+									);
+								})}
+							</div>
+						</div>
+					</>
+				)}
+
+				{/* Bottom Tab Bar */}
+				<nav
+					aria-label="ניווט תחתון"
+					className={cn(
+						"fixed inset-x-0 bottom-0 z-40",
+						"bg-bg-secondary/95 backdrop-blur-md",
+						"border-t border-border",
+						"flex items-center justify-around",
+						"h-[calc(env(safe-area-inset-bottom)+60px)]",
+						"pb-[env(safe-area-inset-bottom)]",
+					)}
+				>
+					{MOBILE_PRIMARY.map(({ label, icon: Icon, page }) => {
+						const isActive = activePage === page;
+						return (
+							<button
+								key={page}
+								type="button"
+								onClick={() => {
+									onNavigate(page);
+									setMoreOpen(false);
+								}}
+								aria-current={isActive ? "page" : undefined}
+								title={label}
+								className={cn(
+									"flex flex-col items-center justify-center gap-0.5",
+									"min-w-[44px] min-h-[44px] flex-1 py-1",
+									"transition-all duration-150",
+									isActive
+										? "text-accent-blue"
+										: "text-text-muted hover:text-text-secondary",
+								)}
+							>
+								<div
+									className={cn(
+										"flex items-center justify-center w-10 h-7 rounded-xl",
+										"transition-all duration-150",
+										isActive ? "bg-accent-blue/20" : "bg-transparent",
+									)}
+								>
+									<Icon
+										size={20}
+										className={cn(
+											isActive ? "text-accent-blue" : "text-current",
+										)}
+									/>
+								</div>
+								<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
+									{label}
+								</span>
+							</button>
+						);
+					})}
+
+					{/* More button */}
+					<button
+						type="button"
+						onClick={() => setMoreOpen((prev) => !prev)}
+						title="עוד"
+						className={cn(
+							"flex flex-col items-center justify-center gap-0.5",
+							"min-w-[44px] min-h-[44px] flex-1 py-1",
+							"transition-all duration-150",
+							isMoreActive || moreOpen
+								? "text-accent-blue"
+								: "text-text-muted hover:text-text-secondary",
+						)}
+					>
+						<div
+							className={cn(
+								"flex items-center justify-center w-10 h-7 rounded-xl",
+								"transition-all duration-150",
+								isMoreActive || moreOpen
+									? "bg-accent-blue/20"
+									: "bg-transparent",
+							)}
+						>
+							<MoreHorizontal
+								size={20}
+								className={cn(
+									isMoreActive || moreOpen
+										? "text-accent-blue"
+										: "text-current",
+								)}
+							/>
+						</div>
+						<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
+							עוד
+						</span>
+					</button>
+				</nav>
+			</>
+		);
+	}
+
+	// ── Desktop: Vertical Sidebar ────────────────────────────────────────
 	return (
 		<aside
 			className={cn(

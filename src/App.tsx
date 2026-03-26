@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AgentGuidePage } from "@/components/pages/AgentGuidePage";
 import { ArchitecturePage } from "@/components/pages/ArchitecturePage";
+import { AutomationPage } from "@/components/pages/AutomationPage";
 import { CiCdPage } from "@/components/pages/CiCdPage";
 import { CiTemplatesPage } from "@/components/pages/CiTemplatesPage";
 import { ControlPage } from "@/components/pages/ControlPage";
@@ -14,6 +15,7 @@ import { HealthPage } from "@/components/pages/HealthPage";
 import { HooksDeepPage } from "@/components/pages/HooksDeepPage";
 import { HooksPage } from "@/components/pages/HooksPage";
 import { HydraPage } from "@/components/pages/HydraPage";
+import { LogsPage } from "@/components/pages/LogsPage";
 import { McpGuidePage } from "@/components/pages/McpGuidePage";
 import { MemoryGuidePage } from "@/components/pages/MemoryGuidePage";
 import { MetricsPage } from "@/components/pages/MetricsPage";
@@ -24,6 +26,7 @@ import { ProjectsPage } from "@/components/pages/ProjectsPage";
 import { RulesExplorerPage } from "@/components/pages/RulesExplorerPage";
 import { SkillsGuidePage } from "@/components/pages/SkillsGuidePage";
 import { SystemPage } from "@/components/pages/SystemPage";
+import { TestingPage } from "@/components/pages/TestingPage";
 
 type Page =
 	| "overview"
@@ -39,10 +42,13 @@ type Page =
 	| "hooks-deep"
 	| "rules-explorer"
 	| "metrics"
+	| "logs"
 	| "control"
+	| "automation"
 	| "deploys"
 	| "cicd"
 	| "ci-templates"
+	| "testing"
 	| "notifications"
 	| "openclaw"
 	| "skills-guide"
@@ -65,10 +71,13 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	"hooks-deep": () => <HooksDeepPage />,
 	"rules-explorer": () => <RulesExplorerPage />,
 	metrics: () => <MetricsPage />,
+	logs: () => <LogsPage />,
 	control: () => <ControlPage />,
+	automation: () => <AutomationPage />,
 	deploys: () => <DeploysPage />,
 	cicd: () => <CiCdPage />,
 	"ci-templates": () => <CiTemplatesPage />,
+	testing: () => <TestingPage />,
 	notifications: () => <NotificationsPage />,
 	openclaw: () => <OpenclawPage />,
 	"skills-guide": () => <SkillsGuidePage />,

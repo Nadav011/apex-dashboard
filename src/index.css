@@ -169,6 +169,59 @@ html {
 	z-index: -1;
 }
 
+/* ── Mobile Responsive ─────────────────────────────────────────────── */
+
+/* Cards: full-width on mobile, 2-col tablet, 3-col desktop */
+.grid-cards {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+	.grid-cards {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.grid-cards {
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.25rem;
+	}
+}
+
+/* Tables: horizontal scroll on mobile */
+.table-scroll {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* Charts: constrain height on mobile */
+@media (max-width: 767px) {
+	.chart-container {
+		max-height: 220px;
+	}
+
+	/* Tighten spacing on mobile */
+	main {
+		padding: 0.75rem;
+	}
+
+	/* Slightly larger base font for mobile readability */
+	body {
+		font-size: 15px;
+	}
+}
+
+/* iOS safe area support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+	.safe-bottom {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+}
+
 /* ── Hover lift ────────────────────────────────────────────────────── */
 .hover-lift {
 	transition:
