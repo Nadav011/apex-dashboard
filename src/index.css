@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ── OKLCH Design Tokens — APEX Command Center ─────────────────────── */
+@theme {
+  --color-bg-primary: oklch(0.13 0.01 260);
+  --color-bg-secondary: oklch(0.16 0.01 260);
+  --color-bg-tertiary: oklch(0.19 0.015 260);
+  --color-bg-elevated: oklch(0.22 0.02 260);
+
+  --color-text-primary: oklch(0.95 0.01 260);
+  --color-text-secondary: oklch(0.72 0.02 260);
+  --color-text-muted: oklch(0.55 0.02 260);
+
+  --color-accent-blue: oklch(0.65 0.18 250);
+  --color-accent-green: oklch(0.72 0.19 155);
+  --color-accent-amber: oklch(0.78 0.16 75);
+  --color-accent-red: oklch(0.62 0.22 25);
+  --color-accent-purple: oklch(0.62 0.2 290);
+  --color-accent-cyan: oklch(0.75 0.14 200);
+
+  --color-cat-gsd: oklch(0.65 0.15 270);
+  --color-cat-security: oklch(0.62 0.2 25);
+  --color-cat-quality: oklch(0.72 0.18 155);
+  --color-cat-testing: oklch(0.62 0.18 290);
+  --color-cat-general: oklch(0.62 0.05 260);
+  --color-cat-performance: oklch(0.75 0.14 200);
+  --color-cat-infra: oklch(0.78 0.16 75);
+
+  --color-status-healthy: oklch(0.72 0.19 155);
+  --color-status-degraded: oklch(0.78 0.16 75);
+  --color-status-critical: oklch(0.62 0.22 25);
+  --color-status-running: oklch(0.65 0.18 250);
+
+  --color-border: oklch(0.28 0.02 260);
+  --color-border-hover: oklch(0.38 0.03 260);
+  --color-glass: oklch(0.18 0.01 260 / 0.8);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────── */
+html {
+	direction: rtl;
+	font-family: "Heebo", "Inter", system-ui, sans-serif;
+	color-scheme: dark;
+}
+
+body {
+	margin: 0;
+	background: var(--color-bg-primary);
+	color: var(--color-text-primary);
+	-webkit-font-smoothing: antialiased;
+	min-height: 100dvh;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: oklch(0.35 0.02 260);
+	border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: oklch(0.45 0.03 260);
+}
+
+/* ── Animations ────────────────────────────────────────────────────── */
+@keyframes pulse-status {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.animate-pulse-status {
+	animation: pulse-status 2s ease-in-out infinite;
+}
+
+.glass-card {
+	background: var(--color-glass);
+	backdrop-filter: blur(12px);
+	border: 1px solid var(--color-border);
+	border-radius: 0.75rem;
+}
+
+.glass-card:hover {
+	border-color: var(--color-border-hover);
+}
+
+/* ── Smooth scroll ─────────────────────────────────────────────────── */
+html {
+	scroll-behavior: smooth;
+}
+
+/* ── Focus-visible (keyboard nav) ──────────────────────────────────── */
+:focus-visible {
+	outline: 2px solid oklch(0.65 0.18 250);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+/* ── Shimmer loading animation ─────────────────────────────────────── */
+@keyframes shimmer-move {
+	0% {
+		background-position: -200% center;
+	}
+	100% {
+		background-position: 200% center;
+	}
+}
+
+.shimmer {
+	background: linear-gradient(
+		90deg,
+		oklch(0.22 0.02 260) 25%,
+		oklch(0.30 0.03 260 / 0.8) 50%,
+		oklch(0.22 0.02 260) 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer-move 1.6s ease-in-out infinite;
+}
+
+/* ── Animated gradient border (glow-border) ────────────────────────── */
+@property --glow-angle {
+	syntax: "<angle>";
+	inherits: false;
+	initial-value: 0deg;
+}
+
+@keyframes glow-spin {
+	to {
+		--glow-angle: 360deg;
+	}
+}
+
+.glow-border {
+	position: relative;
+	border-radius: 0.75rem;
+}
+
+.glow-border::before {
+	content: "";
+	position: absolute;
+	inset: -1px;
+	border-radius: inherit;
+	background: conic-gradient(
+		from var(--glow-angle),
+		oklch(0.65 0.18 250),
+		oklch(0.62 0.2 290),
+		oklch(0.75 0.14 200),
+		oklch(0.65 0.18 250)
+	);
+	animation: glow-spin 3s linear infinite;
+	z-index: -1;
+}
+
+.glow-border::after {
+	content: "";
+	position: absolute;
+	inset: 1px;
+	border-radius: calc(0.75rem - 1px);
+	background: var(--color-bg-secondary);
+	z-index: -1;
+}
+
+/* ── Hover lift ────────────────────────────────────────────────────── */
+.hover-lift {
+	transition:
+		transform 0.18s ease,
+		box-shadow 0.18s ease;
+}
+
+.hover-lift:hover {
+	transform: translateY(-2px);
+	box-shadow:
+		0 8px 24px oklch(0 0 0 / 0.35),
+		0 2px 8px oklch(0 0 0 / 0.2);
+}
+
+/* ── Animated gradient text ────────────────────────────────────────── */
+@keyframes gradient-shift {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.gradient-text {
+	background: linear-gradient(
+		135deg,
+		oklch(0.75 0.14 200),
+		oklch(0.65 0.18 250),
+		oklch(0.62 0.2 290),
+		oklch(0.65 0.18 250),
+		oklch(0.75 0.14 200)
+	);
+	background-size: 300% 300%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+	animation: gradient-shift 5s ease infinite;
+}
