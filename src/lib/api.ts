@@ -1,53 +1,85 @@
+import { STATIC } from "./static-data";
+
 const API_BASE = "/api";
 
-async function fetchApi<T>(path: string): Promise<T> {
-	const res = await fetch(`${API_BASE}${path}`);
-	if (!res.ok) {
-		throw new Error(`API error ${res.status}: ${path}`);
+async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
+	try {
+		const res = await fetch(`${API_BASE}${path}`);
+		if (!res.ok) {
+			throw new Error(`API error ${res.status}: ${path}`);
+		}
+		return res.json() as Promise<T>;
+	} catch (err) {
+		if (fallback !== undefined) return fallback;
+		throw err;
 	}
-	return res.json() as Promise<T>;
 }
 
-async function postApi<T>(path: string): Promise<T> {
-	const res = await fetch(`${API_BASE}${path}`, { method: "POST" });
-	if (!res.ok) {
-		throw new Error(`API error ${res.status}: ${path}`);
+async function postApi<T>(path: string, fallback?: T): Promise<T> {
+	try {
+		const res = await fetch(`${API_BASE}${path}`, { method: "POST" });
+		if (!res.ok) {
+			throw new Error(`API error ${res.status}: ${path}`);
+		}
+		return res.json() as Promise<T>;
+	} catch (err) {
+		if (fallback !== undefined) return fallback;
+		throw err;
 	}
-	return res.json() as Promise<T>;
 }
 
 // ── GET endpoints ──────────────────────────────────────────────────────────────
 export const api = {
-	agents: () => fetchApi<AgentInfo[]>("/agents"),
-	agentsExternal: () => fetchApi<ExternalAgentsResponse>("/agents/external"),
-	hydraTasks: () => fetchApi<HydraTask[]>("/hydra/tasks"),
-	hydraScores: () => fetchApi<HydraScoresResponse>("/hydra/scores"),
-	hydraWatcher: () => fetchApi<WatcherResponse>("/hydra/watcher"),
-	hydraHealth: () => fetchApi<HealthResponse>("/hydra/health"),
-	hooks: () => fetchApi<HooksResponse>("/hooks"),
-	system: () => fetchApi<SystemResponse>("/system"),
-	metrics: () => fetchApi<MetricsResponse>("/metrics"),
-	memory: () => fetchApi<MemoryResponse>("/memory"),
-	rules: () => fetchApi<RuleInfo[]>("/rules"),
-	skills: () => fetchApi<SkillsResponse>("/skills"),
-	mcp: () => fetchApi<McpResponse>("/mcp"),
-	openclaw: () => fetchApi<OpenclawResponse>("/openclaw"),
-	openclawDetails: () => fetchApi<OpenclawDetailsResponse>("/openclaw/details"),
-	sync: () => fetchApi<SyncResponse>("/sync"),
-	lenovoStatus: () => fetchApi<LenovoStatusResponse>("/lenovo/status"),
-	syncStatus: () => fetchApi<SyncStatusResponse>("/sync/status"),
-	crossSync: () => fetchApi<CrossSyncResponse>("/cross-sync"),
-	watcherAll: () => fetchApi<WatcherResponse>("/watcher/all"),
+	agents: () => fetchApi<AgentInfo[]>("/agents", STATIC.agents),
+	agentsExternal: () =>
+		fetchApi<ExternalAgentsResponse>("/agents/external", STATIC.agentsExternal),
+	hydraTasks: () => fetchApi<HydraTask[]>("/hydra/tasks", STATIC.hydraTasks),
+	hydraScores: () =>
+		fetchApi<HydraScoresResponse>("/hydra/scores", STATIC.hydraScores),
+	hydraWatcher: () =>
+		fetchApi<WatcherResponse>("/hydra/watcher", STATIC.hydraWatcher),
+	hydraHealth: () =>
+		fetchApi<HealthResponse>("/hydra/health", STATIC.hydraHealth),
+	hooks: () => fetchApi<HooksResponse>("/hooks", STATIC.hooks),
+	system: () => fetchApi<SystemResponse>("/system", STATIC.system),
+	metrics: () => fetchApi<MetricsResponse>("/metrics", STATIC.metrics),
+	memory: () => fetchApi<MemoryResponse>("/memory", STATIC.memory),
+	rules: () => fetchApi<RuleInfo[]>("/rules", STATIC.rules),
+	skills: () => fetchApi<SkillsResponse>("/skills", STATIC.skills),
+	mcp: () => fetchApi<McpResponse>("/mcp", STATIC.mcp),
+	openclaw: () => fetchApi<OpenclawResponse>("/openclaw", STATIC.openclaw),
+	openclawDetails: () =>
+		fetchApi<OpenclawDetailsResponse>(
+			"/openclaw/details",
+			STATIC.openclawDetails,
+		),
+	sync: () => fetchApi<SyncResponse>("/sync", STATIC.sync),
+	lenovoStatus: () =>
+		fetchApi<LenovoStatusResponse>("/lenovo/status", STATIC.lenovoStatus),
+	syncStatus: () =>
+		fetchApi<SyncStatusResponse>("/sync/status", STATIC.syncStatus),
+	crossSync: () => fetchApi<CrossSyncResponse>("/cross-sync", STATIC.crossSync),
+	watcherAll: () =>
+		fetchApi<WatcherResponse>("/watcher/all", STATIC.watcherAll),
 	notificationsConfig: () =>
-		fetchApi<NotificationConfig>("/notifications/config"),
-	notificationsLog: () => fetchApi<NotificationEvent[]>("/notifications/log"),
-	ciStatus: () => fetchApi<CiStatusResponse>("/ci/status"),
-	ciSummary: () => fetchApi<CiSummaryResponse>("/ci/summary"),
-	ciTemplates: () => fetchApi<CiTemplatesResponse>("/ci/templates"),
-	ciDeep: () => fetchApi<CiDeepResponse>("/ci/deep"),
+		fetchApi<NotificationConfig>(
+			"/notifications/config",
+			STATIC.notificationsConfig,
+		),
+	notificationsLog: () =>
+		fetchApi<NotificationEvent[]>(
+			"/notifications/log",
+			STATIC.notificationsLog,
+		),
+	ciStatus: () => fetchApi<CiStatusResponse>("/ci/status", STATIC.ciStatus),
+	ciSummary: () => fetchApi<CiSummaryResponse>("/ci/summary", STATIC.ciSummary),
+	ciTemplates: () =>
+		fetchApi<CiTemplatesResponse>("/ci/templates", STATIC.ciTemplates),
+	ciDeep: () => fetchApi<CiDeepResponse>("/ci/deep", STATIC.ciDeep),
 
-	deploysStatus: () => fetchApi<DeploysStatusResponse>("/deploys/status"),
-	projects: () => fetchApi<ProjectsResponse>("/projects"),
+	deploysStatus: () =>
+		fetchApi<DeploysStatusResponse>("/deploys/status", STATIC.deploysStatus),
+	projects: () => fetchApi<ProjectsResponse>("/projects", STATIC.projects),
 
 	// ── POST control actions ───────────────────────────────────────────────────
 	startHydra: () => postApi<ControlResponse>("/control/start-hydra"),
@@ -530,7 +562,7 @@ export interface ProjectInfo {
 	name: string;
 	display_name: string;
 	path: string;
-	machine: "pop-os" | "Lenovo";
+	machine: string;
 	stack: string[];
 	github_repo: string;
 	github_url: string;

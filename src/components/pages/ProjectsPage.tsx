@@ -912,8 +912,8 @@ function SummaryStrip({
 	active,
 	archived,
 	development,
+	popOsCount,
 	lenovoCount,
-	msiCount,
 	withGithub,
 	byMachine,
 }: {
@@ -921,8 +921,8 @@ function SummaryStrip({
 	active: number;
 	archived: number;
 	development: number;
+	popOsCount: number;
 	lenovoCount: number;
-	msiCount: number;
 	withGithub: number;
 	byMachine: Record<string, number>;
 }) {
@@ -981,13 +981,13 @@ function SummaryStrip({
 		},
 		{
 			label: "pop-os",
-			value: lenovoCount,
+			value: popOsCount,
 			color: "oklch(0.72 0.18 250)",
 			icon: Monitor,
 		},
 		{
-			label: "MSI",
-			value: msiCount,
+			label: "Lenovo",
+			value: lenovoCount,
 			color: "oklch(0.82 0.18 75)",
 			icon: Monitor,
 		},
@@ -1636,8 +1636,8 @@ export function ProjectsPage() {
 					active={data.active}
 					archived={data.archived}
 					development={data.development}
-					lenovoCount={data.by_machine?.["pop-os"] ?? 0}
-					msiCount={data.by_machine?.["Lenovo"] ?? 0}
+					popOsCount={data.by_machine?.["pop-os"] ?? 0}
+					lenovoCount={data.by_machine?.["Lenovo"] ?? 0}
 					withGithub={data.with_github ?? 0}
 					byMachine={data.by_machine ?? {}}
 				/>

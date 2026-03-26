@@ -9,6 +9,7 @@ import { DeploysPage } from "@/components/pages/DeploysPage";
 import { DispatchGuidePage } from "@/components/pages/DispatchGuidePage";
 import { FaqPage } from "@/components/pages/FaqPage";
 import { FleetPage } from "@/components/pages/FleetPage";
+import { HardwarePage } from "@/components/pages/HardwarePage";
 import { HealthPage } from "@/components/pages/HealthPage";
 import { HooksDeepPage } from "@/components/pages/HooksDeepPage";
 import { HooksPage } from "@/components/pages/HooksPage";
@@ -33,6 +34,7 @@ type Page =
 	| "dispatch-guide"
 	| "health"
 	| "system"
+	| "hardware"
 	| "hooks"
 	| "hooks-deep"
 	| "rules-explorer"
@@ -58,6 +60,7 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	"dispatch-guide": () => <DispatchGuidePage />,
 	health: () => <HealthPage />,
 	system: () => <SystemPage />,
+	hardware: () => <HardwarePage />,
 	hooks: () => <HooksPage />,
 	"hooks-deep": () => <HooksDeepPage />,
 	"rules-explorer": () => <RulesExplorerPage />,
