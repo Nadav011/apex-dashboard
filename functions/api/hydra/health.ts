@@ -1,6 +1,6 @@
 const CORS_HEADERS = {
 	"Content-Type": "application/json",
-	"Access-Control-Allow-Origin": "https://hydra-dashboard.pages.dev",
+	"Access-Control-Allow-Origin": "*",
 	"Access-Control-Allow-Methods": "GET, OPTIONS",
 	Vary: "Origin",
 };
