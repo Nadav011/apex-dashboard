@@ -1,30 +1,35 @@
 import { STATIC } from "./static-data";
 
-const API_BASE = "/api";
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
 async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
 	try {
-		const res = await fetch(`${API_BASE}${path}`);
-		if (!res.ok) {
-			throw new Error(`API error ${res.status}: ${path}`);
-		}
+		const ctrl = new AbortController();
+		const timer = setTimeout(() => ctrl.abort(), 2000);
+		const res = await fetch(`${API_BASE}${path}`, { signal: ctrl.signal });
+		clearTimeout(timer);
+		if (!res.ok) throw new Error(`${res.status}`);
 		return res.json() as Promise<T>;
-	} catch (err) {
+	} catch {
 		if (fallback !== undefined) return fallback;
-		throw err;
+		throw new Error(`API unavailable: ${path}`);
 	}
 }
 
 async function postApi<T>(path: string, fallback?: T): Promise<T> {
 	try {
-		const res = await fetch(`${API_BASE}${path}`, { method: "POST" });
-		if (!res.ok) {
-			throw new Error(`API error ${res.status}: ${path}`);
-		}
+		const ctrl = new AbortController();
+		const timer = setTimeout(() => ctrl.abort(), 3000);
+		const res = await fetch(`${API_BASE}${path}`, {
+			method: "POST",
+			signal: ctrl.signal,
+		});
+		clearTimeout(timer);
+		if (!res.ok) throw new Error(`${res.status}`);
 		return res.json() as Promise<T>;
-	} catch (err) {
+	} catch {
 		if (fallback !== undefined) return fallback;
-		throw err;
+		throw new Error(`API unavailable: ${path}`);
 	}
 }
 
