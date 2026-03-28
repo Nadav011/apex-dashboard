@@ -30,7 +30,7 @@ export const onRequestGet: PagesFunction = async () => {
 			},
 			{
 				name: "nadavai",
-				url: "https://nadavai.pages.dev",
+				url: "https://nadavc.ai",
 				platform: "cloudflare",
 				status: "up",
 				http_status: 200,
@@ -40,7 +40,7 @@ export const onRequestGet: PagesFunction = async () => {
 			},
 			{
 				name: "shifts",
-				url: "https://mexicani-shifts.pages.dev",
+				url: "https://shifts-8ft.pages.dev",
 				platform: "cloudflare",
 				status: "up",
 				http_status: 200,
@@ -106,20 +106,17 @@ export const onRequestGet: PagesFunction = async () => {
 		custom_domains: [
 			{
 				domain: "dashboard.nadavc.ai",
-				target: "apex-dashboard.pages.dev",
-				platform: "cloudflare",
+				target: "apex-dashboard-2z6.pages.dev",
 				status: "active",
 			},
 			{
 				domain: "api.nadavc.ai",
-				target: "apex-api worker",
-				platform: "cloudflare",
+				target: "tunnel → port 8743",
 				status: "active",
 			},
 			{
 				domain: "webhooks.nadavc.ai",
-				target: "cloudflared tunnel",
-				platform: "cloudflare_tunnel",
+				target: "tunnel → port 8744",
 				status: "active",
 			},
 		],

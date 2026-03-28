@@ -21,9 +21,9 @@ export const onRequestGet: PagesFunction = async () => {
 		handoffs: {
 			pending: 2,
 			"in-progress": 1,
-			completed: 47,
-			failed: 3,
-			verified: 38,
+			completed: 26,
+			failed: 35,
+			verified: 35,
 		},
 		agents_config: { max_agents: 16, subagent_model: "claude-sonnet-4-6" },
 		services: {
@@ -129,15 +129,16 @@ export const onRequestGet: PagesFunction = async () => {
 		],
 		apex_counts: {
 			skills: 86,
-			conductor_skills: 6,
-			hooks_files: 82,
 			hooks_registered: 80,
+			hooks_files: 82,
 			agents: 52,
 			rules_files: 11,
 			plugins: 19,
-			mcp_servers: 11,
+			conductor_skills: 6,
 			mcpize_servers: 3,
-			github_repos: 3,
+			github_repos: 4,
+			cli_commands: 13,
+			cross_tool_synced: 30,
 		},
 		apex_cli: {
 			commands: 13,

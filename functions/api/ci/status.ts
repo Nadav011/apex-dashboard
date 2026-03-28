@@ -228,6 +228,7 @@ export const onRequestGet: PagesFunction = async () => {
 			self_healing: 12,
 			last_check: "2026-03-28T10:00:00Z",
 		},
+		self_healing: { deployed: 12, total: 12 },
 		updated_at: "2026-03-28T10:00:00Z",
 	};
 
