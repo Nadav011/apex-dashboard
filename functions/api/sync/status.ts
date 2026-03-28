@@ -22,6 +22,18 @@ export const onRequestGet: PagesFunction = async () => {
 			hostname: "lenovo",
 			load_avg: [1.2, 1.5, 1.8],
 		},
+		config_sync_targets: {
+			count: 6,
+			list: ["gemini", "codex", "kimi", "minimax", "MSI", "pop-os"],
+			last_sync: "2026-03-28T08:00:00Z",
+			status: "in_sync",
+		},
+		kiro_junie_sync: {
+			kiro_hooks: 15,
+			junie_skills: 15,
+			last_sync: "2026-03-28T08:00:00Z",
+			status: "synced",
+		},
 		crossSync: {
 			pop_os: {
 				gemini: {

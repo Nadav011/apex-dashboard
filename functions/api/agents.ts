@@ -352,7 +352,7 @@ export const onRequestGet: PagesFunction = async () => {
 				path: "/home/nadavcohen/.local/bin/minimax",
 			},
 		},
-		total: 45,
+		total: 52,
 	};
 
 	return new Response(JSON.stringify(data), { headers: CORS_HEADERS });

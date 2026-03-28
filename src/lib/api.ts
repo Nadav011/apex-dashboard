@@ -1,6 +1,10 @@
 import { STATIC } from "./static-data";
 
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const API_BASE =
+	import.meta.env.VITE_API_URL ||
+	(typeof window !== "undefined" && window.location.hostname === "localhost"
+		? "/api"
+		: "https://api.nadavc.ai/api");
 
 async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
 	try {

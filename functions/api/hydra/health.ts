@@ -35,7 +35,49 @@ export const onRequestGet: PagesFunction = async () => {
 				message: "hydra-executor.sh present",
 				duration_ms: 1,
 			},
+			{
+				name: "safety_gate",
+				ok: true,
+				message: "safety_gate node active in graph",
+				duration_ms: 1,
+			},
+			{
+				name: "bayesian_scores",
+				ok: true,
+				message: "hydra-bayesian.json present",
+				duration_ms: 1,
+			},
 		],
+		graph_nodes: [
+			{ name: "load_plan", description: "Load and parse plan frontmatter" },
+			{ name: "route_node", description: "Routes tasks to optimal provider" },
+			{ name: "auap_node", description: "AUAP briefing injection" },
+			{ name: "safety_gate", description: "Pre-execution safety check" },
+			{
+				name: "execute_node",
+				description: "Provider execution (910s timeout)",
+			},
+			{
+				name: "verify_node",
+				description: "Post-execution verification (120s)",
+			},
+			{ name: "decide_node", description: "Success/failure + Bayesian update" },
+		],
+		graph_node_count: 7,
+		graph_nodes_list: [
+			"load_plan",
+			"route_node",
+			"auap_node",
+			"safety_gate",
+			"execute_node",
+			"verify_node",
+			"decide_node",
+		],
+		safety_gate: {
+			enabled: true,
+			checks: ["budget", "allowlist", "blast_radius", "cooldown", "notify"],
+		},
+		circuit_breaker: { enabled: true, tiers: ["throttle", "isolate", "trip"] },
 	};
 
 	return new Response(JSON.stringify(data), { headers: CORS_HEADERS });

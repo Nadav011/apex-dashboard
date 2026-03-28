@@ -28,6 +28,25 @@ export const onRequestGet: PagesFunction = async () => {
 		lancedb: {
 			path: "~/.claude/knowledge/lancedb_memory",
 			exists: true,
+			hybrid_search: true,
+			algorithms: ["cosine", "BM25"],
+			description: "LanceDB BM25 hybrid semantic + keyword search",
+		},
+		fsrs: {
+			integrated: true,
+			algorithm: "FSRS v5",
+			description: "Spaced repetition wired into cognitive memory",
+			backend: "cognitive_memory.py",
+		},
+		langfuse: {
+			integrated: true,
+			status: "ready",
+			note: "observability — needs LANGFUSE_PUBLIC_KEY + LANGFUSE_SECRET_KEY",
+		},
+		knowledge_capture_loop: {
+			active: true,
+			backend: "knowledge-capture.sh",
+			storage: "beads.jsonl + LanceDB",
 		},
 		beads_jsonl: {
 			path: "~/.claude/knowledge/beads.jsonl",

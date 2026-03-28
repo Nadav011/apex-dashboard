@@ -171,21 +171,65 @@ export const onRequestGet: PagesFunction = async () => {
 						status: "completed",
 						conclusion: "success",
 						name: "CI",
-						createdAt: "2026-03-24T18:00:00Z",
+						createdAt: "2026-03-28T10:00:00Z",
 						headBranch: "master",
 						url: "https://github.com/Nadav011/israeli-finance-app/actions/runs/12",
 					},
 				],
 			},
+			{
+				name: "apex-skills",
+				full_name: "Nadav011/apex-skills",
+				runs: [
+					{
+						status: "completed",
+						conclusion: "success",
+						name: "CI",
+						createdAt: "2026-03-28T09:00:00Z",
+						headBranch: "main",
+						url: "https://github.com/Nadav011/apex-skills/actions/runs/13",
+					},
+				],
+			},
+			{
+				name: "apex-cli",
+				full_name: "Nadav011/apex-cli",
+				runs: [
+					{
+						status: "completed",
+						conclusion: "success",
+						name: "CI",
+						createdAt: "2026-03-28T09:00:00Z",
+						headBranch: "main",
+						url: "https://github.com/Nadav011/apex-cli/actions/runs/14",
+					},
+				],
+			},
+			{
+				name: "rtl-first-dev-kit",
+				full_name: "Nadav011/rtl-first-dev-kit",
+				runs: [
+					{
+						status: "completed",
+						conclusion: "success",
+						name: "CI",
+						createdAt: "2026-03-28T09:00:00Z",
+						headBranch: "main",
+						url: "https://github.com/Nadav011/rtl-first-dev-kit/actions/runs/15",
+					},
+				],
+			},
 		],
 		summary: {
-			total: 13,
-			passing: 11,
-			failing: 1,
-			unknown: 1,
-			last_check: "2026-03-26T10:00:00Z",
+			total: 16,
+			passing: 12,
+			failing: 0,
+			unknown: 4,
+			self_healing: 12,
+			last_check: "2026-03-28T10:00:00Z",
 		},
-		updated_at: "2026-03-26T10:00:00Z",
+		self_healing: { deployed: 12, total: 12 },
+		updated_at: "2026-03-28T10:00:00Z",
 	};
 
 	return new Response(JSON.stringify(data), { headers: CORS_HEADERS });

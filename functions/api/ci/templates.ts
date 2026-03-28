@@ -51,8 +51,24 @@ export const onRequestGet: PagesFunction = async () => {
 				size_kb: 3.4,
 				lines: 85,
 			},
+			{
+				file: "self-healing-ci.yml",
+				name: "Self-Healing CI",
+				size_kb: 4.1,
+				lines: 102,
+				description:
+					"AI-powered CI self-repair — auto-fixes type errors, lint, bundle",
+			},
+			{
+				file: "dagger-pipeline.yml",
+				name: "Dagger Pipeline",
+				size_kb: 3.8,
+				lines: 95,
+				description: "Dagger 0.20.3 TypeScript pipeline",
+			},
 		],
-		count: 8,
+		count: 10,
+		self_healing_count: 12,
 		path: "/home/nadavcohen/ci-standards",
 	};
 

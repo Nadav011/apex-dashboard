@@ -30,7 +30,7 @@ export const onRequestGet: PagesFunction = async () => {
 			},
 			{
 				name: "nadavai",
-				url: "https://nadavai.pages.dev",
+				url: "https://nadavc.ai",
 				platform: "cloudflare",
 				status: "up",
 				http_status: 200,
@@ -40,7 +40,7 @@ export const onRequestGet: PagesFunction = async () => {
 			},
 			{
 				name: "shifts",
-				url: "https://mexicani-shifts.pages.dev",
+				url: "https://shifts-8ft.pages.dev",
 				platform: "cloudflare",
 				status: "up",
 				http_status: 200,
@@ -102,7 +102,24 @@ export const onRequestGet: PagesFunction = async () => {
 		total: 9,
 		up_count: 8,
 		down_count: 1,
-		checked_at: "2026-03-26T10:00:00Z",
+		checked_at: "2026-03-28T10:00:00Z",
+		custom_domains: [
+			{
+				domain: "dashboard.nadavc.ai",
+				target: "apex-dashboard-2z6.pages.dev",
+				status: "active",
+			},
+			{
+				domain: "api.nadavc.ai",
+				target: "tunnel → port 8743",
+				status: "active",
+			},
+			{
+				domain: "webhooks.nadavc.ai",
+				target: "tunnel → port 8744",
+				status: "active",
+			},
+		],
 	};
 
 	return new Response(JSON.stringify(data), { headers: CORS_HEADERS });
