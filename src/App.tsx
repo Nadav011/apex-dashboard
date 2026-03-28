@@ -27,6 +27,7 @@ import { OpenclawPage } from "@/components/pages/OpenclawPage";
 import { OverviewPage } from "@/components/pages/OverviewPage";
 import { ProjectsPage } from "@/components/pages/ProjectsPage";
 import { RulesExplorerPage } from "@/components/pages/RulesExplorerPage";
+import { SecurityGuidePage } from "@/components/pages/SecurityGuidePage";
 import { SkillsGuidePage } from "@/components/pages/SkillsGuidePage";
 import { SyncPage } from "@/components/pages/SyncPage";
 import { SystemPage } from "@/components/pages/SystemPage";
@@ -63,6 +64,7 @@ type Page =
 	| "architecture"
 	| "memory-guide"
 	| "mcp-guide"
+	| "security-guide"
 	| "faq";
 
 const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
@@ -96,6 +98,7 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 	architecture: () => <ArchitecturePage />,
 	"memory-guide": () => <MemoryGuidePage />,
 	"mcp-guide": () => <McpGuidePage />,
+	"security-guide": () => <SecurityGuidePage />,
 	faq: () => <FaqPage />,
 };
 
