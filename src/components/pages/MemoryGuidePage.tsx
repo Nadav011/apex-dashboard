@@ -410,7 +410,7 @@ function FlowDiagram() {
 
 function HowItWorksSection() {
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			<div>
 				<div className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
 					זרימת לכידת ידע
@@ -506,7 +506,7 @@ const MEMORY_ENTRY_TYPES = [
 
 function MemoryMdSection() {
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* Types */}
 			<div>
 				<div className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
@@ -628,7 +628,7 @@ const SCOPE_EXAMPLES = [
 
 function LanceDbSection() {
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* API */}
 			<div>
 				<div className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
@@ -865,7 +865,7 @@ const CONFIDENCE_TIERS = [
 
 function RulesSection() {
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* Rule files */}
 			<div>
 				<div className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
@@ -989,7 +989,7 @@ function LiveStatsSection() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* MEMORY.md stats */}
 			<div>
 				<div className="text-sm font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">

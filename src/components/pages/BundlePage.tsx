@@ -159,7 +159,7 @@ concurrency:
 
 jobs:
   bundle-check:
-    runs-on: [self-hosted, linux, x64, pop-os]
+    runs-on: [self-hosted, linux, x64, Lenovo]
     steps:
       - uses: actions/checkout@v4
       - name: Setup pnpm
@@ -890,7 +890,7 @@ function BundleCiSection() {
 		},
 		{
 			ok: true,
-			text: "runs-on: [self-hosted, linux, x64, pop-os] — NEVER ubuntu-latest",
+			text: "runs-on: [self-hosted, linux, x64, Lenovo] — NEVER ubuntu-latest",
 		},
 		{
 			ok: true,

@@ -95,7 +95,7 @@ function CopyButton({ text }: { text: string }) {
 			title="העתק"
 			aria-label="העתק קוד"
 			className={cn(
-				"flex items-center justify-center w-7 h-7 rounded-md",
+				"flex items-center justify-center min-h-11 min-w-11 w-7 h-7 rounded-md",
 				"transition-all duration-150 cursor-pointer shrink-0",
 				copied
 					? "bg-accent-green/20 text-accent-green"
@@ -687,7 +687,7 @@ export function HooksDeepPage() {
 					</div>
 					<div className="text-center">
 						<div className="text-lg font-bold text-accent-green" dir="ltr">
-							57+
+							78
 						</div>
 						<div className="text-[10px] text-text-muted">הוקים פעילים</div>
 					</div>

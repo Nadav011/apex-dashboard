@@ -129,7 +129,7 @@ function SiteCard({ site }: { site: DeploySite }) {
 					className={cn(
 						"inline-flex items-center gap-1 text-xs text-[var(--color-accent-blue)]",
 						"hover:text-[var(--color-text-primary)] transition-colors duration-150",
-						"min-h-8 rounded",
+						"min-h-11 rounded",
 					)}
 					dir="ltr"
 				>

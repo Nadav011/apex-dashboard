@@ -199,7 +199,7 @@ export function OverviewPage() {
 	const recentEvents = (watcher.data?.events ?? []).slice(-10).reverse();
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* Header */}
 			<div className="flex items-center gap-3">
 				<LayoutDashboard

@@ -1246,8 +1246,8 @@ export function AutomationPage() {
 							</div>
 							<div className="flex items-center gap-4 flex-wrap">
 								{[
-									{ label: "קבצי hooks", value: "57", color: C.blue },
-									{ label: "רשומים", value: "128", color: C.purple },
+									{ label: "קבצי hooks", value: "78", color: C.blue },
+									{ label: "רשומים", value: "75", color: C.purple },
 									{ label: "מכונות", value: "2", color: C.cyan },
 								].map(({ label, value, color }) => (
 									<div key={label} className="text-center">
@@ -1302,13 +1302,13 @@ export function AutomationPage() {
 						</div>
 						<div className="p-4">
 							<RunnerGroup
-								machine="pop-os (Lenovo)"
+								machine="Lenovo"
 								count={17}
 								online={17}
 								color={C.blue}
 							/>
 							<RunnerGroup
-								machine="MSI (secondary)"
+								machine="MSI"
 								count={5}
 								online={5}
 								color={C.purple}
@@ -1322,7 +1322,7 @@ export function AutomationPage() {
 									{[
 										{
 											label: "runs-on",
-											value: "[self-hosted, linux, x64, pop-os]",
+											value: "[self-hosted, linux, x64, Lenovo]",
 										},
 										{ label: "NEVER", value: "ubuntu-latest" },
 										{ label: "Node.js", value: "v24.14.0 (fnm)" },

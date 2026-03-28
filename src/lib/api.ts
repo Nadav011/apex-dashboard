@@ -85,6 +85,17 @@ export const api = {
 	deploysStatus: () =>
 		fetchApi<DeploysStatusResponse>("/deploys/status", STATIC.deploysStatus),
 	projects: () => fetchApi<ProjectsResponse>("/projects", STATIC.projects),
+	costs: () =>
+		fetchApi<CostsResponse>("/costs", {
+			today_usd: 0,
+			week_usd: 0,
+			month_usd: 0,
+			per_provider: {},
+			per_model: {},
+			daily_history: [],
+			budget_remaining_usd: 50,
+			daily_budget_usd: 50,
+		}),
 
 	// ── POST control actions ───────────────────────────────────────────────────
 	startHydra: () => postApi<ControlResponse>("/control/start-hydra"),
@@ -607,4 +618,16 @@ export interface ProjectsResponse {
 	with_github: number;
 	with_ci: number;
 	with_supabase: number;
+}
+
+// /api/costs
+export interface CostsResponse {
+	today_usd: number;
+	week_usd: number;
+	month_usd: number;
+	per_provider: Record<string, number>;
+	per_model: Record<string, number>;
+	daily_history: Array<{ date: string; usd: number }>;
+	budget_remaining_usd: number;
+	daily_budget_usd: number;
 }

@@ -209,7 +209,7 @@ export function MetricsPage() {
 	};
 
 	return (
-		<div className="space-y-6" dir="rtl">
+		<div className="space-y-6 bg-zinc-950 min-h-screen p-6" dir="rtl">
 			{/* Header */}
 			<div>
 				<h1 className="text-xl font-bold text-text-primary">מטריקות</h1>

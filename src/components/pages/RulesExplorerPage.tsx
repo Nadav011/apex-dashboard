@@ -427,7 +427,7 @@ export function RulesExplorerPage() {
 	];
 
 	return (
-		<div className="space-y-6" dir="rtl">
+		<div className="space-y-6 bg-zinc-950" dir="rtl">
 			{/* Header */}
 			<div className="flex items-start gap-3">
 				<div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-blue/15 mt-0.5">

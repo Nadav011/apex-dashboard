@@ -42,8 +42,8 @@ const RULE_META: RuleMeta[] = [
 	},
 	{
 		key: "lenovo_unreachable",
-		label: "Lenovo לא זמין",
-		description: "קבל התראה כאשר מכונת Lenovo לא מגיבה",
+		label: "MSI לא זמין",
+		description: "קבל התראה כאשר מכונת MSI לא מגיבה",
 	},
 ];
 
@@ -238,10 +238,10 @@ function RuleToggle({
 					className={cn(
 						"inline-block h-4 w-4 rounded-full bg-white shadow-sm",
 						"transition-transform duration-200",
-						enabled ? "translate-x-6" : "translate-x-1",
+						enabled ? "-translate-x-6" : "-translate-x-1",
 					)}
 					style={{
-						transform: enabled ? "translateX(22px)" : "translateX(2px)",
+						transform: enabled ? "translateX(-22px)" : "translateX(-2px)",
 					}}
 				/>
 			</button>
@@ -315,7 +315,7 @@ export function NotificationsPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* Header */}
 			<div className="flex items-center justify-between gap-4 flex-wrap">
 				<div className="flex items-center gap-3">

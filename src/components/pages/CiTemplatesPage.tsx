@@ -283,7 +283,7 @@ function SummaryStrip({
 		},
 		{
 			label: "פרויקטים עם CI",
-			value: `${deep?.stats?.projects_with_ci ?? 13}/${deep?.stats?.projects_total ?? 14}`,
+			value: `${deep?.stats?.projects_with_ci ?? 13}/${deep?.stats?.projects_total ?? 18}`,
 			color: "text-[var(--color-accent-red)]",
 		},
 	];
@@ -1377,12 +1377,12 @@ interface RunnersData {
 	label: string;
 	never_use: string;
 	note_he: string;
-	pop_os_count: number;
 	lenovo_count: number;
+	msi_count: number;
 	total: number;
-	pop_os_ip: string;
 	lenovo_ip: string;
-	note_lenovo: string;
+	msi_ip: string;
+	note_msi: string;
 }
 
 const FALLBACK_RUNNERS: RunnersData = {
@@ -1390,12 +1390,12 @@ const FALLBACK_RUNNERS: RunnersData = {
 	never_use: "ubuntu-latest",
 	note_he:
 		"לעולם לא ubuntu-latest! גורם ל-node_modules cache miss, binaries שונים ושגיאות שקטות",
-	pop_os_count: 17,
-	lenovo_count: 5,
+	lenovo_count: 17,
+	msi_count: 5,
 	total: 22,
-	pop_os_ip: "100.82.33.122",
-	lenovo_ip: "100.87.247.87",
-	note_lenovo: "Lenovo runners: ROLLUP_NATIVE_THREADS=0 לכל build Vite/Rollup",
+	lenovo_ip: "100.82.33.122",
+	msi_ip: "100.87.247.87",
+	note_msi: "MSI runners: ROLLUP_NATIVE_THREADS=0 לכל build Vite/Rollup",
 };
 
 function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
@@ -1443,32 +1443,10 @@ function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
 					<div className="glass-card p-4 space-y-2">
 						<div className="flex items-center justify-between">
 							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
-								Lenovo
+								Lenovo (Pop!_OS)
 							</span>
 							<span
 								className="text-lg font-bold text-[var(--color-accent-blue)]"
-								dir="ltr"
-							>
-								{runners.pop_os_count}
-							</span>
-						</div>
-						<code
-							className="text-xs font-mono text-[var(--color-text-muted)]"
-							dir="ltr"
-						>
-							{runners.pop_os_ip}
-						</code>
-						<p className="text-xs text-[var(--color-text-muted)]">
-							מכונה ראשית — 24-core / 64GB RAM
-						</p>
-					</div>
-					<div className="glass-card p-4 space-y-2">
-						<div className="flex items-center justify-between">
-							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
-								Lenovo
-							</span>
-							<span
-								className="text-lg font-bold text-[var(--color-accent-purple)]"
 								dir="ltr"
 							>
 								{runners.lenovo_count}
@@ -1480,8 +1458,30 @@ function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
 						>
 							{runners.lenovo_ip}
 						</code>
+						<p className="text-xs text-[var(--color-text-muted)]">
+							מכונה ראשית — 24-core / 64GB RAM
+						</p>
+					</div>
+					<div className="glass-card p-4 space-y-2">
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
+								MSI (Secondary)
+							</span>
+							<span
+								className="text-lg font-bold text-[var(--color-accent-purple)]"
+								dir="ltr"
+							>
+								{runners.msi_count}
+							</span>
+						</div>
+						<code
+							className="text-xs font-mono text-[var(--color-text-muted)]"
+							dir="ltr"
+						>
+							{runners.msi_ip}
+						</code>
 						<p className="text-xs text-[var(--color-accent-amber)]">
-							{runners.note_lenovo}
+							{runners.note_msi}
 						</p>
 					</div>
 				</div>

@@ -1858,7 +1858,7 @@ export function SecurityGuidePage() {
 	];
 
 	return (
-		<div className="max-w-5xl mx-auto space-y-5">
+		<div className="max-w-5xl mx-auto space-y-5 bg-zinc-950">
 			{/* ── Header ── */}
 			<div className="glass-card px-6 py-5">
 				<div className="flex items-start gap-4">

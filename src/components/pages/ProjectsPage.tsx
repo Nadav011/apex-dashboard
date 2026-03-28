@@ -1058,7 +1058,7 @@ function MachineFilterTabs({
 	const tabs: { key: MachineFilter; label: string }[] = [
 		{ key: "all", label: "הכול" },
 		{ key: "Lenovo", label: "Lenovo" },
-		{ key: "Lenovo", label: "Lenovo" },
+		{ key: "MSI", label: "MSI" },
 	];
 	return (
 		<div className="flex items-center gap-1.5">
@@ -1609,7 +1609,7 @@ export function ProjectsPage() {
 	}, [allProjects, machineFilter, statusFilter, search]);
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950">
 			{/* ── Header ──────────────────────────────────────────────────────── */}
 			<div className="flex items-center gap-3">
 				<FolderGit2

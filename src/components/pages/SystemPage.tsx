@@ -213,7 +213,7 @@ export function SystemPage() {
 	};
 
 	return (
-		<div className="space-y-6" dir="rtl">
+		<div className="space-y-6 bg-zinc-950" dir="rtl">
 			{/* Header */}
 			<div>
 				<h1 className="text-xl font-bold text-text-primary">מערכת</h1>
@@ -294,7 +294,7 @@ export function SystemPage() {
 				</SectionCard>
 
 				{/* Lenovo status */}
-				<SectionCard title="מחשב Lenovo" icon={<Server size={16} />}>
+				<SectionCard title="מחשב MSI" icon={<Server size={16} />}>
 					<div className="flex items-center gap-3 mb-3">
 						{lenovo?.reachable ? (
 							<>

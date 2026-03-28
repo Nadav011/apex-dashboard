@@ -641,7 +641,7 @@ const BEADS_FIELDS = [
 
 export function LogsPage() {
 	return (
-		<div className="space-y-8 pb-10">
+		<div className="space-y-8 pb-10 min-h-screen bg-zinc-950 p-6" dir="rtl">
 			{/* ── Page Header ── */}
 			<div className="flex items-center gap-4">
 				<div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-blue/10 shrink-0">

@@ -14,11 +14,11 @@ const EVENT_COLORS: Record<string, string> = {
 };
 
 const EVENT_LABELS: Record<string, string> = {
-	PreToolUse: "לפני כלי",
-	PostToolUse: "אחרי כלי",
-	Stop: "עצירה",
+	PreToolUse: "לפני הרצת כלי",
+	PostToolUse: "אחרי הרצת כלי",
+	Stop: "עצירת סשן",
 	SessionStart: "תחילת סשן",
-	PostCompact: "אחרי קיצור",
+	PostCompact: "אחרי דחיסה",
 	UserPromptSubmit: "שליחת פרומפט",
 };
 
@@ -113,7 +113,7 @@ export function HooksPage() {
 	};
 
 	return (
-		<div className="space-y-6" dir="rtl">
+		<div className="space-y-6 bg-zinc-950 min-h-screen p-6" dir="rtl">
 			<div>
 				<h1 className="text-xl font-bold text-text-primary">הוקים</h1>
 				<p className="text-sm text-text-muted mt-0.5">
