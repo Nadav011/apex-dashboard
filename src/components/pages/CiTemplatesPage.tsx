@@ -283,7 +283,7 @@ function SummaryStrip({
 		},
 		{
 			label: "פרויקטים עם CI",
-			value: `${deep?.stats?.projects_with_ci ?? 13}/${deep?.stats?.projects_total ?? 14}`,
+			value: `${deep?.stats?.projects_with_ci ?? 13}/${deep?.stats?.projects_total ?? 18}`,
 			color: "text-[var(--color-accent-red)]",
 		},
 	];

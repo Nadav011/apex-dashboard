@@ -374,7 +374,7 @@ const ROUTING_ROWS: {
 		task: "יצירת בדיקות בבאץ'",
 		provider: "MiniMax",
 		providerColor: PROVIDER_COLORS.minimax.color,
-		why: "50 concurrent + 200ms stagger",
+		why: "50 concurrent + 50ms stagger",
 	},
 	{
 		task: "ביקורת אבטחה",
