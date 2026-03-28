@@ -43,8 +43,9 @@
   "pnpm": {
     "overrides": {
       "picomatch": ">=2.3.2",
-      "brace-expansion": ">=1.1.13",
-      "serialize-javascript": ">=7.0.5"
+      "brace-expansion": ">=2.0.3",
+      "serialize-javascript": ">=7.0.5",
+      "happy-dom": ">=20.8.8"
     }
   }
 }
