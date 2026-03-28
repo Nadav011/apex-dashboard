@@ -112,7 +112,9 @@ export default function App() {
 			activePage={activePage}
 			onNavigate={(page) => setActivePage(page as Page)}
 		>
-			<PageComponent />
+			<div key={activePage} className="animate-fade-in">
+				<PageComponent />
+			</div>
 		</DashboardLayout>
 	);
 }

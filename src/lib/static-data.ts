@@ -732,12 +732,19 @@ const rules: RuleInfo[] = [
 		size_kb: 24.7,
 		last_modified: "2026-03-26T08:00:00Z",
 	},
+	{
+		name: "stack-rules.md",
+		path: "rules/infra/stack-rules.md",
+		category: "infra",
+		size_kb: 12.3,
+		last_modified: "2026-03-25T00:00:00Z",
+	},
 ];
 
 // ── Skills ────────────────────────────────────────────────────────────────────
 
 const skills: SkillsResponse = {
-	total: 78,
+	total: 79,
 	categories: {
 		code: 12,
 		ui: 10,
@@ -749,7 +756,7 @@ const skills: SkillsResponse = {
 		frontend: 5,
 		backend: 5,
 		ai: 4,
-		mobile: 4,
+		mobile: 5,
 		docs: 3,
 	},
 	plugins_count: 19,
@@ -3132,11 +3139,11 @@ const projects: ProjectsResponse = {
 			},
 		},
 	],
-	total: 18,
-	active: 11,
+	total: 19,
+	active: 13,
 	archived: 5,
 	development: 1,
-	by_machine: { "pop-os": 11, Lenovo: 7 },
+	by_machine: { "pop-os": 11, Lenovo: 8 },
 	by_platform: {
 		"Cloudflare Pages": 8,
 		Netlify: 3,
@@ -3144,7 +3151,7 @@ const projects: ProjectsResponse = {
 		"Mobile (Expo)": 1,
 		"npm publish": 1,
 		"Base44 Platform": 1,
-		"": 3,
+		"": 4,
 	},
 	by_stack_type: {
 		"React/Vite": 8,
@@ -3154,10 +3161,11 @@ const projects: ProjectsResponse = {
 		Python: 2,
 		"Node.js": 2,
 		Docker: 1,
+		Remotion: 1,
 	},
 	with_github: 13,
 	with_ci: 13,
-	with_supabase: 10,
+	with_supabase: 9,
 };
 
 // ── Exported STATIC object ────────────────────────────────────────────────────

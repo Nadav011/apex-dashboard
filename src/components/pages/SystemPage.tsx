@@ -175,7 +175,7 @@ function McpServerRow({ name, enabled }: { name: string; enabled: boolean }) {
 
 // ── Main page ───────────────────────────────────────────────────────────
 export function SystemPage() {
-	const { data: sys, isLoading: sysLoading } = useSystem();
+	const { data: sys, isLoading: sysLoading, error: sysError } = useSystem();
 	const { data: mcp } = useMcp();
 	const { data: sync } = useSyncStatus();
 	const { data: lenovo } = useLenovoStatus();
@@ -190,6 +190,13 @@ export function SystemPage() {
 			</div>
 		);
 	}
+
+	if (sysError)
+		return (
+			<div className="p-8 text-center text-[var(--color-accent-red)]">
+				שגיאה בטעינת נתונים
+			</div>
+		);
 
 	const swapPercent = sys.swap.pct;
 

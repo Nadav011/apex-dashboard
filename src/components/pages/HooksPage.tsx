@@ -32,7 +32,7 @@ function getEventLabel(event: string): string {
 
 // ── Main page ───────────────────────────────────────────────────────────
 export function HooksPage() {
-	const { data, isLoading } = useHooks();
+	const { data, isLoading, error } = useHooks();
 
 	if (isLoading || !data) {
 		return (
@@ -44,6 +44,13 @@ export function HooksPage() {
 			</div>
 		);
 	}
+
+	if (error)
+		return (
+			<div className="p-8 text-center text-[var(--color-accent-red)]">
+				שגיאה בטעינת נתונים
+			</div>
+		);
 
 	const sortedEvents = Object.entries(data.by_event).sort(
 		([, a], [, b]) => b - a,

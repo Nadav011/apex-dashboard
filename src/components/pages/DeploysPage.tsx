@@ -285,7 +285,7 @@ function SkeletonGrid() {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export function DeploysPage() {
-	const { data, isLoading, isFetching } = useDeploysStatus();
+	const { data, isLoading, isFetching, error } = useDeploysStatus();
 
 	const sites = data?.sites ?? [];
 	const total = data?.total ?? 0;
@@ -311,8 +311,15 @@ export function DeploysPage() {
 				</div>
 			</div>
 
+			{/* Error */}
+			{error && (
+				<div className="p-8 text-center text-[var(--color-accent-red)]">
+					שגיאה בטעינת נתונים
+				</div>
+			)}
+
 			{/* Summary */}
-			{!isLoading && (
+			{!isLoading && !error && (
 				<SummaryRow
 					total={total}
 					upCount={upCount}
@@ -322,10 +329,10 @@ export function DeploysPage() {
 			)}
 
 			{/* Skeleton */}
-			{isLoading && <SkeletonGrid />}
+			{isLoading && !error && <SkeletonGrid />}
 
 			{/* Empty state */}
-			{!isLoading && sites.length === 0 && (
+			{!isLoading && !error && sites.length === 0 && (
 				<div className="glass-card p-12 text-center flex flex-col items-center gap-4">
 					<Globe
 						size={40}
@@ -339,7 +346,7 @@ export function DeploysPage() {
 			)}
 
 			{/* Site grid: down first, then alphabetical (sorted server-side) */}
-			{!isLoading && sites.length > 0 && (
+			{!isLoading && !error && sites.length > 0 && (
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 					{sites.map((site) => (
 						<SiteCard key={site.name} site={site} />

@@ -139,7 +139,7 @@ function TopBarChart({
 // ── Provider events table ────────────────────────────────────────────────
 // ── Main page ───────────────────────────────────────────────────────────
 export function MetricsPage() {
-	const { data, isLoading } = useMetrics();
+	const { data, isLoading, error } = useMetrics();
 
 	if (isLoading || !data) {
 		return (
@@ -151,6 +151,13 @@ export function MetricsPage() {
 			</div>
 		);
 	}
+
+	if (error)
+		return (
+			<div className="p-8 text-center text-[var(--color-accent-red)]">
+				שגיאה בטעינת נתונים
+			</div>
+		);
 
 	// Build per-provider total from provider_events
 	const providerTotals: Record<string, number> = {};

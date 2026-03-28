@@ -412,6 +412,23 @@ export function HydraPage() {
 	const tasks = useHydraTasks();
 	const watcher = useHydraWatcher();
 
+	if (scores.isLoading || tasks.isLoading || watcher.isLoading)
+		return (
+			<div className="flex items-center justify-center h-64">
+				<div className="flex items-center gap-3 text-text-muted">
+					<Zap size={18} className="animate-spin" />
+					<span>טוען נתוני Hydra...</span>
+				</div>
+			</div>
+		);
+
+	if (scores.error || tasks.error || watcher.error)
+		return (
+			<div className="p-8 text-center text-[var(--color-accent-red)]">
+				שגיאה בטעינת נתונים
+			</div>
+		);
+
 	// providers → Record<string, HydraProviderScore>; extract just the score number
 	const rawProviders = scores.data?.providers ?? {};
 	const scoresData: Record<string, number> = Object.fromEntries(
