@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { AgentGuidePage } from "@/components/pages/AgentGuidePage";
 import { ArchitecturePage } from "@/components/pages/ArchitecturePage";
@@ -104,6 +104,13 @@ const PAGE_COMPONENTS: Record<Page, () => React.ReactElement> = {
 
 export default function App() {
 	const [activePage, setActivePage] = useState<Page>("overview");
+
+	// Expose navigation for Playwright testing
+	// biome-ignore lint: test-only hook
+	useEffect(() => {
+		// @ts-expect-error — Playwright test hook, not production code
+		window.__navigate = (p: string) => setActivePage(p as Page);
+	}, [setActivePage]);
 
 	const PageComponent = PAGE_COMPONENTS[activePage];
 

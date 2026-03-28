@@ -914,10 +914,12 @@ function ToolsSection({ tools }: { tools: DeepTool[] }) {
 
 interface ReusableWorkflow {
 	name: string;
-	description_he: string;
-	stages: string[];
-	used_by: string[];
-	stack: string;
+	description_he?: string;
+	description?: string;
+	stages?: string[];
+	jobs?: string[];
+	used_by?: string[];
+	stack?: string;
 }
 
 function WorkflowCard({ wf }: { wf: ReusableWorkflow }) {
@@ -947,7 +949,7 @@ function WorkflowCard({ wf }: { wf: ReusableWorkflow }) {
 					שלבים:
 				</p>
 				<div className="flex flex-wrap gap-1.5">
-					{wf.stages.map((stage) => (
+					{(wf.stages ?? wf.jobs ?? []).map((stage: string) => (
 						// biome-ignore lint/suspicious/noArrayIndexKey: ordered list
 						<span
 							key={stage}
@@ -962,10 +964,10 @@ function WorkflowCard({ wf }: { wf: ReusableWorkflow }) {
 			{/* Used by */}
 			<div>
 				<p className="text-xs font-medium text-[var(--color-text-muted)] mb-2">
-					משמש ב-{wf.used_by.length} פרויקטים:
+					משמש ב-{(wf.used_by ?? []).length} פרויקטים:
 				</p>
 				<div className="flex flex-wrap gap-1.5">
-					{wf.used_by.map((proj) => (
+					{(wf.used_by ?? []).map((proj) => (
 						<span
 							key={proj}
 							className="text-xs text-[var(--color-accent-green)] bg-[oklch(0.72_0.19_155_/_0.1)] px-2 py-0.5 rounded-full border border-[var(--color-accent-green)]/20"
@@ -1831,15 +1833,15 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 										<span
 											className={cn(
 												"text-xs px-1.5 py-0.5 rounded-full",
-												proj.deploy.includes("CF Pages") &&
+												(proj.deploy ?? "").includes("CF Pages") &&
 													"text-[var(--color-accent-orange)] bg-[oklch(0.75_0.18_50_/_0.1)]",
-												proj.deploy.includes("Netlify") &&
+												(proj.deploy ?? "").includes("Netlify") &&
 													"text-[var(--color-accent-cyan)] bg-[oklch(0.75_0.14_200_/_0.1)]",
-												proj.deploy.includes("Firebase") &&
+												(proj.deploy ?? "").includes("Firebase") &&
 													"text-[var(--color-accent-amber)] bg-[oklch(0.78_0.16_75_/_0.1)]",
-												proj.deploy === "none" &&
+												(proj.deploy ?? "") === "none" &&
 													"text-[var(--color-text-muted)] opacity-50",
-												proj.deploy.includes("npm") &&
+												(proj.deploy ?? "").includes("npm") &&
 													"text-[var(--color-accent-red)] bg-[oklch(0.62_0.22_25_/_0.1)]",
 											)}
 										>
@@ -2099,7 +2101,7 @@ export function CiTemplatesPage() {
 	const templates = templatesData?.templates ?? [];
 	const tools = (deepData?.tools as DeepTool[] | undefined) ?? FALLBACK_TOOLS;
 
-	if (templatesLoading && deepLoading) {
+	if (templatesLoading || deepLoading || !deepData) {
 		return (
 			<div className="p-6 text-center">
 				<RefreshCw
