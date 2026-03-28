@@ -1,0 +1,224 @@
+# Template rendered by deploy-self-healing.py per repo variant.
+name: Self-Healing CI
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Failed workflow run ID to heal"
+        required: false
+        default: ""
+      branch:
+        description: "Branch to target for manual trigger"
+        required: true
+        default: ""
+
+concurrency:
+  group: self-healing-${{ github.event.workflow_run.head_branch || inputs.branch }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  guard:
+    name: Should Heal?
+    runs-on: ["self-hosted", "linux", "x64", "pop-os"]
+    timeout-minutes: 2
+    outputs:
+      should_heal: ${{ steps.check.outputs.should_heal }}
+      branch: ${{ steps.check.outputs.branch }}
+      run_id: ${{ steps.check.outputs.run_id }}
+    steps:
+      - uses: step-security/harden-runner@v2.16.0
+        with:
+          egress-policy: audit
+      - name: Determine heal eligibility
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_BRANCH: ${{ inputs.branch }}
+          INPUT_RUN_ID: ${{ inputs.run_id }}
+          WORKFLOW_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            BRANCH="$INPUT_BRANCH"
+            RUN_ID="$INPUT_RUN_ID"
+            CONCLUSION="failure"
+          else
+            BRANCH="$WORKFLOW_BRANCH"
+            RUN_ID="$WORKFLOW_RUN_ID"
+            CONCLUSION="$WORKFLOW_CONCLUSION"
+          fi
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          if [ "$CONCLUSION" != "failure" ] || [ -z "$BRANCH" ] || [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ] || [[ "$BRANCH" == claude-auto-fix-ci-* ]]; then
+            echo "should_heal=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! gh api "repos/${REPOSITORY}/git/matching-refs/heads/${BRANCH}" --jq 'length > 0' >/dev/null 2>&1; then
+            echo "should_heal=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "should_heal=true" >> "$GITHUB_OUTPUT"
+
+  fix:
+    name: Diagnose + Draft Fix
+    needs: guard
+    if: needs.guard.outputs.should_heal == 'true'
+    runs-on: ["self-hosted", "linux", "x64", "pop-os"]
+    timeout-minutes: 45
+    env:
+      BRANCH: ${{ needs.guard.outputs.branch }}
+      FAILED_RUN_ID: ${{ needs.guard.outputs.run_id }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: step-security/harden-runner@v2.16.0
+        with:
+          egress-policy: audit
+      - name: Reset isolated checkout path
+        run: rm -rf repo
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ needs.guard.outputs.branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: repo
+      - name: Check daily budget
+        run: bash ~/.claude/scripts/ci-budget-check.sh
+        env:
+          SELF_HEALING_DAILY_BUDGET: "5.00"
+      - name: Bootstrap workspace
+        working-directory: repo
+        run: |
+export PATH="$HOME/.local/share/fnm/node-versions/v24.14.0/installation/bin:$PATH"
+          corepack enable pnpm
+          pnpm install --frozen-lockfile
+      - name: Fetch failure logs
+        run: |
+          gh run view "$FAILED_RUN_ID" --log-failed 2>&1 | tail -500 > /tmp/failure-logs.txt || echo "No logs available" > /tmp/failure-logs.txt
+      - name: Create draft branch
+        id: branch_state
+        working-directory: repo
+        run: |
+          BASE_SHA=$(git rev-parse HEAD)
+          FIX_BRANCH="claude-auto-fix-ci-${FAILED_RUN_ID}"
+          git checkout -b "$FIX_BRANCH"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "fix_branch=$FIX_BRANCH" >> "$GITHUB_OUTPUT"
+      - name: Write Claude prompt
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+          logs = Path("/tmp/failure-logs.txt").read_text(encoding="utf-8", errors="replace")
+          prompt = textwrap.dedent(f"""\
+            You are fixing one concrete CI failure in shadow mode.
+
+            Rules:
+            - Read the relevant files first and keep the change minimal.
+            - NEVER touch .github/workflows or CI configuration.
+            - NEVER downgrade dependencies.
+            - NEVER add any, @ts-ignore, eslint-disable, or TODO placeholders.
+            - NEVER modify migrations or RLS policies.
+            - Use only the allowed shell commands.
+            - Before declaring success, run this exact verification command:
+              pnpm run typecheck && pnpm run lint
+            - Do not commit. The workflow will commit if your edits are valid.
+
+            Return your final line as exactly one of:
+            STATUS: FIXED
+            STATUS: UNFIXABLE
+
+            Failure logs:
+            {logs}
+          """)
+          Path("/tmp/self-heal-prompt.txt").write_text(prompt, encoding="utf-8")
+          PY
+      - name: Run Claude
+        id: claude
+        working-directory: repo
+        run: |
+          set +e
+          timeout 900 claude -p "$(cat /tmp/self-heal-prompt.txt)" \
+            --permission-mode bypassPermissions \
+            --allowed-tools "Edit,Read,Grep,Glob,Bash(pnpm run typecheck),Bash(pnpm run lint),Bash(pnpm run build),Bash(git status),Bash(git diff --stat)" \
+            --output-format text \
+            2>&1 | tee /tmp/claude-output.txt
+          CLAUDE_EXIT=${PIPESTATUS[0]}
+          set -e
+          echo "exit_code=$CLAUDE_EXIT" >> "$GITHUB_OUTPUT"
+          if grep -q "STATUS: FIXED" /tmp/claude-output.txt; then
+            echo "status=FIXED" >> "$GITHUB_OUTPUT"
+          elif grep -q "STATUS: UNFIXABLE" /tmp/claude-output.txt; then
+            echo "status=UNFIXABLE" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=UNKNOWN" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+      - name: Create commit if edits exist
+        id: commit
+        if: steps.claude.outputs.status == 'FIXED'
+        env:
+          SELF_HEALING_COMMIT_MESSAGE: "fix(ci): auto-fix failure"
+        working-directory: repo
+        run: |
+          bash ~/.claude/scripts/ci-templates/commit-self-healing.sh
+          if [ "$(git rev-parse HEAD)" != "${{ steps.branch_state.outputs.base_sha }}" ]; then
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Push fix branch
+        if: steps.commit.outputs.committed == 'true'
+        working-directory: repo
+        run: git push origin HEAD
+      - name: Open draft PR
+        if: steps.commit.outputs.committed == 'true'
+        working-directory: repo
+        run: |
+          EXISTING_PR=$(gh pr list --head "${{ steps.branch_state.outputs.fix_branch }}" --base "${BRANCH}" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Draft PR already exists: $EXISTING_PR"
+            exit 0
+          fi
+          cat > /tmp/self-heal-pr-body.txt <<EOF
+          Auto-fix for workflow run ${FAILED_RUN_ID}.
+
+          Shadow mode - review before merge.
+
+          Logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${FAILED_RUN_ID}
+          EOF
+          gh pr create --draft \
+            --title "fix(ci): auto-fix failure ${FAILED_RUN_ID}" \
+            --body-file /tmp/self-heal-pr-body.txt \
+            --base "${BRANCH}" \
+            --head "${{ steps.branch_state.outputs.fix_branch }}"
+      - name: Log result
+        if: always()
+        run: |
+          STATUS="${{ steps.claude.outputs.status || 'UNKNOWN' }}"
+          echo "{\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"repo\":\"${{ github.repository }}\",\"run_id\":\"${FAILED_RUN_ID}\",\"status\":\"$STATUS\"}" >> ~/.config/agents/logs/self-healing.jsonl
+      - name: Notify Telegram
+        if: steps.commit.outputs.committed == 'true'
+        uses: appleboy/telegram-action@847a2d3240d33a6137191cc89b3ad7f53e427c06
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            *Self-Healing* `${{ github.repository }}`
+            Branch: `${{ steps.branch_state.outputs.fix_branch }}`
+            [View PR](${{ github.server_url }}/${{ github.repository }}/pulls)
