@@ -18,7 +18,7 @@ const issues = [];
 
 for (const key of PAGES) {
   await page.evaluate((k) => window.__navigate?.(k), key);
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(2000);
 
   const text = await page.evaluate(() => {
     const el = document.querySelector(".animate-fade-in") || document.querySelector("main") || document.body;
