@@ -417,7 +417,7 @@ pnpm preview   # תצוגה מקדימה של ה-build`}</CodeBlock>
 							<span className="w-2 h-2 rounded-full bg-[var(--color-accent-cyan)]" />
 							מערכת
 						</SectionHeading>
-						<p className="mb-2">מצב חומרה ותשתית — Lenovo ו-Lenovo בו-זמנית.</p>
+						<p className="mb-2">מצב חומרה ותשתית — Lenovo ו-MSI בו-זמנית.</p>
 						<div className="space-y-1">
 							<InfoRow
 								label="משאבים"
@@ -440,7 +440,7 @@ pnpm preview   # תצוגה מקדימה של ה-build`}</CodeBlock>
 								value="node.*mcp processes שנשארו חיים — כמה יש, כמה RAM"
 							/>
 							<InfoRow
-								label="Lenovo"
+								label="MSI"
 								value="סטטוס המכונה השנייה דרך Tailscale (100.87.247.87)"
 							/>
 						</div>
@@ -530,8 +530,8 @@ pnpm preview   # תצוגה מקדימה של ה-build`}</CodeBlock>
 								value="pkill -f 'node.*mcp' — מנקה orphan processes שאוכלים RAM"
 							/>
 							<InfoRow
-								label="Sync Lenovo"
-								value="claude-sync push — סינכרון הגדרות ל-Lenovo (100.87.247.87)"
+								label="Sync MSI"
+								value="claude-sync push — סינכרון הגדרות ל-MSI (100.87.247.87)"
 							/>
 						</div>
 					</div>
@@ -813,7 +813,7 @@ python3 fastapi_wrapper.py
 							},
 							{
 								path: "GET /api/system/lenovo",
-								desc: "מצב מכונת Lenovo דרך Tailscale SSH",
+								desc: "מצב מכונת MSI דרך Tailscale SSH",
 							},
 							{
 								path: "GET /api/system/mcp",
@@ -898,7 +898,7 @@ python3 fastapi_wrapper.py
 							},
 							{
 								path: "POST /api/system/sync-lenovo",
-								desc: "הרץ claude-sync push לסינכרון עם Lenovo",
+								desc: "הרץ claude-sync push לסינכרון עם MSI",
 							},
 						].map((ep) => (
 							<div
@@ -940,8 +940,8 @@ python3 fastapi_wrapper.py
 			content: (
 				<div className="text-sm text-[var(--color-text-secondary)] leading-relaxed space-y-4">
 					<SectionHeading>סינכרון בין מכונות</SectionHeading>
-					<CodeBlock label="שלח הגדרות מ-Lenovo ל-Lenovo">{`claude-sync push`}</CodeBlock>
-					<CodeBlock label="קבל הגדרות מ-Lenovo ל-Lenovo">{`claude-sync pull`}</CodeBlock>
+					<CodeBlock label="שלח הגדרות מ-Lenovo ל-MSI">{`claude-sync push`}</CodeBlock>
+					<CodeBlock label="קבל הגדרות מ-MSI ל-Lenovo">{`claude-sync pull`}</CodeBlock>
 
 					<SectionHeading>ניהול זיכרון ו-Processes</SectionHeading>
 					<CodeBlock label="נקה orphan MCP processes (מונע OOM)">{`clean-memory`}</CodeBlock>
@@ -1125,7 +1125,7 @@ python3 fastapi_wrapper.py
 							mono
 						/>
 						<InfoRow
-							label="Lenovo"
+							label="MSI"
 							value="100.87.247.87 — מכונה שנייה, פרויקטים נפרדים"
 							mono
 						/>
@@ -1187,7 +1187,7 @@ python3 fastapi_wrapper.py
 							],
 						},
 						{
-							problem: "Lenovo מציג 'Unreachable'",
+							problem: "MSI מציג 'Unreachable'",
 							color: "amber" as const,
 							solutions: [
 								<>
@@ -1197,7 +1197,7 @@ python3 fastapi_wrapper.py
 									</code>
 								</>,
 								<>
-									פינג ל-Lenovo:{" "}
+									פינג ל-MSI:{" "}
 									<code className="font-mono text-xs" dir="ltr">
 										ping 100.87.247.87
 									</code>

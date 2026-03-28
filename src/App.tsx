@@ -155,6 +155,11 @@ const TestingPage = lazy(() =>
 		default: m.TestingPage,
 	})),
 );
+const CostPage = lazy(() =>
+	import("@/components/pages/CostPage").then((m) => ({
+		default: m.CostPage,
+	})),
+);
 
 type Page =
 	| "overview"
@@ -188,6 +193,7 @@ type Page =
 	| "memory-guide"
 	| "mcp-guide"
 	| "security-guide"
+	| "costs"
 	| "faq";
 
 const PAGE_TITLES: Record<Page, string> = {
@@ -222,6 +228,7 @@ const PAGE_TITLES: Record<Page, string> = {
 	"memory-guide": "מדריך זיכרון",
 	"mcp-guide": "מדריך MCP",
 	"security-guide": "מדריך אבטחה",
+	costs: "עלויות",
 	faq: "שאלות נפוצות",
 };
 
@@ -260,6 +267,7 @@ const PAGE_COMPONENTS: Record<
 	"memory-guide": MemoryGuidePage,
 	"mcp-guide": McpGuidePage,
 	"security-guide": SecurityGuidePage,
+	costs: CostPage,
 	faq: FaqPage,
 };
 

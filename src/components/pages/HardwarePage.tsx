@@ -256,7 +256,7 @@ function CiRunnersChart({ popOs, lenovo }: { popOs: number; lenovo: number }) {
 		grid: { top: 8, bottom: 24, left: 10, right: 10, containLabel: true }, // rtl-ok
 		xAxis: {
 			type: "category",
-			data: ["pop-os", "Lenovo"],
+			data: ["Lenovo", "MSI"],
 			axisLabel: {
 				color: "oklch(0.55 0.02 260)",
 				fontSize: 11,
@@ -348,13 +348,13 @@ function MemChip({ label }: { label: string }) {
 function NetworkTopology() {
 	return (
 		<div className="relative flex items-center justify-center gap-0 py-6">
-			{/* pop-os node */}
+			{/* Lenovo node (primary) */}
 			<div className="flex flex-col items-center gap-2 z-10">
 				<div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-accent-blue/20 border-2 border-accent-blue/50 shadow-[0_0_20px_oklch(0.65_0.18_250/0.3)]">
 					<Monitor size={28} className="text-accent-blue" aria-hidden="true" />
 				</div>
 				<div className="text-center">
-					<div className="text-xs font-bold text-text-primary">pop-os</div>
+					<div className="text-xs font-bold text-text-primary">Lenovo</div>
 					<div className="text-xs font-mono text-text-muted" dir="ltr">
 						100.82.33.122
 					</div>
@@ -384,13 +384,13 @@ function NetworkTopology() {
 				</div>
 			</div>
 
-			{/* Lenovo node */}
+			{/* MSI node (secondary) */}
 			<div className="flex flex-col items-center gap-2 z-10">
 				<div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-accent-purple/20 border-2 border-accent-purple/50 shadow-[0_0_20px_oklch(0.62_0.2_290/0.3)]">
 					<Server size={28} className="text-accent-purple" aria-hidden="true" />
 				</div>
 				<div className="text-center">
-					<div className="text-xs font-bold text-text-primary">Lenovo</div>
+					<div className="text-xs font-bold text-text-primary">MSI</div>
 					<div className="text-xs font-mono text-text-muted" dir="ltr">
 						100.87.247.87
 					</div>
@@ -433,15 +433,20 @@ const COMPARE_ROWS: CompareRow[] = [
 	{
 		feature: "זיכרון RAM",
 		popos: "64 GB",
-		lenovo: "30 GB",
+		lenovo: "64 GB",
+		advantage: "equal",
+	},
+	{
+		feature: "ליבות CPU",
+		popos: "Intel Core Ultra 9 275HX / 24",
+		lenovo: "סטנדרטי",
 		advantage: "popos",
 	},
-	{ feature: "ליבות CPU", popos: "24", lenovo: "סטנדרטי", advantage: "popos" },
 	{ feature: "אחסון", popos: "~500 GB SSD", lenovo: "SSD", advantage: "popos" },
 	{
 		feature: "מערכת הפעלה",
-		popos: "Pop!_OS 22.04",
-		lenovo: "Linux",
+		popos: "Pop!_OS 24.04",
+		lenovo: "Windows 11",
 		advantage: "equal",
 	},
 	{ feature: "פרויקטים", popos: "11", lenovo: "10", advantage: "equal" },
@@ -452,7 +457,12 @@ const COMPARE_ROWS: CompareRow[] = [
 		lenovo: "פיתוח + Flutter",
 		advantage: "equal",
 	},
-	{ feature: "GPU", popos: "NVIDIA", lenovo: "—", advantage: "popos" },
+	{
+		feature: "GPU",
+		popos: "RTX 5070 Ti Laptop",
+		lenovo: "RTX 4060 Mobile",
+		advantage: "popos",
+	},
 	{
 		feature: "Node.js",
 		popos: "v24.14.0 (fnm)",
@@ -499,14 +509,14 @@ function CompareTable() {
 							style={{ color: "oklch(0.65 0.18 250)" }}
 							scope="col"
 						>
-							pop-os
+							Lenovo
 						</th>
 						<th
 							className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider w-1/3"
 							style={{ color: "oklch(0.62 0.2 290)" }}
 							scope="col"
 						>
-							Lenovo
+							MSI
 						</th>
 					</tr>
 				</thead>
@@ -905,15 +915,15 @@ export function HardwarePage() {
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 					<MachineCard
 						isPrimary
-						nickname="pop-os"
-						fullName="System76 Pop!_OS"
-						hostname="nadavcohen-system76"
+						nickname="Lenovo"
+						fullName="Lenovo"
+						hostname="pop-os"
 						ip="100.82.33.122"
-						cpu="24 ליבות"
+						cpu="Intel Core Ultra 9 275HX — 24 ליבות"
 						ram="64 GB"
-						gpu="NVIDIA"
+						gpu="RTX 5070 Ti Laptop"
 						storage="~500 GB SSD"
-						os="Pop!_OS 22.04 (COSMIC desktop)"
+						os="Pop!_OS 24.04"
 						machineRole="מכונת הפיתוח הראשית"
 						projects={POPOS_PROJECTS}
 						ciRunners="~17"
@@ -932,20 +942,21 @@ export function HardwarePage() {
 
 					<MachineCard
 						isPrimary={false}
-						nickname="Lenovo"
-						fullName="Lenovo"
+						nickname="MSI"
+						fullName="MSI"
 						hostname="msi"
 						ip="100.87.247.87"
 						cpu="סטנדרטי"
-						ram="30 GB"
+						ram="64 GB"
 						storage="SSD"
-						os="Linux"
+						gpu="RTX 4060 Mobile"
+						os="Windows 11"
 						machineRole="פיתוח משני + Flutter"
 						projects={LENOVO_PROJECTS}
 						ciRunners="5"
 						criticalNote="ROLLUP_NATIVE_THREADS=0"
 						flutterPath="~/.flutter-sdk/bin/flutter"
-						connectionNote="Tailscale SSH מ-pop-os"
+						connectionNote="Tailscale SSH מ-Lenovo"
 						nodejsVersion="v24.x (fnm)"
 						accentColor="oklch(0.62 0.2 290)"
 						roleIcon={<Server size={28} />}
@@ -960,7 +971,7 @@ export function HardwarePage() {
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<ResourcePanel
-						machineName="pop-os"
+						machineName="Lenovo"
 						ramUsed={28}
 						ramTotal={64}
 						diskUsed={220}
@@ -971,9 +982,9 @@ export function HardwarePage() {
 						color="oklch(0.65 0.18 250)"
 					/>
 					<ResourcePanel
-						machineName="Lenovo"
+						machineName="MSI"
 						ramUsed={14}
-						ramTotal={30}
+						ramTotal={64}
 						diskUsed={150}
 						diskTotal={300}
 						cpuCores={null}
@@ -1032,7 +1043,7 @@ export function HardwarePage() {
 								/>
 								<div>
 									<div className="font-medium text-text-secondary">
-										IP pop-os
+										IP Lenovo
 									</div>
 									<code className="text-text-muted font-mono" dir="ltr">
 										100.82.33.122
@@ -1046,9 +1057,7 @@ export function HardwarePage() {
 									aria-hidden="true"
 								/>
 								<div>
-									<div className="font-medium text-text-secondary">
-										IP Lenovo
-									</div>
+									<div className="font-medium text-text-secondary">IP MSI</div>
 									<code className="text-text-muted font-mono" dir="ltr">
 										100.87.247.87
 									</code>
@@ -1056,7 +1065,6 @@ export function HardwarePage() {
 							</div>
 						</div>
 					</div>
-
 					{/* Sync operations */}
 					<div className="glass-card p-5">
 						<div className="flex items-center gap-2 mb-1">
@@ -1075,16 +1083,16 @@ export function HardwarePage() {
 						<div className="space-y-0">
 							<SyncOpRow
 								cmd="claude-sync push"
-								desc="דחיפת הגדרות מ-pop-os ל-Lenovo"
+								desc="דחיפת הגדרות מ-Lenovo ל-MSI"
 							/>
-							<SyncOpRow cmd="claude-sync pull" desc="משיכת עדכונים מ-Lenovo" />
+							<SyncOpRow cmd="claude-sync pull" desc="משיכת עדכונים מ-MSI" />
 							<SyncOpRow
 								cmd="rsync -avz ~/.claude/ msi:~/.claude/"
 								desc="סנכרון ספריות שאינן git"
 							/>
 							<SyncOpRow
 								cmd="ssh 100.87.247.87"
-								desc="גישה ישירה ל-Lenovo ב-Tailscale"
+								desc="גישה ישירה ל-MSI ב-Tailscale"
 							/>
 						</div>
 						<div className="mt-4 p-3 rounded-lg bg-accent-amber/8 border border-accent-amber/20">
@@ -1178,7 +1186,7 @@ export function HardwarePage() {
 			</section>
 
 			{/* Lenovo critical rules */}
-			<section aria-label="כללים קריטיים Lenovo">
+			<section aria-label="כללים קריטיים MSI">
 				<div
 					className="glass-card p-5"
 					style={{ borderColor: "oklch(0.78 0.16 75 / 0.25)" }}
@@ -1190,7 +1198,7 @@ export function HardwarePage() {
 							aria-hidden="true"
 						/>
 						<h2 className="text-sm font-semibold text-text-primary">
-							כללים קריטיים — Lenovo
+							כללים קריטיים — MSI
 						</h2>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1209,7 +1217,7 @@ export function HardwarePage() {
 							},
 							{
 								title: "git operations ב-SSH",
-								desc: "פעולות git ב-Lenovo דרך Python subprocess",
+								desc: "פעולות git ב-MSI דרך Python subprocess",
 							},
 						].map(({ title, desc }) => (
 							<div
@@ -1235,13 +1243,13 @@ export function HardwarePage() {
 				</div>
 			</section>
 
-			{/* pop-os services detail */}
-			<section aria-label="שירותי pop-os">
+			{/* Lenovo services detail */}
+			<section aria-label="שירותי Lenovo">
 				<div className="glass-card p-5">
 					<div className="flex items-center gap-2 mb-4">
 						<Server size={16} className="text-accent-blue" aria-hidden="true" />
 						<h2 className="text-sm font-semibold text-text-primary">
-							שירותים פעילים — pop-os
+							שירותים פעילים — Lenovo
 						</h2>
 					</div>
 					<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

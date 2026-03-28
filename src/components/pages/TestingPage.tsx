@@ -312,7 +312,7 @@ const PROJECT_DATA: ProjectRow[] = [
 		passCount: 2100,
 		failCount: 0,
 		coverage: 80,
-		machine: "pop-os",
+		machine: "Lenovo",
 	},
 	{
 		name: "Cash / Z",
@@ -357,7 +357,7 @@ const PROJECT_DATA: ProjectRow[] = [
 		passCount: 380,
 		failCount: 0,
 		coverage: 62,
-		machine: "pop-os",
+		machine: "Lenovo",
 	},
 	{
 		name: "Mediflow",
@@ -366,7 +366,7 @@ const PROJECT_DATA: ProjectRow[] = [
 		passCount: 302,
 		failCount: 18,
 		coverage: 55,
-		machine: "pop-os",
+		machine: "Lenovo",
 	},
 	{
 		name: "Hatumdigital",
@@ -384,7 +384,7 @@ const PROJECT_DATA: ProjectRow[] = [
 		passCount: 210,
 		failCount: 0,
 		coverage: 72,
-		machine: "pop-os",
+		machine: "Lenovo",
 	},
 	{
 		name: "Vibechat",
@@ -402,7 +402,7 @@ const PROJECT_DATA: ProjectRow[] = [
 		passCount: 165,
 		failCount: 0,
 		coverage: 68,
-		machine: "pop-os",
+		machine: "Lenovo",
 	},
 ];
 
@@ -708,7 +708,7 @@ function VitestPattern({
 
 export function TestingPage() {
 	return (
-		<div className="flex flex-col gap-6 pb-8">
+		<div className="flex flex-col gap-6 pb-8 bg-zinc-950">
 			{/* ── Header ─────────────────────────────────────────────────────── */}
 			<div className="flex items-center gap-3">
 				<span
@@ -759,7 +759,7 @@ export function TestingPage() {
 						<StatCard
 							label="פרויקטים"
 							value="11"
-							sub="pop-os + MSI"
+							sub="Lenovo + MSI"
 							color="var(--color-accent-blue)"
 							icon={<Package size={16} />}
 						/>
@@ -1029,9 +1029,10 @@ export function TestingPage() {
 								"reality-checker",
 								"→",
 								"/edge-case-hunter",
-							].map((step) => (
+							].map((step, i) => (
 								<span
-									key={step}
+									// biome-ignore lint/suspicious/noArrayIndexKey: separator arrows are not uniquely identifiable
+									key={i}
 									className={cn(
 										step === "→"
 											? "text-[var(--color-text-muted)]"
@@ -1245,11 +1246,11 @@ export function TestingPage() {
 												className="text-[10px] px-1.5 py-0.5 rounded font-mono"
 												style={{
 													background:
-														row.machine === "pop-os"
+														row.machine === "Lenovo"
 															? "oklch(0.65 0.18 250 / 0.1)"
 															: "oklch(0.62 0.18 290 / 0.1)",
 													color:
-														row.machine === "pop-os"
+														row.machine === "Lenovo"
 															? "var(--color-accent-blue)"
 															: "var(--color-cat-testing)",
 												}}

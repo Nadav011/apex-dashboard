@@ -75,7 +75,7 @@ function CopyButton({ text }: { text: string }) {
 			title="העתק פקודה"
 			aria-label="העתק פקודה"
 			className={cn(
-				"flex items-center justify-center w-7 h-7 rounded-md",
+				"flex items-center justify-center min-h-11 min-w-11 w-7 h-7 rounded-md",
 				"transition-all duration-150 cursor-pointer shrink-0",
 				copied
 					? "bg-[oklch(0.72_0.19_155_/_0.2)] text-[var(--color-accent-green)]"
@@ -263,19 +263,17 @@ const PROVIDERS_DATA: ProviderCardData[] = [
 			"מקסימום 3–5 מקביל, stagger של 30 שניות",
 			'נדרש TTY: השתמש ב-script -qec "gemini ..." /dev/null',
 		],
-		extras: [{ label: "thinkingBudget", value: "32768" }],
+		extras: [{ label: "thinkingBudget", value: "1024" }],
 	},
 	{
 		id: "minimax",
 		name: "MiniMax",
-		model: "MiniMax-M2.7",
+		model: "MiniMax-M2.7-highspeed",
 		context: "204K tokens",
 		bestFor: ["batch text gen", "50 מקביל", "תיעוד בכמויות"],
-		command: 'minimax --no-thinking --no-system "$prompt"',
+		command: 'minimax --batch "$prompt"',
 		settingsPath: "~/.minimax/user-settings.json",
-		warnings: [
-			"Rate limit הוא per-second — לא per-connection. stagger של 200ms",
-		],
+		warnings: ["50 concurrent + 50ms stagger = 100% success (v7)"],
 		extras: [{ label: "API", value: "api.minimax.io/v1 (Direct)" }],
 	},
 ];
@@ -880,7 +878,7 @@ const QUICK_COMMANDS: { label: string; cmd: string }[] = [
 	},
 	{
 		label: "MiniMax — dispatch",
-		cmd: 'minimax --no-thinking --no-system "$AUAP"',
+		cmd: 'minimax --batch "$AUAP"',
 	},
 	{
 		label: "AUAP — בניית briefing",
@@ -888,7 +886,7 @@ const QUICK_COMMANDS: { label: string; cmd: string }[] = [
 	},
 	{
 		label: "MiniMax — batch 50 concurrent",
-		cmd: 'for i in $(seq 1 50); do\n  minimax --no-thinking --no-system "$PROMPT" &\n  sleep 0.2\ndone\nwait',
+		cmd: 'for i in $(seq 1 50); do\n  minimax --batch "$PROMPT" &\n  sleep 0.05\ndone\nwait',
 	},
 	{
 		label: "Gemini — 3 parallel עם stagger",

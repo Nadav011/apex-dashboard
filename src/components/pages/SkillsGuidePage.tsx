@@ -119,7 +119,7 @@ const CAT_META: Record<string, CategoryMeta> = {
 	openclaw: {
 		hebrewTitle: "OpenClaw — כלים מותאמים",
 		hebrewDesc:
-			"מיומנויות ייחודיות שנוצרו במסגרת מערכת OpenClaw v2026.3.22: 42 כלים מותאמים לפרויקטים הספציפיים, אינטגרציות מיוחדות ומאיץ משימות.",
+			"מיומנויות ייחודיות שנוצרו במסגרת מערכת OpenClaw v2026.3.22: 78+ כלים מותאמים לפרויקטים הספציפיים, אינטגרציות מיוחדות ומאיץ משימות.",
 		whenToUse: "משימות ספציפיות לפרויקט, אינטגרציות מותאמות, אוטומציה ייחודית",
 		color: "oklch(0.62 0.2 290)",
 		examples: ["/openclaw-run", "/openclaw-list", "/openclaw-sync"],
@@ -179,7 +179,7 @@ function CategoryTabs({
 						onClick={() => onSelect(key)}
 						className={cn(
 							"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium",
-							"transition-all duration-150 cursor-pointer min-h-9",
+							"transition-all duration-150 cursor-pointer min-h-11",
 							isActive
 								? "text-white shadow-sm"
 								: "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)]",
@@ -599,7 +599,7 @@ export function SkillsGuidePage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950">
 			{/* ── Header ── */}
 			<div className="flex items-center gap-3">
 				<Sparkles

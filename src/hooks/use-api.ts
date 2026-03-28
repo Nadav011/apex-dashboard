@@ -207,6 +207,14 @@ export function useDeploysStatus() {
 	});
 }
 
+export function useCosts() {
+	return useQuery({
+		queryKey: ["costs"],
+		queryFn: api.costs,
+		refetchInterval: 30_000,
+	});
+}
+
 // ── Control mutations ──────────────────────────────────────────────
 function useControlMutation(actionFn: () => Promise<ControlResponse>) {
 	const qc = useQueryClient();

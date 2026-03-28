@@ -450,7 +450,7 @@ export function HydraPage() {
 	const failedCount = failedTasks.length;
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
 			{/* Header */}
 			<div className="flex items-center gap-3">
 				<Zap

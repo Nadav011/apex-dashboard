@@ -124,11 +124,11 @@ const agents: AgentInfo[] = [
 		file: "reality-checker.md",
 	},
 	{
-		name: "accessibility",
+		name: "accessibility-agent",
 		description: "Accessibility audit agent",
 		category: "quality",
 		tools: ["Bash", "Read"],
-		file: "accessibility.md",
+		file: "accessibility-agent.md",
 	},
 	{
 		name: "api-contract",
@@ -145,18 +145,18 @@ const agents: AgentInfo[] = [
 		file: "security-auditor.md",
 	},
 	{
-		name: "agentic-security",
+		name: "agentic-security-auditor",
 		description: "Agentic security validator",
 		category: "security",
 		tools: ["Bash", "Read"],
-		file: "agentic-security.md",
+		file: "agentic-security-auditor.md",
 	},
 	{
-		name: "dependency-auditor",
+		name: "dependency",
 		description: "Dependency audit agent",
 		category: "security",
 		tools: ["Bash", "Read"],
-		file: "dependency-auditor.md",
+		file: "dependency.md",
 	},
 	{
 		name: "bundle-analyzer",
@@ -173,25 +173,25 @@ const agents: AgentInfo[] = [
 		file: "perf-analyzer.md",
 	},
 	{
-		name: "db-perf",
+		name: "db-perf-analyzer",
 		description: "Database performance agent",
 		category: "performance",
 		tools: ["Bash", "Read"],
-		file: "db-perf.md",
+		file: "db-perf-analyzer.md",
 	},
 	{
-		name: "load-test",
+		name: "load-test-runner",
 		description: "Load testing agent",
 		category: "performance",
 		tools: ["Bash"],
-		file: "load-test.md",
+		file: "load-test-runner.md",
 	},
 	{
-		name: "lighthouse",
+		name: "lighthouse-auditor",
 		description: "Lighthouse performance audit",
 		category: "performance",
 		tools: ["Bash", "Read"],
-		file: "lighthouse.md",
+		file: "lighthouse-auditor.md",
 	},
 	{
 		name: "test-generator",
@@ -201,25 +201,25 @@ const agents: AgentInfo[] = [
 		file: "test-generator.md",
 	},
 	{
-		name: "test-mega",
+		name: "test-mega-orchestrator",
 		description: "Mega test suite agent",
 		category: "testing",
 		tools: ["Read", "Write", "Bash"],
-		file: "test-mega.md",
+		file: "test-mega-orchestrator.md",
 	},
 	{
-		name: "race-test",
+		name: "race-test-runner",
 		description: "Race condition tester",
 		category: "testing",
 		tools: ["Bash", "Read"],
-		file: "race-test.md",
+		file: "race-test-runner.md",
 	},
 	{
-		name: "experiment",
+		name: "experiment-tracker",
 		description: "Experiment runner",
 		category: "testing",
 		tools: ["Bash", "Read", "Write"],
-		file: "experiment.md",
+		file: "experiment-tracker.md",
 	},
 	{
 		name: "devops",
@@ -264,11 +264,11 @@ const agents: AgentInfo[] = [
 		file: "architect.md",
 	},
 	{
-		name: "autonomous-optimization",
+		name: "autonomous-optimization-architect",
 		description: "Autonomous optimization agent",
 		category: "analysis",
 		tools: ["Bash", "Read", "Write", "Edit"],
-		file: "autonomous-optimization.md",
+		file: "autonomous-optimization-architect.md",
 	},
 	{
 		name: "feedback-synthesizer",
@@ -299,18 +299,18 @@ const agents: AgentInfo[] = [
 		file: "debugger.md",
 	},
 	{
-		name: "refactor",
+		name: "refactor-expert",
 		description: "Code refactor agent",
 		category: "analysis",
 		tools: ["Read", "Write", "Edit"],
-		file: "refactor.md",
+		file: "refactor-expert.md",
 	},
 	{
-		name: "resilience",
+		name: "resilience-tester",
 		description: "Resilience testing agent",
 		category: "analysis",
 		tools: ["Bash", "Read"],
-		file: "resilience.md",
+		file: "resilience-tester.md",
 	},
 	{
 		name: "ui-ux",
@@ -320,32 +320,32 @@ const agents: AgentInfo[] = [
 		file: "ui-ux.md",
 	},
 	{
-		name: "rtl-fixer",
-		description: "RTL/i18n auto-fix agent",
-		category: "general",
-		tools: ["Read", "Edit", "Write"],
-		file: "rtl-fixer.md",
+		name: "gsd-nyquist-auditor",
+		description: "GSD Nyquist validation auditor",
+		category: "gsd",
+		tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+		file: "gsd-nyquist-auditor.md",
 	},
 	{
-		name: "supabase-auditor",
-		description: "Supabase RLS audit agent",
-		category: "security",
-		tools: ["Bash", "Read"],
-		file: "supabase-auditor.md",
+		name: "gsd-ui-auditor",
+		description: "GSD UI audit agent",
+		category: "gsd",
+		tools: ["Read", "Write", "Bash", "Grep", "Glob"],
+		file: "gsd-ui-auditor.md",
 	},
 	{
-		name: "ci-fixer",
-		description: "CI/CD fix agent",
-		category: "infrastructure",
-		tools: ["Bash", "Read", "Write", "Edit"],
-		file: "ci-fixer.md",
+		name: "gsd-ui-checker",
+		description: "GSD UI spec checker",
+		category: "gsd",
+		tools: ["Read", "Bash", "Glob", "Grep"],
+		file: "gsd-ui-checker.md",
 	},
 	{
-		name: "edge-case-hunter",
-		description: "Edge case discovery agent",
-		category: "quality",
-		tools: ["Read", "Bash"],
-		file: "edge-case-hunter.md",
+		name: "gsd-ui-researcher",
+		description: "GSD UI researcher",
+		category: "gsd",
+		tools: ["Read", "Write", "Bash", "Grep", "Glob", "WebSearch", "WebFetch"],
+		file: "gsd-ui-researcher.md",
 	},
 ];
 
@@ -357,17 +357,17 @@ const agentsExternal: ExternalAgentsResponse = {
 			available: true,
 			model: "gemini-3.1-pro-preview",
 			config_exists: true,
-			path: "/usr/local/bin/gemini",
+			path: "fnm/bin/gemini (v0.35.3)",
 		},
 		codex: {
 			available: true,
 			model: "gpt-5.4",
 			config_exists: true,
-			path: "/usr/local/bin/codex",
+			path: "fnm/bin/codex (v0.114)",
 		},
 		kimi: {
 			available: true,
-			model: "kimi-k2",
+			model: "kimi-k2.5",
 			config_exists: true,
 			yolo: true,
 			path: "/home/nadavcohen/.local/bin/kimi",
@@ -427,36 +427,36 @@ const hydraTasks: HydraTask[] = [
 const hydraScores: HydraScoresResponse = {
 	providers: {
 		codex: {
-			score: 0.857,
-			successes: 5,
+			score: 0.692,
+			successes: 8,
+			failures: 3,
+			total: 11,
+			last_updated: "2026-03-26T08:23:04Z",
+		},
+		kimi: {
+			score: 0.778,
+			successes: 6,
 			failures: 1,
-			total: 6,
-			last_updated: "2026-03-26T10:00:00Z",
+			total: 7,
+			last_updated: "2026-03-07T19:44:30Z",
 		},
 		gemini: {
 			score: 0.8,
-			successes: 4,
-			failures: 1,
-			total: 5,
-			last_updated: "2026-03-26T09:30:00Z",
-		},
-		kimi: {
-			score: 0.75,
 			successes: 3,
-			failures: 1,
-			total: 4,
-			last_updated: "2026-03-25T22:00:00Z",
+			failures: 0,
+			total: 3,
+			last_updated: "2026-03-02T06:46:28Z",
 		},
 		minimax: {
-			score: 0.667,
-			successes: 2,
-			failures: 1,
-			total: 3,
-			last_updated: "2026-03-25T18:00:00Z",
+			score: 0.5,
+			successes: 0,
+			failures: 0,
+			total: 0,
+			last_updated: "2026-03-28T00:00:00Z",
 		},
 	},
-	version: "1.2.0",
-	created_at: "2026-03-20T00:00:00Z",
+	version: "1.1.0",
+	created_at: "2026-03-02T00:00:00Z",
 };
 
 // ── Hydra Watcher ─────────────────────────────────────────────────────────────
@@ -534,14 +534,25 @@ const hydraHealth: HealthResponse = {
 // ── Hooks ─────────────────────────────────────────────────────────────────────
 
 const hooks: HooksResponse = {
-	total: 128,
+	total: 75,
 	by_event: {
-		PreToolUse: 24,
-		PostToolUse: 18,
-		Stop: 12,
-		UserPromptSubmit: 8,
-		SessionStart: 6,
-		PostCompact: 4,
+		PreToolUse: 19,
+		PostToolUse: 12,
+		Stop: 11,
+		UserPromptSubmit: 10,
+		SessionStart: 8,
+		PostCompact: 2,
+		SubagentStop: 2,
+		PostToolUseFailure: 2,
+		SubagentStart: 1,
+		PermissionRequest: 1,
+		Notification: 1,
+		ConfigChange: 1,
+		WorktreeCreate: 1,
+		WorktreeRemove: 1,
+		TaskCompleted: 1,
+		TeammateIdle: 1,
+		PreCompact: 1,
 	},
 	recent: [
 		{
@@ -577,24 +588,24 @@ const hooks: HooksResponse = {
 const system: SystemResponse = {
 	ram: { total_gb: 64.0, used_gb: 22.4, free_gb: 41.6, pct: 35.0 },
 	swap: { total_gb: 200.0, used_gb: 1.2, pct: 0.6 },
-	disk: { total_gb: 512, used_gb: 210, free_gb: 302, pct: 41.0 },
+	disk: { total_gb: 936, used_gb: 457, free_gb: 437, pct: 52.0 },
 	uptime: "12d 4h 33m",
 	uptime_sec: 1056780,
 	orphan_count: 0,
 	earlyoom: "active",
 	handoffs: {
-		pending: 2,
-		"in-progress": 1,
-		completed: 47,
-		failed: 3,
-		verified: 38,
+		pending: 0,
+		"in-progress": 0,
+		completed: 26,
+		failed: 0,
+		verified: 35,
 	},
 };
 
 // ── Metrics ───────────────────────────────────────────────────────────────────
 
 const metrics: MetricsResponse = {
-	total_dispatches: 312,
+	total_dispatches: 595,
 	top_agents: [
 		{ name: "code-reviewer", count: 48 },
 		{ name: "test-generator", count: 42 },
@@ -618,14 +629,14 @@ const metrics: MetricsResponse = {
 		{ name: "nadavai", count: 12 },
 	],
 	provider_events: [
-		{ provider: "codex", event: "success", count: 54 },
-		{ provider: "codex", event: "error", count: 6 },
-		{ provider: "gemini", event: "success", count: 48 },
-		{ provider: "gemini", event: "error", count: 9 },
-		{ provider: "kimi", event: "success", count: 36 },
-		{ provider: "kimi", event: "error", count: 12 },
-		{ provider: "minimax", event: "success", count: 28 },
-		{ provider: "minimax", event: "error", count: 8 },
+		{ provider: "codex", event: "success", count: 8 },
+		{ provider: "codex", event: "error", count: 3 },
+		{ provider: "kimi", event: "success", count: 6 },
+		{ provider: "kimi", event: "error", count: 1 },
+		{ provider: "gemini", event: "success", count: 3 },
+		{ provider: "gemini", event: "error", count: 0 },
+		{ provider: "minimax", event: "success", count: 0 },
+		{ provider: "minimax", event: "error", count: 0 },
 	],
 };
 
@@ -633,7 +644,7 @@ const metrics: MetricsResponse = {
 
 const memory: MemoryResponse = {
 	exists: true,
-	line_count: 120,
+	line_count: 81,
 	last_modified: "2026-03-26T10:00:00Z",
 	sections: [
 		"User Preferences",
@@ -647,9 +658,9 @@ const memory: MemoryResponse = {
 		"MiniMax Direct API",
 		"BrowserStack",
 	],
-	knowledge_files: 62,
-	rules_files: 11,
-	rules_count: 11,
+	knowledge_files: 102,
+	rules_files: 12,
+	rules_count: 12,
 };
 
 // ── Rules ─────────────────────────────────────────────────────────────────────
@@ -659,84 +670,84 @@ const rules: RuleInfo[] = [
 		name: "auto-learned-rules.md",
 		path: "rules/quality/auto-learned-rules.md",
 		category: "quality",
-		size_kb: 44.2,
+		size_kb: 45.8,
 		last_modified: "2026-03-26T10:00:00Z",
 	},
 	{
 		name: "auto-learned-rules-archive.md",
 		path: "rules/quality/auto-learned-rules-archive.md",
 		category: "quality",
-		size_kb: 22.8,
+		size_kb: 20.1,
 		last_modified: "2026-03-25T20:00:00Z",
 	},
 	{
 		name: "code-quality.md",
 		path: "rules/quality/code-quality.md",
 		category: "quality",
-		size_kb: 4.1,
+		size_kb: 2.0,
 		last_modified: "2026-03-20T00:00:00Z",
 	},
 	{
 		name: "past-mistakes.md",
 		path: "rules/quality/past-mistakes.md",
 		category: "quality",
-		size_kb: 38.6,
+		size_kb: 34.2,
 		last_modified: "2026-03-26T08:00:00Z",
 	},
 	{
 		name: "rtl-i18n.md",
 		path: "rules/quality/rtl-i18n.md",
 		category: "quality",
-		size_kb: 2.9,
+		size_kb: 1.0,
 		last_modified: "2026-03-20T00:00:00Z",
 	},
 	{
 		name: "verification.md",
 		path: "rules/quality/verification.md",
 		category: "quality",
-		size_kb: 5.8,
+		size_kb: 3.2,
 		last_modified: "2026-03-20T00:00:00Z",
 	},
 	{
 		name: "security.md",
 		path: "rules/security/security.md",
 		category: "security",
-		size_kb: 9.4,
+		size_kb: 3.9,
 		last_modified: "2026-03-25T00:00:00Z",
 	},
 	{
 		name: "ai-security.md",
 		path: "rules/security/ai-security.md",
 		category: "security",
-		size_kb: 7.2,
+		size_kb: 3.5,
 		last_modified: "2026-03-25T00:00:00Z",
 	},
 	{
 		name: "audit-gates.md",
 		path: "rules/verification/audit-gates.md",
 		category: "verification",
-		size_kb: 3.5,
+		size_kb: 2.0,
 		last_modified: "2026-03-20T00:00:00Z",
 	},
 	{
 		name: "hydra-v2-rules.md",
 		path: "rules/infra/hydra-v2-rules.md",
 		category: "infra",
-		size_kb: 18.4,
+		size_kb: 21.5,
 		last_modified: "2026-03-26T10:00:00Z",
 	},
 	{
 		name: "ops-rules.md",
 		path: "rules/infra/ops-rules.md",
 		category: "infra",
-		size_kb: 24.7,
+		size_kb: 32.5,
 		last_modified: "2026-03-26T08:00:00Z",
 	},
 	{
 		name: "stack-rules.md",
 		path: "rules/infra/stack-rules.md",
 		category: "infra",
-		size_kb: 12.3,
+		size_kb: 9.8,
 		last_modified: "2026-03-25T00:00:00Z",
 	},
 ];
@@ -744,7 +755,7 @@ const rules: RuleInfo[] = [
 // ── Skills ────────────────────────────────────────────────────────────────────
 
 const skills: SkillsResponse = {
-	total: 79,
+	total: 83,
 	categories: {
 		code: 12,
 		ui: 10,
@@ -769,31 +780,31 @@ const mcp: McpResponse = {
 	servers: [
 		{
 			name: "context7",
-			source: "~/.mcp.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "github",
-			source: "~/.mcp.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "playwright",
-			source: "~/.mcp.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "supabase",
-			source: "~/.mcp.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "claude-mem",
-			source: "~/.mcp.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
@@ -811,31 +822,37 @@ const mcp: McpResponse = {
 		},
 		{
 			name: "telegram",
-			source: "settings.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "firebase",
-			source: "settings.json",
+			source: "plugin",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "serena",
+			source: "plugin",
+			enabled: true,
+			transport: "stdio",
+		},
+		{
+			name: "chrome-devtools",
 			source: "settings.json",
 			enabled: true,
 			transport: "stdio",
 		},
 		{
 			name: "chroma",
-			source: "settings.json",
+			source: "plugin",
 			enabled: false,
 			transport: "stdio",
 		},
 	],
-	total: 11,
-	enabled: 10,
+	total: 12,
+	enabled: 11,
 	disabled: 1,
 	plugins: {},
 	plugins_count: 19,
@@ -844,7 +861,7 @@ const mcp: McpResponse = {
 // ── OpenClaw ──────────────────────────────────────────────────────────────────
 
 const openclaw: OpenclawResponse = {
-	skills: 42,
+	skills: 37,
 	version: "v2026.3.22",
 };
 
@@ -941,7 +958,7 @@ const openclawDetails: OpenclawDetailsResponse = {
 			size_kb: 5.3,
 		},
 	],
-	skills_count: 42,
+	skills_count: 37,
 	subagents: [
 		{
 			name: "gsd-executor",
@@ -975,7 +992,7 @@ const sync: SyncResponse = {
 
 const lenovoStatus: LenovoStatusResponse = {
 	reachable: true,
-	hostname: "lenovo",
+	hostname: "pop-os",
 	load_avg: [1.2, 1.5, 1.8],
 };
 
@@ -1030,7 +1047,7 @@ const crossSync: CrossSyncResponse = {
 			rules_dir: "/home/nadavcohen/.minimax/rules",
 		},
 	},
-	diff: ["Lenovo: kimi rules not synced", "Lenovo: minimax rules not synced"],
+	diff: ["MSI: kimi rules not synced", "MSI: minimax rules not synced"],
 };
 
 const watcherAll: WatcherResponse = {
@@ -1649,7 +1666,7 @@ const ciDeep: CiDeepResponse = {
 	runners: [
 		{
 			label: "[self-hosted, linux, x64, pop-os]",
-			machine: "Lenovo",
+			machine: "Lenovo (Pop!_OS)",
 			ip: "100.82.33.122",
 			cores: 24,
 			ram_gb: 64,
@@ -1658,11 +1675,11 @@ const ciDeep: CiDeepResponse = {
 			total: 22,
 		},
 		{
-			label: "[self-hosted, linux, x64, lenovo]",
-			machine: "Lenovo",
+			label: "[self-hosted, linux, x64, msi]",
+			machine: "MSI",
 			ip: "100.87.247.87",
 			cores: 12,
-			ram_gb: 32,
+			ram_gb: 64,
 			count: 5,
 			status: "online",
 		},
@@ -1715,7 +1732,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Z (Cash)",
 			stack: "Vite+React+npm",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 4,
 			bundle_check: true,
@@ -1726,7 +1743,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Cash",
 			stack: "Vite+React",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: true,
@@ -1737,7 +1754,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Shifts",
 			stack: "Vite+React",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 4,
 			bundle_check: true,
@@ -1748,7 +1765,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "HatumDigital",
 			stack: "Vite+Capacitor",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 4,
 			bundle_check: true,
@@ -1759,7 +1776,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Brain",
 			stack: "Vite+React",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 4,
 			bundle_check: true,
@@ -1770,7 +1787,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "SportChat",
 			stack: "Flutter",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: false,
@@ -1781,7 +1798,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "VibChat",
 			stack: "Next.js+Convex",
-			machine: "Lenovo",
+			machine: "MSI",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: true,
@@ -1824,8 +1841,8 @@ const ciDeep: CiDeepResponse = {
 		},
 	],
 	stats: {
-		total_repos: 14,
-		repos_with_ci: 13,
+		total_repos: 18,
+		repos_with_ci: 14,
 		total_workflow_files: 196,
 		total_tools: 14,
 		total_security_gates: 6,
@@ -1833,7 +1850,7 @@ const ciDeep: CiDeepResponse = {
 		total_reusable_workflows: 3,
 		github_apps: 3,
 		projects_with_ci: 13,
-		projects_total: 14,
+		projects_total: 18,
 	},
 };
 
@@ -1863,8 +1880,8 @@ const deploysStatus: DeploysStatusResponse = {
 		},
 		{
 			name: "nadavai",
-			url: "https://nadavai.pages.dev",
-			platform: "cloudflare",
+			url: "https://nadavai-portfolio.netlify.app",
+			platform: "netlify",
 			status: "up",
 			http_status: 200,
 			response_ms: 155,
@@ -1873,7 +1890,7 @@ const deploysStatus: DeploysStatusResponse = {
 		},
 		{
 			name: "shifts",
-			url: "https://mexicani-shifts.pages.dev",
+			url: "https://shifts-8ft.pages.dev",
 			platform: "cloudflare",
 			status: "up",
 			http_status: 200,
@@ -1893,7 +1910,7 @@ const deploysStatus: DeploysStatusResponse = {
 		},
 		{
 			name: "brain",
-			url: "https://brain.pages.dev",
+			url: "https://brain-3qu.pages.dev",
 			platform: "cloudflare",
 			status: "up",
 			http_status: 200,
@@ -1923,18 +1940,38 @@ const deploysStatus: DeploysStatusResponse = {
 		},
 		{
 			name: "mediflow",
-			url: "https://mediflow.netlify.app",
+			url: "https://mediflow-nadav.netlify.app",
 			platform: "netlify",
-			status: "down",
-			http_status: 404,
+			status: "up",
+			http_status: 200,
 			response_ms: 210,
 			checked_at: "2026-03-26T10:00:00Z",
-			error: "HTTP 404",
+			error: null,
+		},
+		{
+			name: "apex-dashboard",
+			url: "https://apex-dashboard-2z6.pages.dev",
+			platform: "cloudflare",
+			status: "up",
+			http_status: 200,
+			response_ms: 128,
+			checked_at: "2026-03-26T10:00:00Z",
+			error: null,
+		},
+		{
+			name: "vibechat",
+			url: "https://vibechat-app.netlify.app",
+			platform: "netlify",
+			status: "up",
+			http_status: 200,
+			response_ms: 162,
+			checked_at: "2026-03-26T10:00:00Z",
+			error: null,
 		},
 	],
-	total: 9,
-	up_count: 8,
-	down_count: 1,
+	total: 11,
+	up_count: 11,
+	down_count: 0,
 	checked_at: "2026-03-26T10:00:00Z",
 };
 
@@ -2118,8 +2155,8 @@ const projects: ProjectsResponse = {
 			],
 			github_repo: "",
 			github_url: "",
-			domain: "mediflow.netlify.app",
-			deploy_platform: "Netlify (broken)",
+			domain: "mediflow-nadav.netlify.app",
+			deploy_platform: "Netlify",
 			status: "development",
 			description_he:
 				"פלטפורמה רפואית ישראלית — ISO 27001/27799, תיקון 13, הצפנת שדות, גישת חירום",
@@ -2644,7 +2681,7 @@ const projects: ProjectsResponse = {
 			name: "Z",
 			display_name: "Z (Cash Control)",
 			path: "~/Desktop/Z",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"React 18.3",
 				"Vite 7.3.1",
@@ -2714,7 +2751,7 @@ const projects: ProjectsResponse = {
 			name: "cash",
 			display_name: "Cash",
 			path: "~/Desktop/cash",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: ["React", "Vite", "Supabase", "Tailwind"],
 			github_repo: "Nadav011/cash",
 			github_url: "https://github.com/Nadav011/cash",
@@ -2752,7 +2789,7 @@ const projects: ProjectsResponse = {
 			name: "shifts",
 			display_name: "Shifts",
 			path: "~/Desktop/shifts",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"React 19.2.4",
 				"Vite 7.3.1",
@@ -2812,7 +2849,7 @@ const projects: ProjectsResponse = {
 			supabase_project: "ywryfqzgfladpyieveva",
 			related_projects: ["mexicani"],
 			notes:
-				"ROLLUP_NATIVE_THREADS=0 needed on Lenovo. Supabase project name: 'restaurant'.",
+				"ROLLUP_NATIVE_THREADS=0 needed on MSI. Supabase project name: 'restaurant'.",
 			last_commit: {
 				sha: "a7b8c9d",
 				message: "feat: payroll calculation with overtime",
@@ -2823,7 +2860,7 @@ const projects: ProjectsResponse = {
 			name: "hatumdigital",
 			display_name: "HatumDigital",
 			path: "~/Desktop/hatumdigital",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"React",
 				"Vite",
@@ -2885,7 +2922,7 @@ const projects: ProjectsResponse = {
 			],
 			supabase_project: "dmuartcdgbpegbgjuplm",
 			related_projects: [],
-			notes: "ROLLUP_NATIVE_THREADS=0 needed on Lenovo.",
+			notes: "ROLLUP_NATIVE_THREADS=0 needed on MSI.",
 			last_commit: {
 				sha: "b8c9d0e",
 				message: "feat: WhatsApp template builder",
@@ -2896,7 +2933,7 @@ const projects: ProjectsResponse = {
 			name: "brain",
 			display_name: "Brain",
 			path: "~/Desktop/brain",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"React",
 				"Vite",
@@ -2911,7 +2948,7 @@ const projects: ProjectsResponse = {
 			],
 			github_repo: "Nadav011/brain",
 			github_url: "https://github.com/Nadav011/brain",
-			domain: "brain.pages.dev",
+			domain: "brain-3qu.pages.dev",
 			deploy_platform: "Cloudflare Pages",
 			status: "active",
 			description_he:
@@ -2947,7 +2984,7 @@ const projects: ProjectsResponse = {
 			supabase_project: "svsomygampaxwsfgqtpa",
 			related_projects: ["Z", "cash"],
 			notes:
-				"branch: master (not main). Shared Supabase with Z/cash. ROLLUP_NATIVE_THREADS=0 on Lenovo.",
+				"branch: master (not main). Shared Supabase with Z/cash. ROLLUP_NATIVE_THREADS=0 on MSI.",
 			last_commit: {
 				sha: "c9d0e1f",
 				message: "feat: worker thread sync engine",
@@ -2958,7 +2995,7 @@ const projects: ProjectsResponse = {
 			name: "sportchat",
 			display_name: "SportChat Ultimate",
 			path: "~/Desktop/SportChat/sportchat_ultimate",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"Flutter 3.x",
 				"Dart >=3.7",
@@ -3030,7 +3067,7 @@ const projects: ProjectsResponse = {
 			name: "vibechat",
 			display_name: "VibecChat",
 			path: "~/Desktop/vibechat",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"Next.js",
 				"Turborepo",
@@ -3081,14 +3118,14 @@ const projects: ProjectsResponse = {
 			supabase_project: undefined,
 			related_projects: [],
 			notes:
-				"ROLLUP_NATIVE_THREADS=0 on Lenovo. Convex (not Supabase) — different from all other projects.",
+				"ROLLUP_NATIVE_THREADS=0 on MSI. Convex (not Supabase) — different from all other projects.",
 			last_commit: null,
 		},
 		{
 			name: "financeapp",
 			display_name: "FinanceApp",
 			path: "~/Desktop/FinanceApp",
-			machine: "Lenovo",
+			machine: "MSI",
 			stack: [
 				"Expo React Native",
 				"Tamagui UI",
@@ -3139,11 +3176,11 @@ const projects: ProjectsResponse = {
 			},
 		},
 	],
-	total: 19,
+	total: 18,
 	active: 13,
-	archived: 5,
+	archived: 4,
 	development: 1,
-	by_machine: { Lenovo: 11, MSI: 8 },
+	by_machine: { Lenovo: 8, MSI: 10 },
 	by_platform: {
 		"Cloudflare Pages": 8,
 		Netlify: 3,

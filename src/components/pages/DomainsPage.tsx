@@ -95,20 +95,18 @@ const DOMAINS: DomainEntry[] = [
 		ssl: true,
 	},
 	{
-		domain: "mediflow.netlify.app",
+		domain: "mediflow-nadav.netlify.app",
 		platform: "netlify",
 		project: "MediFlow",
-		status: "issue",
+		status: "active",
 		ssl: true,
-		note: "בעיות build",
 	},
 	{
-		domain: "vibechat.netlify.app",
+		domain: "vibechat-app.netlify.app",
 		platform: "netlify",
 		project: "vibechat",
-		status: "issue",
+		status: "active",
 		ssl: true,
-		note: "בעיות build",
 	},
 ];
 
@@ -514,7 +512,7 @@ export function DomainsPage() {
 						<DnsRecord
 							type="CNAME"
 							name="nadav.ai"
-							value="nadavai.pages.dev"
+							value="nadavai-portfolio.netlify.app"
 							note="Apex domain"
 						/>
 						<DnsRecord

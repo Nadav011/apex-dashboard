@@ -207,11 +207,12 @@ function TopologyDiagram() {
 	return (
 		<div className="flex flex-col gap-0">
 			<MachineBox
-				name="Lenovo"
+				name="Lenovo (Pop!_OS)"
 				ip="100.82.33.122"
 				color="oklch(0.65 0.18 250)"
-				hardware="🖥 24 ליבות · 64GB RAM · RTX 5070 Ti · ZRAM 200GB · earlyoom פעיל · Pop!_OS"
+				hardware="🖥 Intel Core Ultra 9 275HX · 24 ליבות · 64GB RAM · RTX 5070 Ti · ZRAM 200GB · earlyoom פעיל · Pop!_OS 24.04"
 			>
+				{" "}
 				<ServiceRow
 					icon={<Zap size={12} />}
 					label="Claude Code — Opus 4.6, 1M context"
@@ -246,7 +247,7 @@ function TopologyDiagram() {
 				/>
 				<ServiceRow
 					icon={<Monitor size={12} />}
-					label="Gemini (3.1-pro, 2M ctx, thinkingBudget=32768)"
+					label="Gemini (3.1-pro, 2M ctx, thinkingBudget=1024)"
 					color="oklch(0.72 0.19 155)"
 					indent={2}
 				/>
@@ -258,15 +259,15 @@ function TopologyDiagram() {
 				/>
 				<ServiceRow
 					icon={<Webhook size={12} />}
-					label="78+ Hooks (PreToolUse, PostToolUse, Stop...)"
-					badge="128 registered"
+					label="78 Hooks (PreToolUse, PostToolUse, Stop...)"
+					badge="75 registered"
 					color="oklch(0.62 0.22 25)"
 					indent={1}
 				/>
 				<ServiceRow
 					icon={<Layers size={12} />}
-					label="79 Skills (OpenClaw)"
-					badge="42 skills"
+					label="78+ Skills"
+					badge="53 commands"
 					color="oklch(0.62 0.2 290)"
 					indent={1}
 				/>
@@ -287,11 +288,12 @@ function TopologyDiagram() {
 			<ConnectorArrow label="Tailscale SSH (100.x.x.x)" />
 
 			<MachineBox
-				name="Lenovo"
+				name="MSI (Secondary)"
 				ip="100.87.247.87"
 				color="oklch(0.72 0.19 155)"
-				hardware="🖥 30GB RAM · Pop!_OS · ROLLUP_NATIVE_THREADS=0"
+				hardware="🖥 64GB RAM · MSI · Windows 11 · ROLLUP_NATIVE_THREADS=0"
 			>
+				{" "}
 				<ServiceRow
 					icon={<Zap size={12} />}
 					label="Claude Code + Codex + Gemini + Kimi"
@@ -299,7 +301,7 @@ function TopologyDiagram() {
 				/>
 				<ServiceRow
 					icon={<HardDrive size={12} />}
-					label="7 פרויקטים ייחודיים ל-Lenovo (Z, shifts, brain, vibechat...)"
+					label="7 פרויקטים ייחודיים ל-MSI (Z, shifts, brain, vibechat...)"
 					color="oklch(0.78 0.16 75)"
 					indent={1}
 				/>
@@ -1299,7 +1301,7 @@ export function ArchitecturePage() {
 			<AccordionSection
 				id="hooks"
 				title="מערכת ה-Hooks"
-				subtitle="57 קבצי hook, 128 רשומים — אכיפה דטרמיניסטית"
+				subtitle="78 קבצי hook, 75 רשומים — אכיפה דטרמיניסטית"
 				icon={<Webhook size={16} />}
 				accentColor="oklch(0.78 0.16 75)"
 			>
@@ -1350,8 +1352,8 @@ export function ArchitecturePage() {
 				<span className="text-[var(--color-accent-blue)] font-semibold">
 					APEX Command Center
 				</span>{" "}
-				— מצב מערכת נכון ל-2026-03-26. 78+ skills · 45 agents · 128 hooks ·
-				Lenovo + Lenovo via Tailscale.
+				— מצב מערכת נכון ל-2026-03-28. 78+ skills · 45 agents · 75 hooks ·
+				Lenovo + MSI via Tailscale.
 			</div>
 		</div>
 	);

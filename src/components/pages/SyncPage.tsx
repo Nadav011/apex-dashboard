@@ -67,15 +67,15 @@ interface KnownIssue {
 
 const MACHINES: MachineCard[] = [
 	{
-		name: "pop-os",
+		name: "Lenovo",
 		role: "primary",
 		ip: "100.82.33.122",
-		hostname: "nadavcohen-system76",
+		hostname: "pop-os",
 		tailscaleConnected: true,
 		lastSync: "לפני 4 דקות",
 		filesSynced: 892,
 		driftCount: 0,
-		os: "Pop!_OS 22.04 LTS",
+		os: "Pop!_OS 24.04 (Ultra 9 275HX + RTX 5070 Ti)",
 	},
 	{
 		name: "MSI",
@@ -86,7 +86,7 @@ const MACHINES: MachineCard[] = [
 		lastSync: "לפני 4 דקות",
 		filesSynced: 892,
 		driftCount: 2,
-		os: "Ubuntu 22.04 LTS",
+		os: "Windows 11",
 	},
 ];
 
@@ -95,7 +95,7 @@ const SYNC_TABLE: SyncItem[] = [
 		item: "hooks/",
 		synced: true,
 		method: "git",
-		notes: "57+ קבצים, rsync עם --delete",
+		notes: "78 קבצים, rsync עם --delete",
 	},
 	{
 		item: "rules/",
@@ -214,12 +214,12 @@ const KNOWN_ISSUES: KnownIssue[] = [
 	{
 		title: "settings.json לא מסונכרן",
 		cause: "settings.json ספציפי למכונה — MAX_AGENTS, model IDs שונים",
-		fix: "שנה ידנית ב-MSI דרך SSH אחרי כל שינוי ב-pop-os",
+		fix: "שנה ידנית ב-MSI דרך SSH אחרי כל שינוי ב-Lenovo",
 		severity: "warn",
 	},
 	{
 		title: "הוקים מיושנים ב-MSI",
-		cause: "rsync ללא --delete משאיר קבצים ישנים שנמחקו מ-pop-os",
+		cause: "rsync ללא --delete משאיר קבצים ישנים שנמחקו מ-Lenovo",
 		fix: "השתמש ב-rsync -avz --delete ~/.claude/hooks/ host:~/.claude/hooks/",
 		severity: "warn",
 	},
@@ -250,7 +250,7 @@ function PageHeader({ onRefresh }: { onRefresh: () => void }) {
 						סנכרון מכונות
 					</h1>
 					<p className="text-sm text-text-muted mt-0.5">
-						pop-os ↔ MSI — claude-sync via Tailscale
+						Lenovo ↔ MSI — claude-sync via Tailscale
 					</p>
 				</div>
 			</div>
@@ -415,7 +415,7 @@ function MachineStatusCard({ machine }: { machine: MachineCard }) {
 						aria-hidden="true"
 					/>
 					<p className="text-xs text-[var(--color-status-degraded)]">
-						{machine.driftCount} קבצי config חרגו מ-pop-os — settings.json ידני
+						{machine.driftCount} קבצי config חרגו מ-Lenovo — settings.json ידני
 						נדרש
 					</p>
 				</div>
@@ -529,7 +529,7 @@ function CommandBlock({ command }: { command: SyncCommand }) {
 	};
 	const directionLabels: Record<string, string> = {
 		push: "→ MSI",
-		pull: "← pop-os",
+		pull: "← Lenovo",
 		both: "↔ שתיים",
 		manual: "ידני",
 	};
@@ -678,7 +678,10 @@ export function SyncPage() {
 	const [refreshKey, setRefreshKey] = useState(0);
 
 	return (
-		<div className="space-y-6 p-4 md:p-6 max-w-5xl mx-auto" key={refreshKey}>
+		<div
+			className="space-y-6 p-4 md:p-6 max-w-5xl mx-auto bg-zinc-950"
+			key={refreshKey}
+		>
 			{/* ── Header ── */}
 			<PageHeader onRefresh={() => setRefreshKey((k) => k + 1)} />
 
@@ -695,7 +698,7 @@ export function SyncPage() {
 
 				{/* Connection pulse indicator */}
 				<div className="mt-3 flex items-center justify-center gap-3">
-					<span className="text-xs text-text-muted font-medium">pop-os</span>
+					<span className="text-xs text-text-muted font-medium">Lenovo</span>
 					<div className="flex items-center gap-1">
 						<div className="w-12 h-px bg-[var(--color-status-healthy)]" />
 						<div className="w-2 h-2 rounded-full bg-[var(--color-status-healthy)] animate-pulse-status" />
@@ -811,7 +814,6 @@ export function SyncPage() {
 				{/* overflow-x-auto scroll container — table needs minimum width for readability */}
 				<div className="overflow-x-auto -mx-1">
 					<table className="w-full text-start" style={{ minWidth: "480px" }}>
-						{" "}
 						{/* responsive-ok — inside overflow-x-auto scroll container */}
 						<thead>
 							<tr className="border-b border-border">

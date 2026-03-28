@@ -185,7 +185,7 @@ function CategoryTabs({
 						onClick={() => onSelect(key)}
 						className={cn(
 							"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium",
-							"transition-all duration-150 cursor-pointer min-h-9",
+							"transition-all duration-150 cursor-pointer min-h-11",
 							isActive
 								? key === "all"
 									? "bg-[var(--color-accent-blue)] text-white"
@@ -272,7 +272,7 @@ export function FleetPage() {
 				<div className="relative max-w-sm">
 					<Search
 						size={15}
-						className="absolute inset-y-0 end-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
+						className="absolute inset-y-0 inset-e-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
 						aria-hidden="true"
 					/>
 					<input

@@ -314,9 +314,10 @@ function WhatIsMcpSection() {
 							"תוצאה מוחזרת",
 							"→",
 							"Claude ממשיך",
-						].map((step) => (
+						].map((step, i) => (
 							<span
-								key={step}
+								// biome-ignore lint/suspicious/noArrayIndexKey: separator arrows are not uniquely identifiable
+								key={i}
 								className={
 									step === "→"
 										? "text-[var(--color-text-muted)] text-sm"
@@ -1265,7 +1266,7 @@ function TroubleshootSection() {
 										<ol className="space-y-1.5">
 											{item.steps.map((step, stepIdx) => (
 												<li
-													key={step}
+													key={`step-${step.slice(0, 20)}`}
 													className="flex gap-2.5 text-xs text-[var(--color-text-secondary)] leading-relaxed"
 												>
 													<span
@@ -1568,7 +1569,7 @@ function ArchDiagramCard() {
 
 export function McpGuidePage() {
 	return (
-		<div className="space-y-6 pb-8">
+		<div className="space-y-6 pb-8 min-h-screen bg-zinc-950 p-6" dir="rtl">
 			{/* Page header */}
 			<div className="flex items-start gap-4">
 				<div
@@ -1679,9 +1680,9 @@ export function McpGuidePage() {
 					<code className="text-[var(--color-accent-cyan)] font-mono" dir="ltr">
 						claude-sync push
 					</code>{" "}
-					לסנכרן בין Lenovo ל-Lenovo. כל MCP settings נשמרים ב-~/.mcp.json
-					(unified profile) ובקבצים הספציפיים של כל agent (Gemini: settings.json
-					+ antigravity, Codex: config.toml, Kimi: config.toml).
+					לסנכרן בין Lenovo ל-MSI. כל MCP settings נשמרים ב-~/.mcp.json (unified
+					profile) ובקבצים הספציפיים של כל agent (Gemini: settings.json +
+					antigravity, Codex: config.toml, Kimi: config.toml).
 				</p>
 			</div>
 		</div>
