@@ -7,8 +7,8 @@ const CORS_HEADERS = {
 
 export const onRequestGet: PagesFunction = async () => {
 	const data = {
-		skills: 42,
-		version: "v2026.3.22",
+		skills: 86,
+		version: "v2026.3.28",
 		path: "/home/nadavcohen/.openclaw",
 		skills_list: [
 			{
@@ -91,6 +91,28 @@ export const onRequestGet: PagesFunction = async () => {
 				tags: ["testing"],
 				size_kb: 5.3,
 			},
+		],
+		conductor_skills: [
+			"conductor-setup",
+			"conductor-implement",
+			"conductor-review",
+			"conductor-revert",
+			"conductor-newTrack",
+			"conductor-status",
+		],
+		new_skills_mar28: [
+			"rtl-fix",
+			"conductor-setup",
+			"conductor-implement",
+			"conductor-review",
+			"conductor-revert",
+			"conductor-newTrack",
+			"conductor-status",
+			"deep-project",
+			"deep-plan",
+			"deep-implement",
+			"superpowers",
+			"claude-mem",
 		],
 		subagents: [
 			{

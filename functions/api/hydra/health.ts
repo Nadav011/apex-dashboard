@@ -35,7 +35,35 @@ export const onRequestGet: PagesFunction = async () => {
 				message: "hydra-executor.sh present",
 				duration_ms: 1,
 			},
+			{
+				name: "safety_gate",
+				ok: true,
+				message: "safety_gate node active in graph",
+				duration_ms: 1,
+			},
+			{
+				name: "bayesian_scores",
+				ok: true,
+				message: "hydra-bayesian.json present",
+				duration_ms: 1,
+			},
 		],
+		graph_nodes: [
+			{ name: "route_node", description: "Routes tasks to optimal provider" },
+			{ name: "auap_node", description: "AUAP briefing injection" },
+			{
+				name: "execute_node",
+				description: "Provider execution (910s timeout)",
+			},
+			{
+				name: "verify_node",
+				description: "Post-execution verification (120s)",
+			},
+			{ name: "decide_node", description: "Success/failure + Bayesian update" },
+			{ name: "safety_gate", description: "Pre-execution safety check" },
+			{ name: "fallback_node", description: "Provider fallback on failure" },
+		],
+		graph_node_count: 7,
 	};
 
 	return new Response(JSON.stringify(data), { headers: CORS_HEADERS });
