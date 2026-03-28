@@ -43,7 +43,7 @@ import { cn } from "@/lib/cn";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type MachineFilter = "all" | "pop-os" | "Lenovo";
+type MachineFilter = "all" | "Lenovo" | "MSI";
 type StatusFilter = "all" | "active" | "archived" | "development";
 
 // ── Stack badge color map ─────────────────────────────────────────────────────
@@ -126,12 +126,12 @@ function StackBadges({ stack }: { stack: string[] }) {
 }
 
 function MachineBadge({ machine }: { machine: string }) {
-	const isPopOs = machine === "pop-os";
+	const isLenovo = machine === "Lenovo";
 	return (
 		<span
 			className={cn(
 				"inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border",
-				isPopOs
+				isLenovo
 					? "bg-[oklch(0.6_0.18_250_/_0.15)] text-[oklch(0.72_0.18_250)] border-[oklch(0.6_0.18_250_/_0.4)]"
 					: "bg-[oklch(0.72_0.18_75_/_0.15)] text-[oklch(0.82_0.18_75)] border-[oklch(0.72_0.18_75_/_0.4)]",
 			)}
@@ -912,8 +912,8 @@ function SummaryStrip({
 	active,
 	archived,
 	development,
-	popOsCount,
 	lenovoCount,
+	msiCount,
 	withGithub,
 	byMachine,
 }: {
@@ -921,8 +921,8 @@ function SummaryStrip({
 	active: number;
 	archived: number;
 	development: number;
-	popOsCount: number;
 	lenovoCount: number;
+	msiCount: number;
 	withGithub: number;
 	byMachine: Record<string, number>;
 }) {
@@ -946,7 +946,7 @@ function SummaryStrip({
 					value,
 					itemStyle: {
 						color:
-							name === "pop-os"
+							name === "Lenovo"
 								? "oklch(0.65 0.18 250)"
 								: "oklch(0.78 0.18 75)",
 					},
@@ -980,14 +980,14 @@ function SummaryStrip({
 			icon: Wrench,
 		},
 		{
-			label: "pop-os",
-			value: popOsCount,
+			label: "Lenovo",
+			value: lenovoCount,
 			color: "oklch(0.72 0.18 250)",
 			icon: Monitor,
 		},
 		{
-			label: "Lenovo",
-			value: lenovoCount,
+			label: "MSI",
+			value: msiCount,
 			color: "oklch(0.82 0.18 75)",
 			icon: Monitor,
 		},
@@ -1057,7 +1057,7 @@ function MachineFilterTabs({
 }) {
 	const tabs: { key: MachineFilter; label: string }[] = [
 		{ key: "all", label: "הכול" },
-		{ key: "pop-os", label: "pop-os" },
+		{ key: "Lenovo", label: "Lenovo" },
 		{ key: "Lenovo", label: "Lenovo" },
 	];
 	return (
@@ -1322,7 +1322,7 @@ function MachineBreakdownCard({
 			{Object.entries(byMachine).map(([machine, count]) => {
 				const pct = total > 0 ? Math.round((count / total) * 100) : 0;
 				const barColor =
-					machine === "pop-os" ? "oklch(0.65 0.18 250)" : "oklch(0.78 0.18 75)";
+					machine === "Lenovo" ? "oklch(0.65 0.18 250)" : "oklch(0.78 0.18 75)";
 				return (
 					<div key={machine} className="flex flex-col gap-1.5">
 						<div className="flex items-center justify-between text-xs">
@@ -1568,8 +1568,8 @@ export function ProjectsPage() {
 	const machineCounts = useMemo<Record<MachineFilter, number>>(
 		() => ({
 			all: allProjects.length,
-			"pop-os": allProjects.filter((p) => p.machine === "pop-os").length,
 			Lenovo: allProjects.filter((p) => p.machine === "Lenovo").length,
+			MSI: allProjects.filter((p) => p.machine === "MSI").length,
 		}),
 		[allProjects],
 	);
@@ -1636,8 +1636,8 @@ export function ProjectsPage() {
 					active={data.active}
 					archived={data.archived}
 					development={data.development}
-					popOsCount={data.by_machine?.["pop-os"] ?? 0}
 					lenovoCount={data.by_machine?.["Lenovo"] ?? 0}
+					msiCount={data.by_machine?.["MSI"] ?? 0}
 					withGithub={data.with_github ?? 0}
 					byMachine={data.by_machine ?? {}}
 				/>

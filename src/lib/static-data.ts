@@ -1649,7 +1649,7 @@ const ciDeep: CiDeepResponse = {
 	runners: [
 		{
 			label: "[self-hosted, linux, x64, pop-os]",
-			machine: "pop-os",
+			machine: "Lenovo",
 			ip: "100.82.33.122",
 			cores: 24,
 			ram_gb: 64,
@@ -1671,7 +1671,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Mexicani",
 			stack: "Vite+React",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: true,
 			test_shards: 4,
 			bundle_check: true,
@@ -1682,7 +1682,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Chance Pro",
 			stack: "Python",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: false,
@@ -1693,7 +1693,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "MediFlow",
 			stack: "Next.js",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: true,
@@ -1704,7 +1704,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "NadavAI",
 			stack: "Next.js",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: true,
@@ -1792,7 +1792,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Design System",
 			stack: "Node ESM",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: false,
@@ -1803,7 +1803,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "My Video",
 			stack: "Remotion",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: false,
 			test_shards: 0,
 			bundle_check: false,
@@ -1814,7 +1814,7 @@ const ciDeep: CiDeepResponse = {
 		{
 			name: "Signature Pro",
 			stack: "Vite+React",
-			machine: "pop-os",
+			machine: "Lenovo",
 			has_ci: true,
 			test_shards: 1,
 			bundle_check: true,
@@ -1946,7 +1946,7 @@ const projects: ProjectsResponse = {
 			name: "mexicani",
 			display_name: "Mexicani",
 			path: "~/Desktop/mexicani",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"React 19.2",
 				"Vite 7.3",
@@ -2036,7 +2036,7 @@ const projects: ProjectsResponse = {
 			name: "chance-pro",
 			display_name: "Chance Pro",
 			path: "~/Desktop/chance-pro",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Python 3.10+",
 				"NumPy >=2.4",
@@ -2103,7 +2103,7 @@ const projects: ProjectsResponse = {
 			name: "mediflow",
 			display_name: "MediFlow",
 			path: "~/Desktop/mediflow",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Next.js 16.1",
 				"React Compiler",
@@ -2166,7 +2166,7 @@ const projects: ProjectsResponse = {
 			name: "nadavai",
 			display_name: "NadavAI",
 			path: "~/Desktop/nadavai",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Next.js App Router",
 				"React",
@@ -2235,7 +2235,7 @@ const projects: ProjectsResponse = {
 			name: "design-system",
 			display_name: "Design System",
 			path: "~/design-system",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Node.js ESM",
 				"Style Dictionary 5.3.2",
@@ -2301,7 +2301,7 @@ const projects: ProjectsResponse = {
 			name: "my-video",
 			display_name: "My Video",
 			path: "~/my-video",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: ["Remotion", "Tailwind v4", "Playwright", "Zod"],
 			github_repo: "Nadav011/my-video",
 			github_url: "https://github.com/Nadav011/my-video",
@@ -2344,7 +2344,7 @@ const projects: ProjectsResponse = {
 			name: "signature-pro",
 			display_name: "Signature Pro",
 			path: "~/signature-pro",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"React 18.3",
 				"Vite 5.4",
@@ -2412,7 +2412,7 @@ const projects: ProjectsResponse = {
 			name: "MEX",
 			display_name: "MEX",
 			path: "~/Desktop/MEX",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"React",
 				"Vite",
@@ -2469,7 +2469,7 @@ const projects: ProjectsResponse = {
 			name: "ai-agent-system",
 			display_name: "AI Agent System",
 			path: "~/ai-agent-system",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Python 3.11+",
 				"CrewAI 0.95",
@@ -2525,7 +2525,7 @@ const projects: ProjectsResponse = {
 			name: "ai-assistant",
 			display_name: "AI Assistant",
 			path: "~/ai-assistant",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Node.js",
 				"WhatsApp Baileys",
@@ -2582,7 +2582,7 @@ const projects: ProjectsResponse = {
 			name: "ai-stack",
 			display_name: "AI Stack",
 			path: "~/ai-stack",
-			machine: "pop-os",
+			machine: "Lenovo",
 			stack: [
 				"Docker Compose",
 				"CUDA",
@@ -3143,7 +3143,7 @@ const projects: ProjectsResponse = {
 	active: 13,
 	archived: 5,
 	development: 1,
-	by_machine: { "pop-os": 11, Lenovo: 8 },
+	by_machine: { Lenovo: 11, MSI: 8 },
 	by_platform: {
 		"Cloudflare Pages": 8,
 		Netlify: 3,
