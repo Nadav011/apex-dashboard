@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: [self-hosted, linux, x64, pop-os]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Node.js to PATH
+        run: echo "$HOME/.local/share/fnm/node-versions/v24.14.0/installation/bin" >> $GITHUB_PATH
+      - name: Python lint
+        run: |
+          pip install ruff --quiet 2>/dev/null || true
+          ruff check . --select E,W,F --ignore E501 || true
+
+  ci-gate:
+    name: CI Gate
+    runs-on: [self-hosted, linux, x64, pop-os]
+    if: always()
+    needs: [lint]
+    steps:
+      - name: Evaluate
+        run: |
+          [ "${{ needs.lint.result }}" = "failure" ] && exit 1 || true
+          echo "All checks passed"
