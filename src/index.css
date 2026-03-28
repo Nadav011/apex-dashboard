@@ -253,6 +253,27 @@ html {
 	}
 }
 
+/* ── Print ─────────────────────────────────────────────────────────── */
+@media print {
+	.sidebar,
+	.bottom-nav,
+	.glass-card::before,
+	button {
+		display: none !important;
+	}
+	main {
+		margin: 0 !important;
+		padding: 1rem !important;
+	}
+	* {
+		color: black !important;
+		background: white !important;
+	}
+	.glass-card {
+		border: 1px solid #ccc !important;
+	}
+}
+
 /* ── Hover lift ────────────────────────────────────────────────────── */
 .hover-lift {
 	transition:

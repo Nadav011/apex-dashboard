@@ -339,6 +339,7 @@ export function Sidebar({
 							placeholder="חיפוש בתפריט..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
+							data-search
 							className={cn(
 								"w-full text-xs rounded-lg pe-8 ps-3 py-2",
 								"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
