@@ -32,6 +32,8 @@ import {
 	Zap,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Tabs } from "@/components/ui/Tabs";
 import { useProjects } from "@/hooks/use-api";
 import type {
 	ProjectInfo,
@@ -80,7 +82,7 @@ function stackBadgeColor(token: string): string {
 		return "bg-[oklch(0.6_0.2_310_/_0.18)] text-[oklch(0.72_0.2_310)] border-[oklch(0.6_0.2_310_/_0.35)]";
 	if (t.includes("hono"))
 		return "bg-[oklch(0.68_0.2_30_/_0.18)] text-[oklch(0.78_0.2_30)] border-[oklch(0.68_0.2_30_/_0.35)]";
-	return "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border-[var(--color-border)]";
+	return "bg-bg-elevated text-text-muted border-border";
 }
 
 // ── Feature badge colors ──────────────────────────────────────────────────────
@@ -152,8 +154,7 @@ function PlatformBadge({ platform }: { platform: string }) {
 		platform.includes("CF") || platform.includes("Cloudflare");
 	const isNetlify = platform.includes("Netlify");
 
-	let cls =
-		"bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border-[var(--color-border)]";
+	let cls = "bg-bg-elevated text-text-muted border-border";
 	if (isCloudflare)
 		cls =
 			"bg-[oklch(0.62_0.2_25_/_0.15)] text-[oklch(0.78_0.2_25)] border-[oklch(0.62_0.2_25_/_0.4)]";
@@ -193,7 +194,7 @@ function StatusBadge({ status }: { status: string }) {
 		},
 		archived: {
 			label: "ארכיון",
-			cls: "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border-[var(--color-border)]",
+			cls: "bg-bg-elevated text-text-muted border-border",
 			dotCls: "bg-[var(--color-text-muted)]",
 		},
 	} as const;
@@ -255,16 +256,13 @@ function CoverageBar({ target }: { target: number | undefined }) {
 				: "oklch(0.72 0.2 25)";
 	return (
 		<div className="flex items-center gap-2">
-			<div className="h-1.5 flex-1 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden">
+			<div className="h-1.5 flex-1 rounded-full bg-bg-elevated overflow-hidden">
 				<div
 					className="h-full rounded-full transition-all duration-700"
 					style={{ width: `${pct}%`, backgroundColor: color }}
 				/>
 			</div>
-			<span
-				className="text-[10px] tabular-nums text-[var(--color-text-muted)]"
-				dir="ltr"
-			>
+			<span className="text-[10px] tabular-nums text-text-muted" dir="ltr">
 				{pct}%
 			</span>
 		</div>
@@ -284,12 +282,8 @@ function SectionHeader({
 }) {
 	return (
 		<div className="flex items-center gap-1.5 mb-2">
-			<Icon
-				size={12}
-				className="text-[var(--color-text-muted)] shrink-0"
-				aria-hidden="true"
-			/>
-			<span className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
+			<Icon size={12} className="text-text-muted shrink-0" aria-hidden="true" />
+			<span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
 				{label}
 			</span>
 		</div>
@@ -308,13 +302,8 @@ function InfoRow({
 	if (!value) return null;
 	return (
 		<div className="flex items-start gap-2 text-xs">
-			<span className="text-[var(--color-text-muted)] shrink-0 min-w-[90px]">
-				{label}
-			</span>
-			<span
-				className="text-[var(--color-text-secondary)] break-all"
-				dir={d ?? "rtl"}
-			>
+			<span className="text-text-muted shrink-0 min-w-[90px]">{label}</span>
+			<span className="text-text-secondary break-all" dir={d ?? "rtl"}>
 				{value}
 			</span>
 		</div>
@@ -327,7 +316,7 @@ function ExternalLinkBadge({ href, label }: { href: string; label: string }) {
 			href={href}
 			target="_blank"
 			rel="noopener noreferrer"
-			className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-accent-blue)] hover:text-[oklch(0.75_0.18_250)] transition-colors duration-150"
+			className="inline-flex items-center gap-1 text-xs font-medium text-accent-blue hover:text-[oklch(0.75_0.18_250)] transition-colors duration-150"
 		>
 			<ExternalLink size={11} aria-hidden="true" />
 			{label}
@@ -355,7 +344,7 @@ function CommitInfo({
 						? `לפני ${Math.floor(diffDays / 7)} שבועות`
 						: `לפני ${Math.floor(diffDays / 30)} חודשים`;
 	return (
-		<div className="flex items-start gap-1.5 text-[11px] text-[var(--color-text-muted)]">
+		<div className="flex items-start gap-1.5 text-[11px] text-text-muted">
 			<GitCommit size={11} className="shrink-0 mt-0.5" aria-hidden="true" />
 			<span
 				dir="ltr"
@@ -437,7 +426,7 @@ function SectionGithub({ project }: { project: ProjectInfo }) {
 					/>
 				)}
 				{project.default_branch && (
-					<div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+					<div className="flex items-center gap-1.5 text-xs text-text-muted">
 						<GitBranch size={11} aria-hidden="true" />
 						<span dir="ltr">{project.default_branch}</span>
 					</div>
@@ -456,18 +445,14 @@ function SectionDeployment({ project }: { project: ProjectInfo }) {
 			<SectionHeader icon={Server} label="Deployment" />
 			<div className="flex flex-col gap-2">
 				{project.deploy_platform && (
-					<div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-						<span className="text-[var(--color-text-muted)] min-w-[90px]">
-							פלטפורמה
-						</span>
+					<div className="flex items-center gap-2 text-xs text-text-secondary">
+						<span className="text-text-muted min-w-[90px]">פלטפורמה</span>
 						<PlatformBadge platform={project.deploy_platform} />
 					</div>
 				)}
 				{project.domain && project.domain !== "—" && (
-					<div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-						<span className="text-[var(--color-text-muted)] min-w-[90px]">
-							דומיין
-						</span>
+					<div className="flex items-center gap-2 text-xs text-text-secondary">
+						<span className="text-text-muted min-w-[90px]">דומיין</span>
 						<ExternalLinkBadge
 							href={`https://${project.domain}`}
 							label={project.domain}
@@ -475,10 +460,8 @@ function SectionDeployment({ project }: { project: ProjectInfo }) {
 					</div>
 				)}
 				{project.bundle_limit_kb && (
-					<div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-						<span className="text-[var(--color-text-muted)] min-w-[90px]">
-							מגבלת Bundle
-						</span>
+					<div className="flex items-center gap-2 text-xs text-text-secondary">
+						<span className="text-text-muted min-w-[90px]">מגבלת Bundle</span>
 						<span
 							className="font-mono text-[oklch(0.82_0.18_75)] bg-[oklch(0.72_0.18_75_/_0.1)] px-1.5 py-0.5 rounded border border-[oklch(0.72_0.18_75_/_0.3)]"
 							dir="ltr"
@@ -541,48 +524,31 @@ function SectionTesting({ testing }: { testing: ProjectTesting }) {
 			<div className="flex flex-col gap-2">
 				{testing.framework && (
 					<div className="flex items-center gap-2 text-xs">
-						<span className="text-[var(--color-text-muted)] min-w-[90px]">
-							Framework
-						</span>
-						<span
-							className="text-[var(--color-text-secondary)] font-mono"
-							dir="ltr"
-						>
+						<span className="text-text-muted min-w-[90px]">Framework</span>
+						<span className="text-text-secondary font-mono" dir="ltr">
 							{testing.framework}
 						</span>
 					</div>
 				)}
 				{testing.e2e && (
 					<div className="flex items-center gap-2 text-xs">
-						<span className="text-[var(--color-text-muted)] min-w-[90px]">
-							E2E
-						</span>
-						<span
-							className="text-[var(--color-text-secondary)] font-mono"
-							dir="ltr"
-						>
+						<span className="text-text-muted min-w-[90px]">E2E</span>
+						<span className="text-text-secondary font-mono" dir="ltr">
 							{testing.e2e}
 						</span>
 					</div>
 				)}
 				{testing.mutation && (
 					<div className="flex items-center gap-2 text-xs">
-						<span className="text-[var(--color-text-muted)] min-w-[90px]">
-							Mutation
-						</span>
-						<span
-							className="text-[var(--color-text-secondary)] font-mono"
-							dir="ltr"
-						>
+						<span className="text-text-muted min-w-[90px]">Mutation</span>
+						<span className="text-text-secondary font-mono" dir="ltr">
 							{testing.mutation}
 						</span>
 					</div>
 				)}
 				{testing.coverage_target !== undefined && (
 					<div className="flex flex-col gap-1">
-						<span className="text-[var(--color-text-muted)] text-xs">
-							Coverage target
-						</span>
+						<span className="text-text-muted text-xs">Coverage target</span>
 						<CoverageBar target={testing.coverage_target} />
 					</div>
 				)}
@@ -679,7 +645,7 @@ function SectionScale({ scale }: { scale: ProjectScale | undefined }) {
 				{entries.map(([key, val]) => (
 					<div
 						key={key}
-						className="flex flex-col items-center gap-0.5 p-2 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border)]"
+						className="flex flex-col items-center gap-0.5 p-2 rounded-lg bg-bg-elevated border border-border"
 					>
 						<span
 							className="text-lg font-bold tabular-nums text-[oklch(0.72_0.18_250)]"
@@ -687,7 +653,7 @@ function SectionScale({ scale }: { scale: ProjectScale | undefined }) {
 						>
 							{val}
 						</span>
-						<span className="text-[9px] text-[var(--color-text-muted)] text-center">
+						<span className="text-[9px] text-text-muted text-center">
 							{labelMap[key] ?? key}
 						</span>
 					</div>
@@ -736,10 +702,10 @@ function ProjectCard({
 		<div
 			className={cn(
 				"glass-card flex flex-col transition-all duration-200",
-				"border border-[var(--color-border)]",
+				"border border-border",
 				expanded
 					? "border-[oklch(0.55_0.15_250_/_0.5)]"
-					: "hover:border-[var(--color-border-hover)]",
+					: "hover:border-border-hover",
 				project.status === "archived" && "opacity-70",
 			)}
 		>
@@ -753,11 +719,11 @@ function ProjectCard({
 				{/* Name row */}
 				<div className="flex items-start justify-between gap-2">
 					<div className="min-w-0 flex-1">
-						<h3 className="text-sm font-bold text-[var(--color-text-primary)] leading-snug">
+						<h3 className="text-sm font-bold text-text-primary leading-snug">
 							{project.display_name || project.name}
 						</h3>
 						{project.description_he && (
-							<p className="text-xs text-[var(--color-text-secondary)] mt-0.5 leading-relaxed line-clamp-2">
+							<p className="text-xs text-text-secondary mt-0.5 leading-relaxed line-clamp-2">
 								{project.description_he}
 							</p>
 						)}
@@ -767,13 +733,13 @@ function ProjectCard({
 						{expanded ? (
 							<ChevronUp
 								size={14}
-								className="text-[var(--color-text-muted)]"
+								className="text-text-muted"
 								aria-hidden="true"
 							/>
 						) : (
 							<ChevronDown
 								size={14}
-								className="text-[var(--color-text-muted)]"
+								className="text-text-muted"
 								aria-hidden="true"
 							/>
 						)}
@@ -799,7 +765,7 @@ function ProjectCard({
 							target="_blank"
 							rel="noopener noreferrer"
 							onClick={(e) => e.stopPropagation()}
-							className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-accent-blue)] hover:text-[oklch(0.75_0.18_250)] transition-colors duration-150"
+							className="inline-flex items-center gap-1 text-xs font-medium text-accent-blue hover:text-[oklch(0.75_0.18_250)] transition-colors duration-150"
 						>
 							<ExternalLink size={11} aria-hidden="true" />
 							{project.domain}
@@ -811,7 +777,7 @@ function ProjectCard({
 							target="_blank"
 							rel="noopener noreferrer"
 							onClick={(e) => e.stopPropagation()}
-							className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors duration-150"
+							className="inline-flex items-center gap-1 text-xs font-medium text-text-muted hover:text-text-secondary transition-colors duration-150"
 						>
 							<GitBranch size={11} aria-hidden="true" />
 							<span dir="ltr">{project.github_repo}</span>
@@ -822,14 +788,14 @@ function ProjectCard({
 
 			{/* ── Expanded details ─────────────────────────────────────────────── */}
 			{expanded && (
-				<div className="flex flex-col gap-4 px-4 pb-4 pt-0 border-t border-[var(--color-border)]">
+				<div className="flex flex-col gap-4 px-4 pb-4 pt-0 border-t border-border">
 					{/* Divider label */}
 					<div className="flex items-center gap-2 pt-3">
-						<div className="h-px flex-1 bg-[var(--color-border)]" />
-						<span className="text-[10px] text-[var(--color-text-muted)] font-medium px-1">
+						<div className="h-px flex-1 bg-border" />
+						<span className="text-[10px] text-text-muted font-medium px-1">
 							פרטים מלאים
 						</span>
-						<div className="h-px flex-1 bg-[var(--color-border)]" />
+						<div className="h-px flex-1 bg-border" />
 					</div>
 
 					<SectionGeneral project={project} />
@@ -880,26 +846,26 @@ function ProjectCard({
 
 function ProjectSkeleton() {
 	return (
-		<div className="glass-card p-4 animate-pulse flex flex-col gap-3">
+		<div className="glass-card card-spotlight p-4 animate-pulse flex flex-col gap-3">
 			<div className="flex items-start justify-between gap-2">
 				<div className="space-y-1.5 flex-1">
-					<div className="h-4 bg-[var(--color-bg-elevated)] rounded w-2/3" />
-					<div className="h-3 bg-[var(--color-bg-elevated)] rounded w-full" />
+					<div className="h-4 bg-bg-elevated rounded w-2/3" />
+					<div className="h-3 bg-bg-elevated rounded w-full" />
 				</div>
-				<div className="h-5 w-14 bg-[var(--color-bg-elevated)] rounded-full" />
+				<div className="h-5 w-14 bg-bg-elevated rounded-full" />
 			</div>
 			<div className="flex gap-1.5 flex-wrap">
-				<div className="h-5 w-12 bg-[var(--color-bg-elevated)] rounded" />
-				<div className="h-5 w-9 bg-[var(--color-bg-elevated)] rounded" />
-				<div className="h-5 w-11 bg-[var(--color-bg-elevated)] rounded" />
+				<div className="h-5 w-12 bg-bg-elevated rounded" />
+				<div className="h-5 w-9 bg-bg-elevated rounded" />
+				<div className="h-5 w-11 bg-bg-elevated rounded" />
 			</div>
 			<div className="flex gap-1.5">
-				<div className="h-5 w-20 bg-[var(--color-bg-elevated)] rounded-full" />
-				<div className="h-5 w-16 bg-[var(--color-bg-elevated)] rounded-full" />
+				<div className="h-5 w-20 bg-bg-elevated rounded-full" />
+				<div className="h-5 w-16 bg-bg-elevated rounded-full" />
 			</div>
 			<div className="flex gap-3">
-				<div className="h-3.5 w-24 bg-[var(--color-bg-elevated)] rounded" />
-				<div className="h-3.5 w-20 bg-[var(--color-bg-elevated)] rounded" />
+				<div className="h-3.5 w-24 bg-bg-elevated rounded" />
+				<div className="h-3.5 w-20 bg-bg-elevated rounded" />
 			</div>
 		</div>
 	);
@@ -947,7 +913,7 @@ function SummaryStrip({
 					itemStyle: {
 						color:
 							name === "Lenovo"
-								? "oklch(0.65 0.18 250)"
+								? "var(--color-accent-blue)"
 								: "oklch(0.78 0.18 75)",
 					},
 				})),
@@ -1000,7 +966,7 @@ function SummaryStrip({
 	];
 
 	return (
-		<div className="glass-card p-4">
+		<div className="glass-card card-spotlight p-4">
 			<div className="flex items-center gap-4 flex-wrap">
 				{/* Stats */}
 				<div className="flex flex-wrap gap-3 flex-1 min-w-0">
@@ -1024,9 +990,7 @@ function SummaryStrip({
 									{value}
 								</span>
 							</div>
-							<span className="text-[10px] text-[var(--color-text-muted)]">
-								{label}
-							</span>
+							<span className="text-[10px] text-text-muted">{label}</span>
 						</div>
 					))}
 				</div>
@@ -1071,8 +1035,8 @@ function MachineFilterTabs({
 						"inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium",
 						"transition-all duration-150 cursor-pointer min-h-9",
 						active === key
-							? "bg-[var(--color-accent-blue)] text-white"
-							: "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)]",
+							? "bg-accent-blue text-white"
+							: "text-text-muted hover:text-text-secondary hover:bg-bg-elevated",
 					)}
 				>
 					{label}
@@ -1081,7 +1045,7 @@ function MachineFilterTabs({
 							"text-xs tabular-nums px-1.5 py-0.5 rounded-full",
 							active === key
 								? "bg-white/20 text-current"
-								: "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]",
+								: "bg-bg-elevated text-text-muted",
 						)}
 						dir="ltr"
 					>
@@ -1122,7 +1086,7 @@ function StatusFilterTabs({
 						"transition-all duration-150 cursor-pointer min-h-9",
 						active === key
 							? "bg-[oklch(0.62_0.2_155_/_0.8)] text-white"
-							: "text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)]",
+							: "text-text-muted hover:text-text-secondary hover:bg-bg-elevated",
 					)}
 				>
 					{label}
@@ -1131,7 +1095,7 @@ function StatusFilterTabs({
 							"text-xs tabular-nums px-1.5 py-0.5 rounded-full",
 							active === key
 								? "bg-white/20 text-current"
-								: "bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]",
+								: "bg-bg-elevated text-text-muted",
 						)}
 						dir="ltr"
 					>
@@ -1201,13 +1165,9 @@ function DeployPlatformPie({
 	};
 
 	return (
-		<div className="glass-card p-4">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
-				<Server
-					size={14}
-					className="text-[var(--color-text-muted)]"
-					aria-hidden="true"
-				/>
+		<div className="glass-card card-spotlight p-4">
+			<h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+				<Server size={14} className="text-text-muted" aria-hidden="true" />
 				לפי פלטפורמת Deploy
 			</h3>
 			<ReactECharts
@@ -1282,11 +1242,11 @@ function StackTypeBar({
 	};
 
 	return (
-		<div className="glass-card p-4">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
+		<div className="glass-card card-spotlight p-4">
+			<h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
 				<TerminalSquare
 					size={14}
-					className="text-[var(--color-text-muted)]"
+					className="text-text-muted"
 					aria-hidden="true"
 				/>
 				לפי סוג Stack
@@ -1310,36 +1270,31 @@ function MachineBreakdownCard({
 	total: number;
 }) {
 	return (
-		<div className="glass-card p-4 flex flex-col gap-3">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
-				<Monitor
-					size={14}
-					className="text-[var(--color-text-muted)]"
-					aria-hidden="true"
-				/>
+		<div className="glass-card card-spotlight p-4 flex flex-col gap-3">
+			<h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+				<Monitor size={14} className="text-text-muted" aria-hidden="true" />
 				לפי מחשב
 			</h3>
 			{Object.entries(byMachine).map(([machine, count]) => {
 				const pct = total > 0 ? Math.round((count / total) * 100) : 0;
 				const barColor =
-					machine === "Lenovo" ? "oklch(0.65 0.18 250)" : "oklch(0.78 0.18 75)";
+					machine === "Lenovo"
+						? "var(--color-accent-blue)"
+						: "oklch(0.78 0.18 75)";
 				return (
 					<div key={machine} className="flex flex-col gap-1.5">
 						<div className="flex items-center justify-between text-xs">
-							<span
-								className="font-semibold text-[var(--color-text-secondary)]"
-								dir="ltr"
-							>
+							<span className="font-semibold text-text-secondary" dir="ltr">
 								{machine}
 							</span>
 							<span
-								className="text-[var(--color-text-muted)] tabular-nums font-mono"
+								className="text-text-muted tabular-nums font-mono"
 								dir="ltr"
 							>
 								{count} / {pct}%
 							</span>
 						</div>
-						<div className="h-2 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden">
+						<div className="h-2 rounded-full bg-bg-elevated overflow-hidden">
 							<div
 								className="h-full rounded-full transition-all duration-700"
 								style={{ width: `${pct}%`, backgroundColor: barColor }}
@@ -1368,18 +1323,13 @@ function PackageManagerSummary({ projects }: { projects: ProjectInfo[] }) {
 		pnpm: "bg-[oklch(0.62_0.2_310_/_0.15)] text-[oklch(0.75_0.2_310)] border-[oklch(0.62_0.2_310_/_0.35)]",
 		npm: "bg-[oklch(0.62_0.2_25_/_0.15)] text-[oklch(0.78_0.2_25)] border-[oklch(0.62_0.2_25_/_0.35)]",
 		pub: "bg-[oklch(0.6_0.18_250_/_0.15)] text-[oklch(0.72_0.18_250)] border-[oklch(0.6_0.18_250_/_0.35)]",
-		unknown:
-			"bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border-[var(--color-border)]",
+		unknown: "bg-bg-elevated text-text-muted border-border",
 	};
 
 	return (
-		<div className="glass-card p-4 flex flex-col gap-3">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
-				<Package
-					size={14}
-					className="text-[var(--color-text-muted)]"
-					aria-hidden="true"
-				/>
+		<div className="glass-card card-spotlight p-4 flex flex-col gap-3">
+			<h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+				<Package size={14} className="text-text-muted" aria-hidden="true" />
 				מנהלי חבילות
 			</h3>
 			<div className="flex flex-wrap gap-2">
@@ -1431,13 +1381,9 @@ function SecurityOverview({ projects }: { projects: ProjectInfo[] }) {
 	];
 
 	return (
-		<div className="glass-card p-4">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
-				<Shield
-					size={14}
-					className="text-[var(--color-text-muted)]"
-					aria-hidden="true"
-				/>
+		<div className="glass-card card-spotlight p-4">
+			<h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+				<Shield size={14} className="text-text-muted" aria-hidden="true" />
 				כיסוי אבטחה
 			</h3>
 			<div className="flex flex-col gap-2">
@@ -1452,19 +1398,19 @@ function SecurityOverview({ projects }: { projects: ProjectInfo[] }) {
 					return (
 						<div key={label} className="flex items-center gap-2">
 							<span
-								className="text-[11px] text-[var(--color-text-muted)] font-mono min-w-[60px]"
+								className="text-[11px] text-text-muted font-mono min-w-[60px]"
 								dir="ltr"
 							>
 								{label}
 							</span>
-							<div className="h-1.5 flex-1 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden">
+							<div className="h-1.5 flex-1 rounded-full bg-bg-elevated overflow-hidden">
 								<div
 									className="h-full rounded-full transition-all duration-700"
 									style={{ width: `${pct}%`, backgroundColor: barColor }}
 								/>
 							</div>
 							<span
-								className="text-[10px] tabular-nums text-[var(--color-text-muted)] min-w-[40px] text-end"
+								className="text-[10px] tabular-nums text-text-muted min-w-[40px] text-end"
 								dir="ltr"
 							>
 								{count}/{stats.all}
@@ -1497,15 +1443,11 @@ function CICoverageSummary({ projects }: { projects: ProjectInfo[] }) {
 	if (!stats.topWorkflows.length) return null;
 
 	return (
-		<div className="glass-card p-4">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
-				<Play
-					size={14}
-					className="text-[var(--color-text-muted)]"
-					aria-hidden="true"
-				/>
+		<div className="glass-card card-spotlight p-4">
+			<h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+				<Play size={14} className="text-text-muted" aria-hidden="true" />
 				כיסוי CI/CD
-				<span className="text-xs text-[var(--color-text-muted)] font-normal">
+				<span className="text-xs text-text-muted font-normal">
 					{stats.withCi}/{stats.total} פרויקטים
 				</span>
 			</h3>
@@ -1534,19 +1476,19 @@ function CICoverageSummary({ projects }: { projects: ProjectInfo[] }) {
 
 function EmptyState({ search }: { search: string }) {
 	return (
-		<div className="glass-card p-12 text-center flex flex-col items-center gap-3">
+		<div className="glass-card card-spotlight p-12 text-center flex flex-col items-center gap-3">
 			<FolderGit2
 				size={40}
-				className="text-[var(--color-text-muted)] opacity-40"
+				className="text-text-muted opacity-40"
 				aria-hidden="true"
 			/>
-			<p className="text-[var(--color-text-muted)] text-sm">
+			<p className="text-text-muted text-sm">
 				{search
 					? `לא נמצאו פרויקטים התואמים "${search}"`
 					: "אין פרויקטים בסינון זה"}
 			</p>
 			{search && (
-				<p className="text-[var(--color-text-muted)] text-xs">
+				<p className="text-text-muted text-xs">
 					ניתן לחפש לפי שם, תיאור, Stack, דומיין או מחשב
 				</p>
 			)}
@@ -1585,13 +1527,15 @@ export function ProjectsPage() {
 		[allProjects],
 	);
 
-	// Filtered projects
-	const filtered = useMemo<ProjectInfo[]>(() => {
+	// Filtered projects (tabStatusFilter overrides statusFilter when set)
+	const buildFiltered = (tabStatusFilter: StatusFilter | null) => {
+		const effectiveStatus = tabStatusFilter ?? statusFilter;
 		const q = search.trim().toLowerCase();
 		return allProjects.filter((p) => {
 			const matchesMachine =
 				machineFilter === "all" || p.machine === machineFilter;
-			const matchesStatus = statusFilter === "all" || p.status === statusFilter;
+			const matchesStatus =
+				effectiveStatus === "all" || p.status === effectiveStatus;
 			const matchesSearch =
 				!q ||
 				p.name.toLowerCase().includes(q) ||
@@ -1606,28 +1550,121 @@ export function ProjectsPage() {
 				(p.notes ?? "").toLowerCase().includes(q);
 			return matchesMachine && matchesStatus && matchesSearch;
 		});
-	}, [allProjects, machineFilter, statusFilter, search]);
+	};
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: buildFiltered depends on these state values
+	const filtered = useMemo<ProjectInfo[]>(
+		() => buildFiltered(null),
+		[allProjects, machineFilter, statusFilter, search],
+	);
+
+	const renderProjectsContent = (tabStatusFilter: StatusFilter | null) => {
+		const tabFiltered =
+			tabStatusFilter !== null ? buildFiltered(tabStatusFilter) : filtered;
+
+		return (
+			<div className="flex flex-col gap-6">
+				{/* ── Filters bar ────────────────────────────────────────────────── */}
+				<div className="flex flex-col gap-3">
+					{/* Search */}
+					<div className="relative max-w-sm">
+						<Search
+							size={15}
+							className="absolute inset-y-0 end-3 my-auto text-text-muted pointer-events-none"
+							aria-hidden="true"
+						/>
+						<input
+							type="search"
+							placeholder="חיפוש לפי שם, Stack, דומיין, תיאור…"
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+							className={cn(
+								"w-full h-10 ps-3 pe-9 rounded-lg text-sm",
+								"bg-bg-elevated border border-border",
+								"text-text-primary placeholder:text-text-muted",
+								"focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-blue)]",
+								"transition-colors duration-150",
+							)}
+							aria-label="חיפוש פרויקט"
+						/>
+					</div>
+
+					{/* Machine tabs */}
+					<div className="flex flex-col gap-2">
+						<div className="flex items-center gap-2">
+							<Monitor
+								size={12}
+								className="text-text-muted"
+								aria-hidden="true"
+							/>
+							<span className="text-xs text-text-muted font-medium">מחשב</span>
+						</div>
+						<MachineFilterTabs
+							active={machineFilter}
+							onSelect={setMachineFilter}
+							counts={machineCounts}
+						/>
+					</div>
+
+					{/* Status tabs — only shown on "all" tab */}
+					{tabStatusFilter === null && (
+						<div className="flex flex-col gap-2">
+							<div className="flex items-center gap-2">
+								<Zap size={12} className="text-text-muted" aria-hidden="true" />
+								<span className="text-xs text-text-muted font-medium">
+									סטטוס
+								</span>
+							</div>
+							<StatusFilterTabs
+								active={statusFilter}
+								onSelect={setStatusFilter}
+								counts={statusCounts}
+							/>
+						</div>
+					)}
+
+					{/* Results count */}
+					{!isLoading && (
+						<p className="text-xs text-text-muted" dir="ltr">
+							{tabFiltered.length === allProjects.length
+								? `${allProjects.length} פרויקטים`
+								: `${tabFiltered.length} מתוך ${allProjects.length} פרויקטים`}
+						</p>
+					)}
+				</div>
+
+				{/* ── Projects grid ──────────────────────────────────────────────── */}
+				{isLoading ? (
+					<div className="grid-cards stagger-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+						{Array.from({ length: 9 }).map((_, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders
+							<ProjectSkeleton key={i} />
+						))}
+					</div>
+				) : tabFiltered.length === 0 ? (
+					<EmptyState search={search} />
+				) : (
+					<div className="grid-cards stagger-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+						{tabFiltered.map((project) => (
+							<ProjectCard
+								key={project.name}
+								project={project}
+								allProjects={allProjects}
+							/>
+						))}
+					</div>
+				)}
+			</div>
+		);
+	};
 
 	return (
-		<div className="flex flex-col gap-6 bg-zinc-950">
-			{/* ── Header ──────────────────────────────────────────────────────── */}
-			<div className="flex items-center gap-3">
-				<FolderGit2
-					size={22}
-					className="text-[var(--color-accent-blue)] shrink-0"
-					aria-hidden="true"
-				/>
-				<div>
-					<h1 className="text-xl font-bold text-[var(--color-text-primary)]">
-						פרויקטים — מפה מלאה
-					</h1>
-					<p className="text-sm text-[var(--color-text-muted)]">
-						{data
-							? `${data.total} פרויקטים רשומים — ${data.active} פעילים, ${data.development ?? 0} בפיתוח`
-							: "טוען נתוני פרויקטים…"}
-					</p>
-				</div>
-			</div>
+		<div className="flex flex-col gap-6">
+			<PageHeader
+				icon={FolderGit2}
+				title="פרויקטים"
+				description="כל 18 הפרויקטים — סטטוס, טכנולוגיה, ופריסה"
+			/>
 
 			{/* ── Summary strip ────────────────────────────────────────────────── */}
 			{data && (
@@ -1643,82 +1680,24 @@ export function ProjectsPage() {
 				/>
 			)}
 
-			{/* ── Filters bar ──────────────────────────────────────────────────── */}
-			<div className="flex flex-col gap-3">
-				{/* Search */}
-				<div className="relative max-w-sm">
-					<Search
-						size={15}
-						className="absolute inset-y-0 end-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
-						aria-hidden="true"
-					/>
-					<input
-						type="search"
-						placeholder="חיפוש לפי שם, Stack, דומיין, תיאור…"
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						className={cn(
-							"w-full h-10 ps-3 pe-9 rounded-lg text-sm",
-							"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
-							"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
-							"focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-blue)]",
-							"transition-colors duration-150",
-						)}
-						aria-label="חיפוש פרויקט"
-					/>
-				</div>
-
-				{/* Machine tabs */}
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center gap-2">
-						<Monitor
-							size={12}
-							className="text-[var(--color-text-muted)]"
-							aria-hidden="true"
-						/>
-						<span className="text-xs text-[var(--color-text-muted)] font-medium">
-							מחשב
-						</span>
-					</div>
-					<MachineFilterTabs
-						active={machineFilter}
-						onSelect={setMachineFilter}
-						counts={machineCounts}
-					/>
-				</div>
-
-				{/* Status tabs */}
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center gap-2">
-						<Zap
-							size={12}
-							className="text-[var(--color-text-muted)]"
-							aria-hidden="true"
-						/>
-						<span className="text-xs text-[var(--color-text-muted)] font-medium">
-							סטטוס
-						</span>
-					</div>
-					<StatusFilterTabs
-						active={statusFilter}
-						onSelect={setStatusFilter}
-						counts={statusCounts}
-					/>
-				</div>
-
-				{/* Results count */}
-				{!isLoading && (
-					<p className="text-xs text-[var(--color-text-muted)]" dir="ltr">
-						{filtered.length === allProjects.length
-							? `${allProjects.length} פרויקטים`
-							: `${filtered.length} מתוך ${allProjects.length} פרויקטים`}
-					</p>
-				)}
-			</div>
+			<Tabs
+				tabs={[
+					{ id: "all", label: "כל הפרויקטים" },
+					{ id: "active", label: "פעילים" },
+					{ id: "archived", label: "ארכיון" },
+				]}
+			>
+				{(activeTab) => {
+					if (activeTab === "active") return renderProjectsContent("active");
+					if (activeTab === "archived")
+						return renderProjectsContent("archived");
+					return renderProjectsContent(null);
+				}}
+			</Tabs>
 
 			{/* ── Projects grid ────────────────────────────────────────────────── */}
 			{isLoading ? (
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+				<div className="grid-cards stagger-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 					{Array.from({ length: 9 }).map((_, i) => (
 						// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders
 						<ProjectSkeleton key={i} />
@@ -1727,7 +1706,7 @@ export function ProjectsPage() {
 			) : filtered.length === 0 ? (
 				<EmptyState search={search} />
 			) : (
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+				<div className="grid-cards stagger-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 					{filtered.map((project) => (
 						<ProjectCard
 							key={project.name}
@@ -1743,12 +1722,12 @@ export function ProjectsPage() {
 				<>
 					{/* Divider */}
 					<div className="flex items-center gap-3">
-						<div className="h-px flex-1 bg-[var(--color-border)]" />
-						<span className="text-xs text-[var(--color-text-muted)] font-medium px-1 flex items-center gap-1.5">
+						<div className="h-px flex-1 bg-border" />
+						<span className="text-xs text-text-muted font-medium px-1 flex items-center gap-1.5">
 							<Zap size={11} aria-hidden="true" />
 							אנליטיקס
 						</span>
-						<div className="h-px flex-1 bg-[var(--color-border)]" />
+						<div className="h-px flex-1 bg-border" />
 					</div>
 
 					{/* Charts row */}

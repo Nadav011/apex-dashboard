@@ -11,6 +11,7 @@ import {
 	Wifi,
 	WifiOff,
 } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import {
 	useLenovoStatus,
@@ -45,7 +46,7 @@ function Gauge({ label, value, color, icon, detail, unit = "%" }: GaugeProps) {
 				: `stroke-[${color}]`;
 
 	return (
-		<div className="glass-card flex flex-col items-center gap-3 p-5">
+		<div className="glass-card card-spotlight flex flex-col items-center gap-3 p-5">
 			<div className="relative w-28 h-28 flex items-center justify-center">
 				<svg
 					className="absolute inset-0 w-full h-full -rotate-90"
@@ -58,7 +59,7 @@ function Gauge({ label, value, color, icon, detail, unit = "%" }: GaugeProps) {
 						cy="50"
 						r={radius}
 						fill="none"
-						stroke="oklch(0.22 0.02 260)"
+						stroke="var(--color-bg-elevated)"
 						strokeWidth="8"
 					/>
 					{/* Progress ring */}
@@ -138,7 +139,7 @@ function SectionCard({
 	className?: string;
 }) {
 	return (
-		<div className={cn("glass-card p-5", className)}>
+		<div className={cn("glass-card card-spotlight p-5", className)}>
 			<div className="flex items-center gap-2 mb-4">
 				<span className="text-accent-blue" aria-hidden="true">
 					{icon}
@@ -193,9 +194,7 @@ export function SystemPage() {
 
 	if (sysError)
 		return (
-			<div className="p-8 text-center text-[var(--color-accent-red)]">
-				שגיאה בטעינת נתונים
-			</div>
+			<div className="p-8 text-center text-accent-red">שגיאה בטעינת נתונים</div>
 		);
 
 	const swapPercent = sys.swap.pct;
@@ -213,46 +212,44 @@ export function SystemPage() {
 	};
 
 	return (
-		<div className="space-y-6 bg-zinc-950" dir="rtl">
-			{/* Header */}
-			<div>
-				<h1 className="text-xl font-bold text-text-primary">מערכת</h1>
-				<p className="text-sm text-text-muted mt-0.5">
-					ניטור משאבי המערכת בזמן אמת
-				</p>
-			</div>
+		<div className="space-y-6" dir="rtl">
+			<PageHeader
+				icon={Server}
+				title="מצב מערכת"
+				description="משאבי חומרה, שירותים, וחיבורים בין המכונות"
+			/>
 
 			{/* Resource gauges */}
 			<section aria-label="מדדי משאבים">
 				<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
 					ניצול משאבים
 				</h2>
-				<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+				<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 grid-cards stagger-grid">
 					<Gauge
 						label="זיכרון RAM"
 						value={sys.ram.pct}
-						color="oklch(0.72 0.19 155)"
+						color="var(--color-accent-green)"
 						icon={<MemoryStick size={14} />}
 						detail={`${sys.ram.used_gb.toFixed(1)} / ${sys.ram.total_gb.toFixed(0)} GB`}
 					/>
 					<Gauge
 						label="דיסק"
 						value={sys.disk.pct}
-						color="oklch(0.78 0.16 75)"
+						color="var(--color-accent-amber)"
 						icon={<HardDrive size={14} />}
 						detail={`${sys.disk.used_gb.toFixed(0)} / ${sys.disk.total_gb.toFixed(0)} GB`}
 					/>
 					<Gauge
 						label="Swap"
 						value={swapPercent}
-						color="oklch(0.62 0.2 290)"
+						color="var(--color-accent-purple)"
 						icon={<Database size={14} />}
 						detail={`${sys.swap.used_gb.toFixed(1)} / ${sys.swap.total_gb.toFixed(0)} GB`}
 					/>
 					<Gauge
 						label="תהליכים עזובים"
 						value={Math.min(100, (sys.orphan_count / 100) * 100)}
-						color="oklch(0.65 0.18 250)"
+						color="var(--color-accent-blue)"
 						icon={<Cpu size={14} />}
 						detail={`${sys.orphan_count} orphans`}
 					/>

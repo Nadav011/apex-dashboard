@@ -11,6 +11,7 @@ import {
 	XCircle,
 } from "lucide-react";
 import { useCallback } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useCiStatus } from "@/hooks/use-api";
 import type { CiRepo, CiRun } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -65,16 +66,12 @@ function RunBadge({ run }: { run: CiRun }) {
 		<span
 			className={cn(
 				"inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium",
-				s === "success" &&
-					"bg-[oklch(0.72_0.19_155_/_0.15)] text-[var(--color-accent-green)]",
-				s === "failure" &&
-					"bg-[oklch(0.62_0.22_25_/_0.15)] text-[var(--color-accent-red)]",
+				s === "success" && "bg-[oklch(0.72_0.19_155_/_0.15)] text-accent-green",
+				s === "failure" && "bg-[oklch(0.62_0.22_25_/_0.15)] text-accent-red",
 				s === "in_progress" &&
-					"bg-[oklch(0.65_0.18_250_/_0.15)] text-[var(--color-accent-blue)]",
-				s === "cancelled" &&
-					"bg-[oklch(0.55_0.02_260_/_0.12)] text-[var(--color-text-muted)]",
-				s === "unknown" &&
-					"bg-[oklch(0.55_0.02_260_/_0.12)] text-[var(--color-text-muted)]",
+					"bg-[oklch(0.65_0.18_250_/_0.15)] text-accent-blue",
+				s === "cancelled" && "bg-[oklch(0.55_0.02_260_/_0.12)] text-text-muted",
+				s === "unknown" && "bg-[oklch(0.55_0.02_260_/_0.12)] text-text-muted",
 			)}
 		>
 			{s === "success" && <CheckCircle2 size={10} aria-hidden="true" />}
@@ -98,8 +95,8 @@ function RepoCard({ repo }: { repo: CiRepo }) {
 	return (
 		<div
 			className={cn(
-				"glass-card p-4 flex flex-col gap-3 transition-all duration-200",
-				"hover:border-[var(--color-border-hover)]",
+				"glass-card card-spotlight p-4 flex flex-col gap-3 transition-all duration-200",
+				"hover:border-border-hover",
 			)}
 		>
 			{/* Header */}
@@ -108,16 +105,15 @@ function RepoCard({ repo }: { repo: CiRepo }) {
 					<span
 						className={cn(
 							"size-2 rounded-full shrink-0",
-							health === "success" && "bg-[var(--color-accent-green)]",
-							health === "failure" && "bg-[var(--color-accent-red)]",
-							health === "in_progress" &&
-								"bg-[var(--color-accent-blue)] animate-pulse-status",
+							health === "success" && "bg-accent-green",
+							health === "failure" && "bg-accent-red",
+							health === "in_progress" && "bg-accent-blue animate-pulse-status",
 							(health === "cancelled" || health === "unknown") &&
 								"bg-[var(--color-text-muted)]",
 						)}
 						aria-hidden="true"
 					/>
-					<span className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
+					<span className="text-sm font-semibold text-text-primary truncate">
 						{repo.name}
 					</span>
 				</div>
@@ -128,7 +124,7 @@ function RepoCard({ repo }: { repo: CiRepo }) {
 						rel="noopener noreferrer"
 						title="פתח ב-GitHub"
 						className={cn(
-							"shrink-0 text-[var(--color-text-muted)] hover:text-[var(--color-accent-blue)]",
+							"shrink-0 text-text-muted hover:text-accent-blue",
 							"transition-colors duration-150 min-h-11 min-w-11 flex items-center justify-center -m-2",
 						)}
 						aria-label={`פתח ${repo.name} ב-GitHub`}
@@ -140,7 +136,7 @@ function RepoCard({ repo }: { repo: CiRepo }) {
 
 			{/* Branch */}
 			{latestRun?.headBranch && (
-				<div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+				<div className="flex items-center gap-1.5 text-xs text-text-muted">
 					<GitBranch size={11} aria-hidden="true" />
 					<span dir="ltr" className="truncate">
 						{latestRun.headBranch}
@@ -156,11 +152,9 @@ function RepoCard({ repo }: { repo: CiRepo }) {
 
 			{/* Runs list */}
 			{repo.error && !repo.runs.length ? (
-				<p className="text-xs text-[var(--color-accent-red)] truncate">
-					{repo.error}
-				</p>
+				<p className="text-xs text-accent-red truncate">{repo.error}</p>
 			) : repo.runs.length === 0 ? (
-				<p className="text-xs text-[var(--color-text-muted)]">אין ריצות</p>
+				<p className="text-xs text-text-muted">אין ריצות</p>
 			) : (
 				<div className="flex flex-wrap gap-1">
 					{repo.runs.map((run, i) => (
@@ -187,17 +181,12 @@ function SummaryStat({
 	icon: React.ComponentType<{ size?: number; className?: string }>;
 }) {
 	return (
-		<div className="glass-card p-4 flex flex-col gap-2">
+		<div className="glass-card card-spotlight p-4 flex flex-col gap-2">
 			<div className="flex items-center gap-2">
 				<Icon size={16} className={color} aria-hidden="true" />
-				<span className="text-sm text-[var(--color-text-secondary)]">
-					{label}
-				</span>
+				<span className="text-sm text-text-secondary">{label}</span>
 			</div>
-			<p
-				className="text-3xl font-bold text-[var(--color-text-primary)]"
-				dir="ltr"
-			>
+			<p className="text-3xl font-bold text-text-primary" dir="ltr">
 				{value}
 			</p>
 		</div>
@@ -220,9 +209,9 @@ function CiPieChart({
 		tooltip: {
 			trigger: "item",
 			formatter: "{b}: {c} ({d}%)",
-			backgroundColor: "oklch(0.22 0.02 260)",
-			borderColor: "oklch(0.28 0.02 260)",
-			textStyle: { color: "oklch(0.95 0.01 260)" },
+			backgroundColor: "var(--color-bg-elevated)",
+			borderColor: "var(--color-border)",
+			textStyle: { color: "var(--color-text-primary)" },
 		},
 		series: [
 			{
@@ -239,17 +228,17 @@ function CiPieChart({
 					{
 						value: passing,
 						name: "עבר",
-						itemStyle: { color: "oklch(0.72 0.19 155)" },
+						itemStyle: { color: "var(--color-accent-green)" },
 					},
 					{
 						value: failing,
 						name: "נכשל",
-						itemStyle: { color: "oklch(0.62 0.22 25)" },
+						itemStyle: { color: "var(--color-accent-red)" },
 					},
 					{
 						value: unknown,
 						name: "לא ידוע",
-						itemStyle: { color: "oklch(0.55 0.02 260)" },
+						itemStyle: { color: "var(--color-text-muted)" },
 					},
 				].filter((d) => d.value > 0),
 			},
@@ -287,27 +276,13 @@ export function CiCdPage() {
 
 	return (
 		<div className="flex flex-col gap-6 pb-8">
-			{/* Header */}
-			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-3">
-					<div className="flex items-center justify-center size-10 rounded-lg bg-[var(--color-accent-blue)]/20">
-						<GitBranch
-							size={20}
-							className="text-[var(--color-accent-blue)]"
-							aria-hidden="true"
-						/>
-					</div>
-					<div>
-						<h1 className="text-xl font-bold text-[var(--color-text-primary)]">
-							CI/CD מעקב
-						</h1>
-						{data?.updated_at && (
-							<p className="text-xs text-[var(--color-text-muted)]">
-								עודכן {relativeTime(data.updated_at)}
-							</p>
-						)}
-					</div>
-				</div>
+			<PageHeader
+				icon={GitBranch}
+				title="CI/CD"
+				description="מצב Pipeline של כל הפרויקטים — בדיקות, Build, ופריסה"
+			/>
+			{/* Refresh button */}
+			<div className="flex items-center justify-end">
 				<button
 					type="button"
 					onClick={handleRefresh}
@@ -316,9 +291,9 @@ export function CiCdPage() {
 					aria-label="רענן נתוני CI"
 					className={cn(
 						"flex items-center gap-2 rounded-lg px-3 py-2",
-						"text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
-						"bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-bg-elevated)]",
-						"border border-[var(--color-border)] hover:border-[var(--color-border-hover)]",
+						"text-sm text-text-secondary hover:text-text-primary",
+						"bg-bg-tertiary hover:bg-bg-elevated",
+						"border border-border hover:border-border-hover",
 						"transition-colors duration-150 min-h-11",
 						"disabled:opacity-50 disabled:cursor-not-allowed",
 					)}
@@ -335,7 +310,7 @@ export function CiCdPage() {
 			{/* Error state */}
 			{error && (
 				<div className="glass-card p-4 border-[var(--color-accent-red)]/40 bg-[oklch(0.62_0.22_25_/_0.08)]">
-					<p className="text-sm text-[var(--color-accent-red)]">
+					<p className="text-sm text-accent-red">
 						שגיאה בטעינת נתוני CI: {(error as Error).message}
 					</p>
 				</div>
@@ -343,29 +318,29 @@ export function CiCdPage() {
 
 			{/* Summary cards + pie */}
 			{!isLoading && (
-				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+				<div className="grid grid-cols-2 gap-4 lg:grid-cols-4 stagger-grid">
 					<SummaryStat
 						label="סך הכל ריפוs"
 						value={repos.length}
-						color="text-[var(--color-text-secondary)]"
+						color="text-text-secondary"
 						icon={Server}
 					/>
 					<SummaryStat
 						label="עבר בהצלחה"
 						value={passing}
-						color="text-[var(--color-accent-green)]"
+						color="text-accent-green"
 						icon={CheckCircle2}
 					/>
 					<SummaryStat
 						label="נכשל"
 						value={failing}
-						color="text-[var(--color-accent-red)]"
+						color="text-accent-red"
 						icon={XCircle}
 					/>
 					<SummaryStat
 						label="לא ידוע / פעיל"
 						value={unknown}
-						color="text-[var(--color-text-muted)]"
+						color="text-text-muted"
 						icon={HelpCircle}
 					/>
 				</div>
@@ -383,8 +358,8 @@ export function CiCdPage() {
 
 			{/* Pie chart + legend */}
 			{!isLoading && repos.length > 0 && (
-				<div className="glass-card p-5">
-					<h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-4">
+				<div className="glass-card card-spotlight p-5">
+					<h2 className="text-sm font-semibold text-text-secondary mb-4">
 						התפלגות סטטוס
 					</h2>
 					<div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
@@ -400,12 +375,12 @@ export function CiCdPage() {
 								{
 									label: "עבר",
 									value: passing,
-									color: "bg-[var(--color-accent-green)]",
+									color: "bg-accent-green",
 								},
 								{
 									label: "נכשל",
 									value: failing,
-									color: "bg-[var(--color-accent-red)]",
+									color: "bg-accent-red",
 								},
 								{
 									label: "לא ידוע / פעיל",
@@ -422,12 +397,10 @@ export function CiCdPage() {
 											className={cn("size-2.5 rounded-full shrink-0", color)}
 											aria-hidden="true"
 										/>
-										<span className="text-sm text-[var(--color-text-secondary)]">
-											{label}
-										</span>
+										<span className="text-sm text-text-secondary">{label}</span>
 									</div>
 									<span
-										className="text-sm font-semibold text-[var(--color-text-primary)]"
+										className="text-sm font-semibold text-text-primary"
 										dir="ltr"
 									>
 										{value}
@@ -441,7 +414,7 @@ export function CiCdPage() {
 
 			{/* Repo grid */}
 			<div>
-				<h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">
+				<h2 className="text-sm font-semibold text-text-secondary mb-3">
 					ריפוs ({repos.length})
 				</h2>
 				{isLoading ? (
@@ -453,10 +426,10 @@ export function CiCdPage() {
 					</div>
 				) : repos.length === 0 ? (
 					<div className="glass-card p-8 text-center">
-						<p className="text-[var(--color-text-muted)]">אין נתונים זמינים</p>
+						<p className="text-text-muted">אין נתונים זמינים</p>
 					</div>
 				) : (
-					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 stagger-grid">
 						{repos.map((repo) => (
 							<RepoCard key={repo.full_name} repo={repo} />
 						))}
@@ -466,7 +439,7 @@ export function CiCdPage() {
 
 			{/* Last updated timestamp */}
 			{dataUpdatedAt > 0 && (
-				<p className="text-xs text-[var(--color-text-muted)] text-center">
+				<p className="text-xs text-text-muted text-center">
 					נתונים מתרעננים אוטומטית כל 60 שניות
 				</p>
 			)}

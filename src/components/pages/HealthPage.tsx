@@ -6,6 +6,8 @@ import {
 	XCircle,
 } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useHydraHealth, useRunHealthCheck } from "@/hooks/use-api";
 import type { HealthCheck } from "@/lib/api";
@@ -52,7 +54,7 @@ function HealthCard({ check }: { check: HealthCheck }) {
 	return (
 		<div
 			className={cn(
-				"glass-card flex flex-col gap-4 p-5 transition-colors duration-200",
+				"glass-card card-spotlight flex flex-col gap-4 p-5 transition-colors duration-200",
 				check.ok
 					? "border-[oklch(0.72_0.19_155_/_0.25)]"
 					: "border-[oklch(0.62_0.22_25_/_0.35)]",
@@ -70,38 +72,24 @@ function HealthCard({ check }: { check: HealthCheck }) {
 					aria-hidden="true"
 				>
 					{check.ok ? (
-						<CheckCircle2
-							size={24}
-							className="text-[var(--color-status-healthy)]"
-						/>
+						<CheckCircle2 size={24} className="text-status-healthy" />
 					) : (
-						<XCircle
-							size={24}
-							className="text-[var(--color-status-critical)]"
-						/>
+						<XCircle size={24} className="text-status-critical" />
 					)}
 				</div>
 
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between gap-2 flex-wrap">
-						<h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
-							{label}
-						</h3>
-						<span
-							className={cn(
-								"text-xs font-medium px-2 py-0.5 rounded-full shrink-0",
-								check.ok
-									? "bg-[oklch(0.72_0.19_155_/_0.12)] text-[var(--color-status-healthy)]"
-									: "bg-[oklch(0.62_0.22_25_/_0.12)] text-[var(--color-status-critical)]",
-							)}
+						<h3 className="text-sm font-semibold text-text-primary">{label}</h3>
+						<Badge
+							variant={check.ok ? "success" : "error"}
+							className="shrink-0"
 						>
 							{check.ok ? "תקין" : "שגיאה"}
-						</span>
+						</Badge>
 					</div>
 					{description && (
-						<p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-							{description}
-						</p>
+						<p className="text-xs text-text-muted mt-0.5">{description}</p>
 					)}
 				</div>
 			</div>
@@ -112,8 +100,8 @@ function HealthCard({ check }: { check: HealthCheck }) {
 					className={cn(
 						"text-xs rounded-lg px-3 py-2",
 						check.ok
-							? "bg-[oklch(0.72_0.19_155_/_0.08)] text-[var(--color-status-healthy)]"
-							: "bg-[oklch(0.62_0.22_25_/_0.08)] text-[var(--color-status-critical)]",
+							? "bg-[oklch(0.72_0.19_155_/_0.08)] text-status-healthy"
+							: "bg-[oklch(0.62_0.22_25_/_0.08)] text-status-critical",
 					)}
 				>
 					{check.message}
@@ -122,7 +110,7 @@ function HealthCard({ check }: { check: HealthCheck }) {
 
 			{/* Duration */}
 			{check.duration_ms !== undefined && (
-				<p className="text-xs text-[var(--color-text-muted)]" dir="ltr">
+				<p className="text-xs text-text-muted" dir="ltr">
 					{check.duration_ms.toFixed(1)} ms
 				</p>
 			)}
@@ -157,10 +145,10 @@ function OverallHealthBar({
 	const Icon = pct === 100 ? CheckCircle2 : pct >= 60 ? AlertTriangle : XCircle;
 	const iconColor =
 		pct === 100
-			? "text-[var(--color-status-healthy)]"
+			? "text-status-healthy"
 			: pct >= 60
-				? "text-[var(--color-status-degraded)]"
-				: "text-[var(--color-status-critical)]";
+				? "text-status-degraded"
+				: "text-status-critical";
 	const valueColor =
 		pct === 100
 			? "var(--color-status-healthy)"
@@ -169,15 +157,15 @@ function OverallHealthBar({
 				: "var(--color-status-critical)";
 
 	return (
-		<div className="glass-card p-5 flex flex-col gap-4">
+		<div className="glass-card card-spotlight p-5 flex flex-col gap-4">
 			<div className="flex items-center justify-between gap-3 flex-wrap">
 				<div className="flex items-center gap-3">
 					<Icon size={20} className={iconColor} aria-hidden="true" />
 					<div>
-						<p className="text-sm font-semibold text-[var(--color-text-primary)]">
+						<p className="text-sm font-semibold text-text-primary">
 							{statusText}
 						</p>
-						<p className="text-xs text-[var(--color-text-muted)]">
+						<p className="text-xs text-text-muted">
 							<span dir="ltr">
 								{healthy}/{total}
 							</span>{" "}
@@ -221,24 +209,14 @@ export function HealthPage() {
 
 	return (
 		<div className="flex flex-col gap-6">
-			{/* Header */}
-			<div className="flex items-center justify-between gap-4 flex-wrap">
-				<div className="flex items-center gap-3">
-					<HeartPulse
-						size={20}
-						className="text-[var(--color-accent-blue)]"
-						aria-hidden="true"
-					/>
-					<div>
-						<h1 className="text-lg font-bold text-[var(--color-text-primary)]">
-							בריאות מערכת
-						</h1>
-						<p className="text-sm text-[var(--color-text-muted)]">
-							בדיקת מצב רכיבי Hydra v2
-						</p>
-					</div>
-				</div>
+			<PageHeader
+				icon={HeartPulse}
+				title="בריאות המערכת"
+				description="בדיקות בריאות של כל רכיבי המערכת"
+			/>
 
+			{/* Action row */}
+			<div className="flex items-center justify-end gap-4 flex-wrap">
 				<ActionButton
 					label="הרץ בדיקת בריאות"
 					icon={RefreshCw}
@@ -254,8 +232,8 @@ export function HealthPage() {
 					className={cn(
 						"rounded-lg px-4 py-3 text-sm font-medium",
 						runCheck.data.status === "ok"
-							? "bg-[oklch(0.72_0.19_155_/_0.12)] text-[var(--color-status-healthy)] border border-[oklch(0.72_0.19_155_/_0.25)]"
-							: "bg-[oklch(0.62_0.22_25_/_0.12)] text-[var(--color-status-critical)] border border-[oklch(0.62_0.22_25_/_0.25)]",
+							? "bg-[oklch(0.72_0.19_155_/_0.12)] text-status-healthy border border-[oklch(0.72_0.19_155_/_0.25)]"
+							: "bg-[oklch(0.62_0.22_25_/_0.12)] text-status-critical border border-[oklch(0.62_0.22_25_/_0.25)]",
 					)}
 					role="status"
 					aria-live="polite"
@@ -278,13 +256,13 @@ export function HealthPage() {
 							className="glass-card p-5 animate-pulse flex flex-col gap-4"
 						>
 							<div className="flex items-start gap-4">
-								<div className="w-12 h-12 rounded-xl bg-[var(--color-bg-elevated)]" />
+								<div className="w-12 h-12 rounded-xl bg-bg-elevated" />
 								<div className="flex-1 space-y-2">
-									<div className="h-4 bg-[var(--color-bg-elevated)] rounded w-2/3" />
-									<div className="h-3 bg-[var(--color-bg-elevated)] rounded w-1/2" />
+									<div className="h-4 bg-bg-elevated rounded w-2/3" />
+									<div className="h-3 bg-bg-elevated rounded w-1/2" />
 								</div>
 							</div>
-							<div className="h-3 bg-[var(--color-bg-elevated)] rounded" />
+							<div className="h-3 bg-bg-elevated rounded" />
 						</div>
 					))}
 				</div>
@@ -295,10 +273,10 @@ export function HealthPage() {
 				<div className="glass-card p-12 text-center flex flex-col items-center gap-4">
 					<HeartPulse
 						size={40}
-						className="text-[var(--color-text-muted)]"
+						className="text-text-muted"
 						aria-hidden="true"
 					/>
-					<p className="text-sm text-[var(--color-text-muted)]">
+					<p className="text-sm text-text-muted">
 						אין נתוני בריאות זמינים — לחץ "הרץ בדיקת בריאות"
 					</p>
 				</div>
@@ -306,7 +284,7 @@ export function HealthPage() {
 
 			{/* Check Cards */}
 			{!isLoading && sorted.length > 0 && (
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 grid-cards stagger-grid">
 					{sorted.map((check) => (
 						<HealthCard key={check.name} check={check} />
 					))}

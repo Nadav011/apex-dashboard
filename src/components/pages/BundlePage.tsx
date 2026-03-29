@@ -19,6 +19,8 @@ import {
 	Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Tabs } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -225,7 +227,7 @@ function StatCard({
 	icon: React.ReactNode;
 }) {
 	return (
-		<div className="glass-card p-4 flex items-start gap-3">
+		<div className="glass-card card-spotlight p-4 flex items-start gap-3">
 			<div
 				className="flex size-10 shrink-0 items-center justify-center rounded-xl mt-0.5"
 				style={{
@@ -337,9 +339,9 @@ function BundleBarChart() {
 	const getBarColor = (p: ProjectBundle): string => {
 		const status = getBundleStatus(p);
 		return {
-			ok: "oklch(0.72 0.19 155)",
-			warn: "oklch(0.78 0.16 75)",
-			over: "oklch(0.62 0.22 25)",
+			ok: "var(--color-accent-green)",
+			warn: "var(--color-accent-amber)",
+			over: "var(--color-accent-red)",
 		}[status];
 	};
 
@@ -349,9 +351,9 @@ function BundleBarChart() {
 			trigger: "axis" as const,
 			axisPointer: { type: "shadow" as const },
 			backgroundColor: "oklch(0.16 0.01 260)",
-			borderColor: "oklch(0.28 0.02 260)",
+			borderColor: "var(--color-border)",
 			textStyle: {
-				color: "oklch(0.95 0.01 260)",
+				color: "var(--color-text-primary)",
 				fontFamily: "Heebo, Inter, system-ui",
 			},
 			formatter: (params: { name: string; value: number }[]) => {
@@ -376,12 +378,12 @@ function BundleBarChart() {
 			axisTick: { show: false },
 			splitLine: {
 				lineStyle: {
-					color: "oklch(0.28 0.02 260)",
+					color: "var(--color-border)",
 					type: "dashed" as const,
 				},
 			},
 			axisLabel: {
-				color: "oklch(0.55 0.02 260)",
+				color: "var(--color-text-muted)",
 				formatter: (v: number) => `${v}KB`,
 				fontFamily: "Heebo, Inter, system-ui",
 				fontSize: 11,
@@ -479,7 +481,7 @@ function SummarySection() {
 				</span>
 				סיכום
 			</h2>
-			<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+			<div className="grid grid-cols-2 gap-3 sm:grid-cols-4 stagger-grid">
 				<StatCard
 					label="פרויקטים נוטרים"
 					value={String(PROJECTS.length)}
@@ -595,26 +597,26 @@ function ProjectBundleSection() {
 			</div>
 
 			{view === "chart" ? (
-				<div className="glass-card p-4">
+				<div className="glass-card card-spotlight p-4">
 					<div className="mb-3 flex items-center gap-4 text-xs text-text-muted flex-wrap">
 						<span className="flex items-center gap-1.5">
 							<span
 								className="w-3 h-3 rounded-sm inline-block"
-								style={{ background: "oklch(0.72 0.19 155)" }}
+								style={{ background: "var(--color-accent-green)" }}
 							/>
 							תקין
 						</span>
 						<span className="flex items-center gap-1.5">
 							<span
 								className="w-3 h-3 rounded-sm inline-block"
-								style={{ background: "oklch(0.78 0.16 75)" }}
+								style={{ background: "var(--color-accent-amber)" }}
 							/>
 							קרוב לסף (90%+)
 						</span>
 						<span className="flex items-center gap-1.5">
 							<span
 								className="w-3 h-3 rounded-sm inline-block"
-								style={{ background: "oklch(0.62 0.22 25)" }}
+								style={{ background: "var(--color-accent-red)" }}
 							/>
 							חריגה
 						</span>
@@ -622,7 +624,7 @@ function ProjectBundleSection() {
 					<BundleBarChart />
 				</div>
 			) : (
-				<div className="glass-card overflow-hidden">
+				<div className="glass-card card-spotlight overflow-hidden">
 					{/* Desktop table */}
 					<div className="hidden sm:block overflow-x-auto">
 						<table
@@ -631,22 +633,40 @@ function ProjectBundleSection() {
 						>
 							<thead>
 								<tr className="border-b border-border">
-									<th className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">
+									<th
+										scope="col"
+										className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide"
+									>
 										פרויקט
 									</th>
-									<th className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">
+									<th
+										scope="col"
+										className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide"
+									>
 										גודל
 									</th>
-									<th className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">
+									<th
+										scope="col"
+										className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide"
+									>
 										סף
 									</th>
-									<th className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">
+									<th
+										scope="col"
+										className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide"
+									>
 										שימוש
 									</th>
-									<th className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">
+									<th
+										scope="col"
+										className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide"
+									>
 										סטטוס
 									</th>
-									<th className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide">
+									<th
+										scope="col"
+										className="text-start px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wide"
+									>
 										פלטפורמה
 									</th>
 								</tr>
@@ -728,8 +748,8 @@ function OptimizationCard({ tech }: { tech: OptimizationTech }) {
 	return (
 		<div
 			className={cn(
-				"glass-card overflow-hidden transition-colors duration-200",
-				expanded && "border-[var(--color-border-hover)]",
+				"glass-card card-spotlight overflow-hidden transition-colors duration-200",
+				expanded && "border-border-hover",
 			)}
 		>
 			<button
@@ -918,9 +938,12 @@ function BundleCiSection() {
 			</h2>
 
 			{/* Flow steps */}
-			<div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-4">
+			<div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-4 stagger-grid">
 				{steps.map((step) => (
-					<div key={step.num} className="glass-card p-3 text-center">
+					<div
+						key={step.num}
+						className="glass-card card-spotlight p-3 text-center"
+					>
 						<div
 							className="mx-auto mb-2 size-8 flex items-center justify-center rounded-full text-sm font-bold"
 							style={{
@@ -941,7 +964,7 @@ function BundleCiSection() {
 			</div>
 
 			{/* Warnings & Rules */}
-			<div className="glass-card p-4 mb-4 space-y-2">
+			<div className="glass-card card-spotlight p-4 mb-4 space-y-2">
 				<div className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">
 					חשוב לזכור
 				</div>
@@ -967,7 +990,7 @@ function BundleCiSection() {
 			</div>
 
 			{/* YAML — Vite */}
-			<div className="glass-card overflow-hidden mb-3">
+			<div className="glass-card card-spotlight overflow-hidden mb-3">
 				<div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-bg-elevated/50">
 					<div className="flex items-center gap-2">
 						<FileCode2 size={14} className="text-accent-blue" />
@@ -988,7 +1011,7 @@ function BundleCiSection() {
 			</div>
 
 			{/* YAML — Next.js */}
-			<div className="glass-card overflow-hidden">
+			<div className="glass-card card-spotlight overflow-hidden">
 				<div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-bg-elevated/50">
 					<div className="flex items-center gap-2">
 						<FileCode2 size={14} className="text-accent-purple" />
@@ -1043,7 +1066,10 @@ function ToolsSection() {
 			</h2>
 			<div className="space-y-3">
 				{TOOLS.map((tool, toolIdx) => (
-					<div key={tool.command} className="glass-card overflow-hidden">
+					<div
+						key={tool.command}
+						className="glass-card card-spotlight overflow-hidden"
+					>
 						<div className="flex items-start gap-3 p-4">
 							<span
 								className="flex size-8 shrink-0 items-center justify-center rounded-lg mt-0.5"
@@ -1090,43 +1116,53 @@ function ToolsSection() {
 
 // ── Page Root ─────────────────────────────────────────────────────────────────
 
+const BUNDLE_TABS = [
+	{ id: "status", label: "סטטוס" },
+	{ id: "optimization", label: "אופטימיזציה" },
+	{ id: "platforms", label: "פלטפורמות" },
+];
+
 export function BundlePage() {
 	return (
 		<div className="space-y-8 pb-8">
-			{/* Page Header */}
-			<div>
-				<div className="flex items-center gap-3 mb-1">
-					<div
-						className="flex size-10 items-center justify-center rounded-xl shrink-0"
-						style={{
-							background: "oklch(0.65 0.18 250 / 0.15)",
-							color: "var(--color-accent-blue)",
-						}}
-						aria-hidden="true"
-					>
-						<Package size={22} />
+			<PageHeader
+				icon={Package}
+				title="חבילות"
+				description="גודל Bundle לכל פרויקט — לימיטים ומגמות"
+			/>
+
+			<Tabs tabs={BUNDLE_TABS}>
+				{(activeTab) => (
+					<div className="space-y-8">
+						{activeTab === "status" && (
+							<>
+								{/* Section 1: Summary */}
+								<SummarySection />
+
+								{/* Section 2: Per-Project */}
+								<ProjectBundleSection />
+							</>
+						)}
+
+						{activeTab === "optimization" && (
+							<>
+								{/* Section 3: Optimization */}
+								<OptimizationSection />
+
+								{/* Section 5: Tools */}
+								<ToolsSection />
+							</>
+						)}
+
+						{activeTab === "platforms" && (
+							<>
+								{/* Section 4: CI Guard */}
+								<BundleCiSection />
+							</>
+						)}
 					</div>
-					<h1 className="text-2xl font-bold text-text-primary">גודל חבילות</h1>
-				</div>
-				<p className="text-sm text-text-muted mt-1 ms-[52px]">
-					ניטור באנדל, סטטוס CI guard, וטכניקות אופטימיזציה מוכחות
-				</p>
-			</div>
-
-			{/* Section 1: Summary */}
-			<SummarySection />
-
-			{/* Section 2: Per-Project */}
-			<ProjectBundleSection />
-
-			{/* Section 3: Optimization */}
-			<OptimizationSection />
-
-			{/* Section 4: CI Guard */}
-			<BundleCiSection />
-
-			{/* Section 5: Tools */}
-			<ToolsSection />
+				)}
+			</Tabs>
 		</div>
 	);
 }

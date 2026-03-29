@@ -11,6 +11,8 @@ import {
 	TrendingDown,
 	Wifi,
 } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Tabs } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -124,14 +126,14 @@ function StatCard({
 	color: string;
 }) {
 	return (
-		<div className="glass-card px-5 py-3 flex items-center gap-3 min-w-[120px]">
+		<div className="glass-card card-spotlight px-5 py-3 flex items-center gap-3 min-w-[120px]">
 			<Icon size={16} className={color} />
 			<div>
-				<p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
+				<p className="text-[10px] text-text-muted uppercase tracking-wide">
 					{label}
 				</p>
 				<p
-					className="text-xl font-bold text-[var(--color-text-primary)] tabular-nums"
+					className="text-xl font-bold text-text-primary tabular-nums"
 					dir="ltr"
 				>
 					{value}
@@ -151,8 +153,8 @@ function PlatformBadge({ platform }: { platform: Platform }) {
 				"inline-flex items-center gap-1 text-[10px] font-semibold shrink-0",
 				"px-2 py-0.5 rounded-full uppercase tracking-wide",
 				isCf
-					? "bg-[oklch(0.65_0.18_250_/_0.15)] text-[var(--color-accent-blue)]"
-					: "bg-[oklch(0.78_0.16_75_/_0.15)] text-[var(--color-accent-amber)]",
+					? "bg-[oklch(0.65_0.18_250_/_0.15)] text-accent-blue"
+					: "bg-[oklch(0.78_0.16_75_/_0.15)] text-accent-amber",
 			)}
 		>
 			{isCf ? "CF Pages" : "Netlify"}
@@ -171,7 +173,7 @@ function StatusBadge({
 }) {
 	if (status === "active") {
 		return (
-			<span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[oklch(0.72_0.19_155_/_0.12)] text-[var(--color-status-healthy)]">
+			<span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[oklch(0.72_0.19_155_/_0.12)] text-status-healthy">
 				<CheckCircle2 size={11} aria-hidden="true" />
 				פעיל
 			</span>
@@ -180,7 +182,7 @@ function StatusBadge({
 	if (status === "pending") {
 		return (
 			<span
-				className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[oklch(0.78_0.16_75_/_0.12)] text-[var(--color-accent-amber)]"
+				className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[oklch(0.78_0.16_75_/_0.12)] text-accent-amber"
 				title={note}
 			>
 				<Clock size={11} aria-hidden="true" />
@@ -190,7 +192,7 @@ function StatusBadge({
 	}
 	return (
 		<span
-			className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[oklch(0.62_0.22_25_/_0.12)] text-[var(--color-status-critical)]"
+			className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[oklch(0.62_0.22_25_/_0.12)] text-status-critical"
 			title={note}
 		>
 			<AlertTriangle size={11} aria-hidden="true" />
@@ -204,14 +206,14 @@ function StatusBadge({
 function SslBadge({ ssl }: { ssl: boolean }) {
 	if (ssl) {
 		return (
-			<span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--color-status-healthy)]">
+			<span className="inline-flex items-center gap-1 text-[10px] font-medium text-status-healthy">
 				<Lock size={10} aria-hidden="true" />
 				SSL
 			</span>
 		);
 	}
 	return (
-		<span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--color-text-muted)]">
+		<span className="inline-flex items-center gap-1 text-[10px] font-medium text-text-muted">
 			<LockOpen size={10} aria-hidden="true" />
 			ללא SSL
 		</span>
@@ -231,7 +233,7 @@ function DomainCard({ entry }: { entry: DomainEntry }) {
 	return (
 		<article
 			className={cn(
-				"glass-card p-4 flex flex-col gap-3 transition-colors duration-200",
+				"glass-card card-spotlight p-4 flex flex-col gap-3 transition-colors duration-200",
 				borderColor,
 			)}
 			aria-label={entry.domain}
@@ -239,16 +241,14 @@ function DomainCard({ entry }: { entry: DomainEntry }) {
 			{/* Top row: project name + platform */}
 			<div className="flex items-start justify-between gap-2">
 				<div className="min-w-0">
-					<p className="text-xs text-[var(--color-text-muted)] mb-0.5">
-						{entry.project}
-					</p>
+					<p className="text-xs text-text-muted mb-0.5">{entry.project}</p>
 					<a
 						href={`https://${entry.domain}`}
 						target="_blank"
 						rel="noopener noreferrer"
 						className={cn(
 							"inline-flex items-center gap-1 text-sm font-semibold",
-							"text-[var(--color-text-primary)] hover:text-[var(--color-accent-blue)]",
+							"text-text-primary hover:text-accent-blue",
 							"transition-colors duration-150 min-h-8 rounded",
 						)}
 						dir="ltr"
@@ -283,26 +283,21 @@ function DnsRecord({
 	note?: string;
 }) {
 	return (
-		<div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5 border-b border-[var(--color-border)] last:border-0">
-			<span className="inline-flex items-center justify-center w-14 text-[10px] font-bold px-2 py-0.5 rounded bg-[var(--color-bg-elevated)] text-[var(--color-accent-blue)] font-mono shrink-0">
+		<div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5 border-b border-border last:border-0">
+			<span className="inline-flex items-center justify-center w-14 text-[10px] font-bold px-2 py-0.5 rounded bg-bg-elevated text-accent-blue font-mono shrink-0">
 				{type}
 			</span>
 			<span
-				className="text-xs font-mono text-[var(--color-text-secondary)] min-w-[140px]"
+				className="text-xs font-mono text-text-secondary min-w-[140px]"
 				dir="ltr"
 			>
 				{name}
 			</span>
-			<span
-				className="text-xs font-mono text-[var(--color-text-muted)] flex-1"
-				dir="ltr"
-			>
+			<span className="text-xs font-mono text-text-muted flex-1" dir="ltr">
 				{value}
 			</span>
 			{note && (
-				<span className="text-[10px] text-[var(--color-text-muted)] italic">
-					{note}
-				</span>
+				<span className="text-[10px] text-text-muted italic">{note}</span>
 			)}
 		</div>
 	);
@@ -329,34 +324,26 @@ function TimelineItem({
 					className={cn(
 						"w-3 h-3 rounded-full mt-0.5 shrink-0",
 						done
-							? "bg-[var(--color-status-healthy)] shadow-[0_0_8px_oklch(0.72_0.19_155_/_0.6)]"
-							: "bg-[var(--color-accent-amber)] shadow-[0_0_8px_oklch(0.78_0.16_75_/_0.5)]",
+							? "bg-status-healthy shadow-[0_0_8px_oklch(0.72_0.19_155_/_0.6)]"
+							: "bg-accent-amber shadow-[0_0_8px_oklch(0.78_0.16_75_/_0.5)]",
 					)}
 				/>
-				<div
-					className="w-px flex-1 bg-[var(--color-border)] mt-1"
-					aria-hidden="true"
-				/>
+				<div className="w-px flex-1 bg-border mt-1" aria-hidden="true" />
 			</div>
 			{/* Content */}
 			<div className="pb-5 min-w-0">
-				<p
-					className="text-[10px] text-[var(--color-text-muted)] font-mono mb-0.5"
-					dir="ltr"
-				>
+				<p className="text-[10px] text-text-muted font-mono mb-0.5" dir="ltr">
 					{date}
 				</p>
 				<p
 					className={cn(
 						"text-sm font-semibold mb-1",
-						done
-							? "text-[var(--color-text-primary)]"
-							: "text-[var(--color-accent-amber)]",
+						done ? "text-text-primary" : "text-accent-amber",
 					)}
 				>
 					{title}
 				</p>
-				<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+				<p className="text-xs text-text-secondary leading-relaxed">
 					{description}
 				</p>
 			</div>
@@ -374,250 +361,259 @@ export function DomainsPage() {
 
 	return (
 		<div className="flex flex-col gap-6">
-			{/* Header */}
-			<div className="flex items-center gap-3">
-				<Globe
-					size={20}
-					className="text-[var(--color-accent-blue)] shrink-0"
-					aria-hidden="true"
-				/>
-				<div>
-					<h1 className="text-lg font-bold text-[var(--color-text-primary)]">
-						דומיינים ו-DNS
-					</h1>
-					<p className="text-sm text-[var(--color-text-muted)]">
-						כל הדומיינים, DNS, ופלטפורמות הפריסה
-					</p>
-				</div>
-			</div>
+			<PageHeader
+				icon={Globe}
+				title="דומיינים"
+				description="מפת דומיינים, DNS, ו-Tunnels"
+			/>
 
-			{/* Section 1: Overview stats */}
-			<section aria-labelledby="overview-heading">
-				<h2
-					id="overview-heading"
-					className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-3"
-				>
-					סקירה כללית
-				</h2>
-				<div className="flex flex-wrap gap-3">
-					<StatCard
-						label="סה״כ דומיינים"
-						value={totalDomains}
-						icon={Globe}
-						color="text-[var(--color-accent-blue)]"
-					/>
-					<StatCard
-						label="CF Pages"
-						value={cfCount}
-						icon={Wifi}
-						color="text-[var(--color-accent-blue)]"
-					/>
-					<StatCard
-						label="Netlify"
-						value={netlifyCount}
-						icon={Server}
-						color="text-[var(--color-accent-amber)]"
-					/>
-					<StatCard
-						label="פעילים"
-						value={activeCount}
-						icon={ShieldCheck}
-						color="text-[var(--color-status-healthy)]"
-					/>
-				</div>
-			</section>
+			<Tabs
+				tabs={[
+					{ id: "domains", label: "דומיינים" },
+					{ id: "tunnels", label: "Tunnels" },
+					{ id: "dns", label: "DNS" },
+				]}
+			>
+				{(activeTab) => {
+					if (activeTab === "domains") {
+						return (
+							<div className="flex flex-col gap-6">
+								{/* Overview stats */}
+								<section aria-labelledby="overview-heading">
+									<h2
+										id="overview-heading"
+										className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3"
+									>
+										סקירה כללית
+									</h2>
+									<div className="flex flex-wrap gap-3">
+										<StatCard
+											label="סה״כ דומיינים"
+											value={totalDomains}
+											icon={Globe}
+											color="text-accent-blue"
+										/>
+										<StatCard
+											label="CF Pages"
+											value={cfCount}
+											icon={Wifi}
+											color="text-accent-blue"
+										/>
+										<StatCard
+											label="Netlify"
+											value={netlifyCount}
+											icon={Server}
+											color="text-accent-amber"
+										/>
+										<StatCard
+											label="פעילים"
+											value={activeCount}
+											icon={ShieldCheck}
+											color="text-status-healthy"
+										/>
+									</div>
+								</section>
 
-			{/* Section 2: All deployed sites */}
-			<section aria-labelledby="sites-heading">
-				<h2
-					id="sites-heading"
-					className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-3"
-				>
-					כל האתרים הפרוסים
-				</h2>
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-					{DOMAINS.map((entry) => (
-						<DomainCard key={entry.domain} entry={entry} />
-					))}
-				</div>
-			</section>
+								{/* All deployed sites */}
+								<section aria-labelledby="sites-heading">
+									<h2
+										id="sites-heading"
+										className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3"
+									>
+										כל האתרים הפרוסים
+									</h2>
+									<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-grid">
+										{DOMAINS.map((entry) => (
+											<DomainCard key={entry.domain} entry={entry} />
+										))}
+									</div>
+								</section>
+							</div>
+						);
+					}
 
-			{/* Section 3: DNS configuration */}
-			<section aria-labelledby="dns-heading">
-				<h2
-					id="dns-heading"
-					className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-3"
-				>
-					קונפיגורציית DNS
-				</h2>
-				<div className="glass-card p-5 flex flex-col gap-4">
-					{/* Info row */}
-					<div className="flex flex-wrap gap-4 pb-4 border-b border-[var(--color-border)]">
-						<div className="flex flex-col gap-0.5">
-							<p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
-								רשם דומיין
-							</p>
-							<p className="text-sm font-semibold text-[var(--color-text-primary)]">
-								GoDaddy
-							</p>
-							<p className="text-xs text-[var(--color-text-muted)]">nadav.ai</p>
-						</div>
-						<div className="flex flex-col gap-0.5">
-							<p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
-								ספק DNS
-							</p>
-							<p className="text-sm font-semibold text-[var(--color-text-primary)]">
-								Cloudflare
-							</p>
-							<p className="text-xs text-[var(--color-text-muted)]">
-								Nameservers managed by CF
-							</p>
-						</div>
-						<div className="flex flex-col gap-0.5">
-							<p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
-								פרוקסי
-							</p>
-							<p className="text-sm font-semibold text-[var(--color-text-primary)]">
-								Cloudflare Proxy
-							</p>
-							<p className="text-xs text-[var(--color-text-muted)]">
-								כל ה-subdomains דרך CF
-							</p>
-						</div>
-					</div>
+					if (activeTab === "tunnels") {
+						return (
+							<section aria-labelledby="migration-heading">
+								<h2
+									id="migration-heading"
+									className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3"
+								>
+									היסטוריית מיגרציה
+								</h2>
+								<div className="glass-card card-spotlight p-5">
+									{/* Migration highlight banner */}
+									<div className="flex items-center gap-3 mb-5 p-3 rounded-xl bg-[oklch(0.72_0.19_155_/_0.08)] border border-[oklch(0.72_0.19_155_/_0.2)]">
+										<TrendingDown
+											size={18}
+											className="text-status-healthy shrink-0"
+											aria-hidden="true"
+										/>
+										<div>
+											<p className="text-sm font-bold text-status-healthy">
+												חיסכון: $170/חודש → $0
+											</p>
+											<p className="text-xs text-text-secondary">
+												Vercel Pro → Cloudflare Pages + Netlify (חינם)
+											</p>
+										</div>
+									</div>
 
-					{/* DNS records table */}
-					<div>
-						<p className="text-xs font-semibold text-[var(--color-text-secondary)] mb-2">
-							רשומות DNS עיקריות
-						</p>
-						<DnsRecord
-							type="NS"
-							name="nadav.ai"
-							value="chad.ns.cloudflare.com"
-							note="Nameserver ראשי"
-						/>
-						<DnsRecord
-							type="NS"
-							name="nadav.ai"
-							value="rose.ns.cloudflare.com"
-							note="Nameserver משני"
-						/>
-						<DnsRecord
-							type="CNAME"
-							name="*.nadav.ai"
-							value="<project>.pages.dev"
-							note="כל ה-subdomains"
-						/>
-						<DnsRecord
-							type="CNAME"
-							name="nadav.ai"
-							value="nadavai-portfolio.netlify.app"
-							note="Apex domain"
-						/>
-						<DnsRecord
-							type="CNAME"
-							name="dashboard.nadav.ai"
-							value="ממתין"
-							note="לא מוגדר עדיין"
-						/>
-					</div>
+									{/* Timeline */}
+									<div>
+										<TimelineItem
+											date="מרץ 2026 — שלב 1"
+											title="מיגרציה מ-Vercel Pro"
+											description="הגדרת Cloudflare Pages לכל 8 אתרי React/Next.js. חיבור nameservers ל-Cloudflare."
+											done
+										/>
+										<TimelineItem
+											date="מרץ 2026 — שלב 2"
+											title="8 CF Pages + Netlify פעילים"
+											description="mexicani, chance-pro, nadavai, cash-control, shifts, hatumdigital, brain, signature-pro על CF Pages. mediflow ו-vibechat על Netlify."
+											done
+										/>
+										<TimelineItem
+											date="מרץ 2026 — שלב 3"
+											title="dashboard.nadav.ai — ממתין CNAME"
+											description="APEX Dashboard עדיין ממתין לרשומת CNAME ב-GoDaddy. SSL לא פעיל עד שהרשומה תוגדר."
+											done={false}
+										/>
+										<TimelineItem
+											date="ממתין"
+											title="ביטול Vercel Pro"
+											description="לאחר אימות שכל האתרים פועלים תקין על CF Pages ו-Netlify, לבטל את מנוי Vercel Pro. חיסכון שוטף $170/חודש."
+											done={false}
+										/>
+									</div>
 
-					{/* Note */}
-					<p className="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-elevated)] rounded-lg px-3 py-2">
-						כל ה-subdomains תחת nadav.ai מנותבים דרך Cloudflare Pages. שגיאות
-						SSL נפתרות אוטומטית ע"י CF.
-					</p>
-				</div>
-			</section>
+									{/* Platform summary */}
+									<div className="mt-2 pt-4 border-t border-border grid grid-cols-2 gap-3">
+										<div className="p-3 rounded-xl bg-bg-elevated flex flex-col gap-1">
+											<p className="text-[10px] text-text-muted uppercase tracking-wide">
+												CF Pages
+											</p>
+											<p
+												className="text-2xl font-bold text-accent-blue tabular-nums"
+												dir="ltr"
+											>
+												8
+											</p>
+											<p className="text-xs text-text-secondary">
+												אתרים פעילים
+											</p>
+										</div>
+										<div className="p-3 rounded-xl bg-bg-elevated flex flex-col gap-1">
+											<p className="text-[10px] text-text-muted uppercase tracking-wide">
+												Netlify
+											</p>
+											<p
+												className="text-2xl font-bold text-accent-amber tabular-nums"
+												dir="ltr"
+											>
+												2
+											</p>
+											<p className="text-xs text-text-secondary">
+												אתרים (build issues)
+											</p>
+										</div>
+									</div>
+								</div>
+							</section>
+						);
+					}
 
-			{/* Section 4: Migration history */}
-			<section aria-labelledby="migration-heading">
-				<h2
-					id="migration-heading"
-					className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-3"
-				>
-					היסטוריית מיגרציה
-				</h2>
-				<div className="glass-card p-5">
-					{/* Migration highlight banner */}
-					<div className="flex items-center gap-3 mb-5 p-3 rounded-xl bg-[oklch(0.72_0.19_155_/_0.08)] border border-[oklch(0.72_0.19_155_/_0.2)]">
-						<TrendingDown
-							size={18}
-							className="text-[var(--color-status-healthy)] shrink-0"
-							aria-hidden="true"
-						/>
-						<div>
-							<p className="text-sm font-bold text-[var(--color-status-healthy)]">
-								חיסכון: $170/חודש → $0
-							</p>
-							<p className="text-xs text-[var(--color-text-secondary)]">
-								Vercel Pro → Cloudflare Pages + Netlify (חינם)
-							</p>
-						</div>
-					</div>
-
-					{/* Timeline */}
-					<div>
-						<TimelineItem
-							date="מרץ 2026 — שלב 1"
-							title="מיגרציה מ-Vercel Pro"
-							description="הגדרת Cloudflare Pages לכל 8 אתרי React/Next.js. חיבור nameservers ל-Cloudflare."
-							done
-						/>
-						<TimelineItem
-							date="מרץ 2026 — שלב 2"
-							title="8 CF Pages + Netlify פעילים"
-							description="mexicani, chance-pro, nadavai, cash-control, shifts, hatumdigital, brain, signature-pro על CF Pages. mediflow ו-vibechat על Netlify."
-							done
-						/>
-						<TimelineItem
-							date="מרץ 2026 — שלב 3"
-							title="dashboard.nadav.ai — ממתין CNAME"
-							description="APEX Dashboard עדיין ממתין לרשומת CNAME ב-GoDaddy. SSL לא פעיל עד שהרשומה תוגדר."
-							done={false}
-						/>
-						<TimelineItem
-							date="ממתין"
-							title="ביטול Vercel Pro"
-							description="לאחר אימות שכל האתרים פועלים תקין על CF Pages ו-Netlify, לבטל את מנוי Vercel Pro. חיסכון שוטף $170/חודש."
-							done={false}
-						/>
-					</div>
-
-					{/* Platform summary */}
-					<div className="mt-2 pt-4 border-t border-[var(--color-border)] grid grid-cols-2 gap-3">
-						<div className="p-3 rounded-xl bg-[var(--color-bg-elevated)] flex flex-col gap-1">
-							<p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
-								CF Pages
-							</p>
-							<p
-								className="text-2xl font-bold text-[var(--color-accent-blue)] tabular-nums"
-								dir="ltr"
+					return (
+						<section aria-labelledby="dns-heading">
+							<h2
+								id="dns-heading"
+								className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3"
 							>
-								8
-							</p>
-							<p className="text-xs text-[var(--color-text-secondary)]">
-								אתרים פעילים
-							</p>
-						</div>
-						<div className="p-3 rounded-xl bg-[var(--color-bg-elevated)] flex flex-col gap-1">
-							<p className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
-								Netlify
-							</p>
-							<p
-								className="text-2xl font-bold text-[var(--color-accent-amber)] tabular-nums"
-								dir="ltr"
-							>
-								2
-							</p>
-							<p className="text-xs text-[var(--color-text-secondary)]">
-								אתרים (build issues)
-							</p>
-						</div>
-					</div>
-				</div>
-			</section>
+								קונפיגורציית DNS
+							</h2>
+							<div className="glass-card card-spotlight p-5 flex flex-col gap-4">
+								{/* Info row */}
+								<div className="flex flex-wrap gap-4 pb-4 border-b border-border">
+									<div className="flex flex-col gap-0.5">
+										<p className="text-[10px] text-text-muted uppercase tracking-wide">
+											רשם דומיין
+										</p>
+										<p className="text-sm font-semibold text-text-primary">
+											GoDaddy
+										</p>
+										<p className="text-xs text-text-muted">nadav.ai</p>
+									</div>
+									<div className="flex flex-col gap-0.5">
+										<p className="text-[10px] text-text-muted uppercase tracking-wide">
+											ספק DNS
+										</p>
+										<p className="text-sm font-semibold text-text-primary">
+											Cloudflare
+										</p>
+										<p className="text-xs text-text-muted">
+											Nameservers managed by CF
+										</p>
+									</div>
+									<div className="flex flex-col gap-0.5">
+										<p className="text-[10px] text-text-muted uppercase tracking-wide">
+											פרוקסי
+										</p>
+										<p className="text-sm font-semibold text-text-primary">
+											Cloudflare Proxy
+										</p>
+										<p className="text-xs text-text-muted">
+											כל ה-subdomains דרך CF
+										</p>
+									</div>
+								</div>
+
+								{/* DNS records table */}
+								<div>
+									<p className="text-xs font-semibold text-text-secondary mb-2">
+										רשומות DNS עיקריות
+									</p>
+									<DnsRecord
+										type="NS"
+										name="nadav.ai"
+										value="chad.ns.cloudflare.com"
+										note="Nameserver ראשי"
+									/>
+									<DnsRecord
+										type="NS"
+										name="nadav.ai"
+										value="rose.ns.cloudflare.com"
+										note="Nameserver משני"
+									/>
+									<DnsRecord
+										type="CNAME"
+										name="*.nadav.ai"
+										value="<project>.pages.dev"
+										note="כל ה-subdomains"
+									/>
+									<DnsRecord
+										type="CNAME"
+										name="nadav.ai"
+										value="nadavai-portfolio.netlify.app"
+										note="Apex domain"
+									/>
+									<DnsRecord
+										type="CNAME"
+										name="dashboard.nadav.ai"
+										value="ממתין"
+										note="לא מוגדר עדיין"
+									/>
+								</div>
+
+								{/* Note */}
+								<p className="text-xs text-text-muted bg-bg-elevated rounded-lg px-3 py-2">
+									כל ה-subdomains תחת nadav.ai מנותבים דרך Cloudflare Pages.
+									שגיאות SSL נפתרות אוטומטית ע"י CF.
+								</p>
+							</div>
+						</section>
+					);
+				}}
+			</Tabs>
 		</div>
 	);
 }

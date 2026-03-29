@@ -20,6 +20,8 @@ import {
 	Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Tabs } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
 
 // ── Accordion ─────────────────────────────────────────────────────────────────
@@ -49,7 +51,7 @@ function AccordionSection({
 		<div
 			className={cn(
 				"glass-card overflow-hidden transition-colors duration-200",
-				open && "border-[var(--color-border-hover)]",
+				open && "border-border-hover",
 			)}
 			id={id}
 		>
@@ -59,7 +61,7 @@ function AccordionSection({
 				className={cn(
 					"w-full flex items-center gap-3 px-4 py-4",
 					"transition-colors duration-150 cursor-pointer",
-					"hover:bg-[var(--color-bg-tertiary)]",
+					"hover:bg-bg-tertiary",
 					"min-h-[60px] text-start",
 				)}
 				aria-expanded={open}
@@ -75,22 +77,18 @@ function AccordionSection({
 					{icon}
 				</span>
 				<div className="flex-1 min-w-0">
-					<div className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
+					<div className="text-sm font-semibold text-text-primary truncate">
 						{title}
 					</div>
-					<div className="text-xs text-[var(--color-text-muted)] truncate">
-						{subtitle}
-					</div>
+					<div className="text-xs text-text-muted truncate">{subtitle}</div>
 				</div>
-				<span className="shrink-0 text-[var(--color-text-muted)]">
+				<span className="shrink-0 text-text-muted" aria-hidden="true">
 					{open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
 				</span>
 			</button>
 
 			{open && (
-				<div className="border-t border-[var(--color-border)] px-4 py-5">
-					{children}
-				</div>
+				<div className="border-t border-border px-4 py-5">{children}</div>
 			)}
 		</div>
 	);
@@ -103,8 +101,8 @@ function CodeBlock({ children }: { children: string }) {
 		<pre
 			className={cn(
 				"rounded-lg px-4 py-3 text-xs font-mono overflow-x-auto",
-				"bg-[var(--color-bg-primary)] text-[var(--color-accent-cyan)]",
-				"border border-[var(--color-border)]",
+				"bg-bg-primary text-accent-cyan",
+				"border border-border",
 				"leading-relaxed",
 			)}
 			dir="ltr"
@@ -210,7 +208,7 @@ function LogFileCard({
 	};
 
 	return (
-		<div className="glass-card p-4 flex flex-col gap-3 hover:border-[var(--color-border-hover)] transition-colors duration-200">
+		<div className="glass-card card-spotlight p-4 flex flex-col gap-3 hover:border-border-hover transition-colors duration-200">
 			{/* Header */}
 			<div className="flex items-start gap-3">
 				<div
@@ -244,9 +242,7 @@ function LogFileCard({
 			</div>
 
 			{/* Purpose */}
-			<p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-				{purpose}
-			</p>
+			<p className="text-sm text-text-secondary leading-relaxed">{purpose}</p>
 
 			{/* Meta */}
 			<div className="flex flex-wrap gap-2 items-center">
@@ -258,7 +254,7 @@ function LogFileCard({
 					<span>{rotation}</span>
 				</div>
 				{size && (
-					<div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+					<div className="flex items-center gap-1.5 text-xs text-text-muted">
 						<HardDrive size={11} aria-hidden="true" />
 						<span dir="ltr">{size}</span>
 					</div>
@@ -271,10 +267,10 @@ function LogFileCard({
 					{notes.map((note) => (
 						<li
 							key={note}
-							className="text-xs text-[var(--color-text-muted)] flex items-start gap-1.5"
+							className="text-xs text-text-muted flex items-start gap-1.5"
 						>
 							<span
-								className="text-[var(--color-accent-blue)] mt-0.5 shrink-0"
+								className="text-accent-blue mt-0.5 shrink-0"
 								aria-hidden="true"
 							>
 								›
@@ -641,7 +637,13 @@ const BEADS_FIELDS = [
 
 export function LogsPage() {
 	return (
-		<div className="space-y-8 pb-10 min-h-screen bg-zinc-950 p-6" dir="rtl">
+		<div className="space-y-8 pb-10 min-h-screen p-6" dir="rtl">
+			<PageHeader
+				icon={ScrollText}
+				title="לוגים"
+				description="כל אירועי Hydra Watcher בזמן אמת"
+			/>
+
 			{/* ── Page Header ── */}
 			<div className="flex items-center gap-4">
 				<div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent-blue/10 shrink-0">
@@ -651,18 +653,10 @@ export function LogsPage() {
 						aria-hidden="true"
 					/>
 				</div>
-				<div>
-					<h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
-						לוגים ופעילות
-					</h1>
-					<p className="text-sm text-[var(--color-text-muted)] mt-0.5">
-						כל קבצי הלוג, כיצד לחפש, ופתרון בעיות
-					</p>
-				</div>
 			</div>
 
 			{/* ── Stats Strip ── */}
-			<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+			<div className="grid grid-cols-2 gap-3 sm:grid-cols-4 stagger-grid">
 				{[
 					{
 						label: "קבצי לוג",
@@ -689,7 +683,10 @@ export function LogsPage() {
 						icon: <FileText size={16} />,
 					},
 				].map(({ label, value, color, icon }) => (
-					<div key={label} className="glass-card p-3 flex items-center gap-3">
+					<div
+						key={label}
+						className="glass-card card-spotlight p-3 flex items-center gap-3"
+					>
 						<div
 							className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0"
 							style={{ background: `oklch(from ${color} l c h / 0.15)` }}
@@ -699,93 +696,111 @@ export function LogsPage() {
 							</span>
 						</div>
 						<div className="min-w-0">
-							<div className="text-lg font-bold tabular-nums text-[var(--color-text-primary)]">
+							<div className="text-lg font-bold tabular-nums text-text-primary">
 								{value}
 							</div>
-							<div className="text-xs text-[var(--color-text-muted)] truncate">
-								{label}
-							</div>
+							<div className="text-xs text-text-muted truncate">{label}</div>
 						</div>
 					</div>
 				))}
 			</div>
 
-			{/* ── Section 1: Log Files ── */}
-			<AccordionSection
-				id="log-files"
-				title="קבצי לוג"
-				subtitle="6 קבצים — מבנה, מיקום, ומדיניות סיבוב"
-				icon={<FileJson size={18} />}
-				defaultOpen
-				accentColor="var(--color-accent-blue)"
+			<Tabs
+				tabs={[
+					{ id: "files", label: "קבצי לוג" },
+					{ id: "rotation", label: "סיבוב" },
+					{ id: "search", label: "חיפוש" },
+				]}
 			>
-				<div className="space-y-4">
-					<AlertBox type="info">
-						כל קבצי הלוג נכתבים בתקן JSONL — כל שורה היא JSON עצמאי ותקני. תמיד
-						בדוק שורות בנפרד עם jq אחד לשורה, לא את כל הקובץ כ-array.
-					</AlertBox>
+				{(activeTab) => (
+					<div className="space-y-8">
+						{/* ── Section 1: Log Files ── */}
+						{activeTab === "files" && (
+							<AccordionSection
+								id="log-files"
+								title="קבצי לוג"
+								subtitle="6 קבצים — מבנה, מיקום, ומדיניות סיבוב"
+								icon={<FileJson size={18} />}
+								defaultOpen
+								accentColor="var(--color-accent-blue)"
+							>
+								<div className="space-y-4">
+									<AlertBox type="info">
+										כל קבצי הלוג נכתבים בתקן JSONL — כל שורה היא JSON עצמאי
+										ותקני. תמיד בדוק שורות בנפרד עם jq אחד לשורה, לא את כל הקובץ
+										כ-array.
+									</AlertBox>
 
-					<div className="grid gap-4 sm:grid-cols-2">
-						{LOG_FILES.map((file) => (
-							<LogFileCard key={file.name} {...file} />
-						))}
-					</div>
-				</div>
-			</AccordionSection>
-
-			{/* ── Section 2: Query Examples ── */}
-			<AccordionSection
-				id="search-logs"
-				title="איך לחפש בלוגים"
-				subtitle="דוגמאות grep, jq, ו-Python לניתוח לוגים"
-				icon={<Search size={18} />}
-				defaultOpen
-				accentColor="var(--color-accent-cyan)"
-			>
-				<div className="space-y-5">
-					<AlertBox type="info">
-						הלוגים הם JSONL — כל שורה JSON עצמאי. השתמש ב-grep לחיפוש מהיר, jq
-						לפענוח מובנה, ו-python3 לאנליזה מורכבת.
-					</AlertBox>
-
-					<div className="grid gap-4">
-						{QUERY_EXAMPLES.map((example) => (
-							<div key={example.title} className="glass-card p-4 space-y-2">
-								<div className="flex items-center gap-2">
-									<span style={{ color: example.color }} aria-hidden="true">
-										{example.icon}
-									</span>
-									<span
-										className="text-sm font-semibold"
-										style={{ color: example.color }}
-									>
-										{example.title}
-									</span>
+									<div className="grid gap-4 sm:grid-cols-2">
+										{LOG_FILES.map((file) => (
+											<LogFileCard key={file.name} {...file} />
+										))}
+									</div>
 								</div>
-								<p className="text-xs text-[var(--color-text-muted)]">
-									{example.description}
-								</p>
-								<CodeBlock>{example.code}</CodeBlock>
-							</div>
-						))}
-					</div>
+							</AccordionSection>
+						)}
 
-					{/* Live Monitor Pattern */}
-					<div className="glass-card p-4 space-y-3">
-						<div className="flex items-center gap-2">
-							<Terminal
-								size={14}
-								className="text-accent-green"
-								aria-hidden="true"
-							/>
-							<span className="text-sm font-semibold text-[var(--color-accent-green)]">
-								מעקב לוג מלא — Live Dashboard בטרמינל
-							</span>
-						</div>
-						<p className="text-xs text-[var(--color-text-muted)]">
-							הפעל שני טרמינלים: אחד עם tail -f לכל לוג, שני עם watch לגדלים
-						</p>
-						<CodeBlock>{`# טרמינל 1 — אירועי Watcher בזמן אמת
+						{/* ── Section 2: Query Examples ── */}
+						{activeTab === "search" && (
+							<AccordionSection
+								id="search-logs"
+								title="איך לחפש בלוגים"
+								subtitle="דוגמאות grep, jq, ו-Python לניתוח לוגים"
+								icon={<Search size={18} />}
+								defaultOpen
+								accentColor="var(--color-accent-cyan)"
+							>
+								<div className="space-y-5">
+									<AlertBox type="info">
+										הלוגים הם JSONL — כל שורה JSON עצמאי. השתמש ב-grep לחיפוש
+										מהיר, jq לפענוח מובנה, ו-python3 לאנליזה מורכבת.
+									</AlertBox>
+
+									<div className="grid gap-4">
+										{QUERY_EXAMPLES.map((example) => (
+											<div
+												key={example.title}
+												className="glass-card card-spotlight p-4 space-y-2"
+											>
+												<div className="flex items-center gap-2">
+													<span
+														style={{ color: example.color }}
+														aria-hidden="true"
+													>
+														{example.icon}
+													</span>
+													<span
+														className="text-sm font-semibold"
+														style={{ color: example.color }}
+													>
+														{example.title}
+													</span>
+												</div>
+												<p className="text-xs text-text-muted">
+													{example.description}
+												</p>
+												<CodeBlock>{example.code}</CodeBlock>
+											</div>
+										))}
+									</div>
+
+									{/* Live Monitor Pattern */}
+									<div className="glass-card card-spotlight p-4 space-y-3">
+										<div className="flex items-center gap-2">
+											<Terminal
+												size={14}
+												className="text-accent-green"
+												aria-hidden="true"
+											/>
+											<span className="text-sm font-semibold text-accent-green">
+												מעקב לוג מלא — Live Dashboard בטרמינל
+											</span>
+										</div>
+										<p className="text-xs text-text-muted">
+											הפעל שני טרמינלים: אחד עם tail -f לכל לוג, שני עם watch
+											לגדלים
+										</p>
+										<CodeBlock>{`# טרמינל 1 — אירועי Watcher בזמן אמת
 tail -f ~/.config/agents/logs/hydra-watcher.jsonl \\
   | python3 -c "
 import sys, json
@@ -798,150 +813,166 @@ for line in sys.stdin:
 
 # טרמינל 2 — גדלי קבצים כל 5 שניות
 watch -n 5 'du -sh ~/.config/agents/logs/hydra-*.jsonl ~/.claude/knowledge/*.jsonl 2>/dev/null | sort -h'`}</CodeBlock>
-					</div>
-				</div>
-			</AccordionSection>
-
-			{/* ── Section 3: Beads Knowledge Capture ── */}
-			<AccordionSection
-				id="beads-knowledge"
-				title="Beads — Knowledge Capture"
-				subtitle="מה נלכד, מבנה הנתונים, וכיצד לנתח"
-				icon={<Database size={18} />}
-				defaultOpen
-				accentColor="var(--color-accent-purple)"
-			>
-				<div className="space-y-5">
-					<p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-						<strong className="text-[var(--color-text-primary)]">
-							beads.jsonl
-						</strong>{" "}
-						הוא מאגר הידע הגולמי של APEX — כל PostToolUse hook מוסיף רשומה.
-						הנתונים מועברים ל-LanceDB לחיפוש סמנטי, ומשמשים לשיפור עתידי של קבלת
-						החלטות.
-					</p>
-
-					{/* What gets captured */}
-					<div className="space-y-2">
-						<h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
-							<BookOpen
-								size={14}
-								className="text-accent-purple"
-								aria-hidden="true"
-							/>
-							מה נלכד בכל פעולה
-						</h3>
-						<div className="grid gap-3 sm:grid-cols-2">
-							{[
-								{
-									label: "סוג סוכן",
-									desc: "codex / kimi / gemini / minimax / claude",
-									icon: <Zap size={12} />,
-									color: "var(--color-accent-amber)",
-								},
-								{
-									label: "מודל שהופעל",
-									desc: "gpt-5.4, gemini-3.1-pro-preview, MiniMax-M2.7",
-									icon: <Terminal size={12} />,
-									color: "var(--color-accent-cyan)",
-								},
-								{
-									label: "כלי שהשתמש",
-									desc: "Write, Edit, Bash, Read, TodoWrite, WebFetch",
-									icon: <FileText size={12} />,
-									color: "var(--color-accent-blue)",
-								},
-								{
-									label: "תקציר תוצאה",
-									desc: "100+ תוים ראשונים של תוצאת הפעולה",
-									icon: <Archive size={12} />,
-									color: "var(--color-accent-green)",
-								},
-							].map(({ label, desc, icon, color }) => (
-								<div
-									key={label}
-									className="flex items-start gap-2.5 p-3 rounded-lg"
-									style={{ background: `oklch(from ${color} l c h / 0.06)` }}
-								>
-									<span
-										style={{ color }}
-										className="mt-0.5 shrink-0"
-										aria-hidden="true"
-									>
-										{icon}
-									</span>
-									<div>
-										<div className="text-xs font-semibold" style={{ color }}>
-											{label}
-										</div>
-										<div className="text-xs text-[var(--color-text-muted)] mt-0.5">
-											{desc}
-										</div>
 									</div>
 								</div>
-							))}
-						</div>
-					</div>
+							</AccordionSection>
+						)}
 
-					{/* Format / Schema */}
-					<div className="space-y-2">
-						<h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
-							<FileJson
-								size={14}
-								className="text-accent-purple"
-								aria-hidden="true"
-							/>
-							מבנה שדות — Schema
-						</h3>
-						<div className="glass-card overflow-hidden">
-							<table className="w-full text-xs">
-								<thead>
-									<tr className="border-b border-[var(--color-border)]">
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)]">
-											שדה
-										</th>
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)]">
-											סוג
-										</th>
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)] hidden sm:table-cell">
-											דוגמה
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{BEADS_FIELDS.map(({ field, type, example, color }) => (
-										<tr
-											key={field}
-											className="border-b border-[var(--color-border)] last:border-0"
-										>
-											<td
-												className="px-3 py-2 font-mono font-semibold"
-												style={{ color }}
-											>
-												{field}
-											</td>
-											<td className="px-3 py-2 text-[var(--color-text-muted)]">
-												{type}
-											</td>
-											<td
-												className="px-3 py-2 font-mono text-[var(--color-text-muted)] hidden sm:table-cell truncate max-w-[200px]"
-												dir="ltr"
-											>
-												{example}
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-					</div>
+						{/* ── Section 3: Beads Knowledge Capture ── */}
+						{activeTab === "files" && (
+							<AccordionSection
+								id="beads-knowledge"
+								title="Beads — Knowledge Capture"
+								subtitle="מה נלכד, מבנה הנתונים, וכיצד לנתח"
+								icon={<Database size={18} />}
+								defaultOpen
+								accentColor="var(--color-accent-purple)"
+							>
+								<div className="space-y-5">
+									<p className="text-sm text-text-secondary leading-relaxed">
+										<strong className="text-text-primary">beads.jsonl</strong>{" "}
+										הוא מאגר הידע הגולמי של APEX — כל PostToolUse hook מוסיף
+										רשומה. הנתונים מועברים ל-LanceDB לחיפוש סמנטי, ומשמשים
+										לשיפור עתידי של קבלת החלטות.
+									</p>
 
-					{/* Parse example */}
-					<div className="space-y-2">
-						<h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
-							ניתוח beads.jsonl
-						</h3>
-						<CodeBlock>{`# קריאת תקציר כל רשומה (100 תווים ראשונים)
+									{/* What gets captured */}
+									<div className="space-y-2">
+										<h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+											<BookOpen
+												size={14}
+												className="text-accent-purple"
+												aria-hidden="true"
+											/>
+											מה נלכד בכל פעולה
+										</h3>
+										<div className="grid gap-3 sm:grid-cols-2">
+											{[
+												{
+													label: "סוג סוכן",
+													desc: "codex / kimi / gemini / minimax / claude",
+													icon: <Zap size={12} />,
+													color: "var(--color-accent-amber)",
+												},
+												{
+													label: "מודל שהופעל",
+													desc: "gpt-5.4, gemini-3.1-pro-preview, MiniMax-M2.7",
+													icon: <Terminal size={12} />,
+													color: "var(--color-accent-cyan)",
+												},
+												{
+													label: "כלי שהשתמש",
+													desc: "Write, Edit, Bash, Read, TodoWrite, WebFetch",
+													icon: <FileText size={12} />,
+													color: "var(--color-accent-blue)",
+												},
+												{
+													label: "תקציר תוצאה",
+													desc: "100+ תוים ראשונים של תוצאת הפעולה",
+													icon: <Archive size={12} />,
+													color: "var(--color-accent-green)",
+												},
+											].map(({ label, desc, icon, color }) => (
+												<div
+													key={label}
+													className="flex items-start gap-2.5 p-3 rounded-lg"
+													style={{
+														background: `oklch(from ${color} l c h / 0.06)`,
+													}}
+												>
+													<span
+														style={{ color }}
+														className="mt-0.5 shrink-0"
+														aria-hidden="true"
+													>
+														{icon}
+													</span>
+													<div>
+														<div
+															className="text-xs font-semibold"
+															style={{ color }}
+														>
+															{label}
+														</div>
+														<div className="text-xs text-text-muted mt-0.5">
+															{desc}
+														</div>
+													</div>
+												</div>
+											))}
+										</div>
+									</div>
+
+									{/* Format / Schema */}
+									<div className="space-y-2">
+										<h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+											<FileJson
+												size={14}
+												className="text-accent-purple"
+												aria-hidden="true"
+											/>
+											מבנה שדות — Schema
+										</h3>
+										<div className="glass-card card-spotlight overflow-hidden">
+											<table className="w-full text-xs">
+												<thead>
+													<tr className="border-b border-border">
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted"
+														>
+															שדה
+														</th>
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted"
+														>
+															סוג
+														</th>
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted hidden sm:table-cell"
+														>
+															דוגמה
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													{BEADS_FIELDS.map(
+														({ field, type, example, color }) => (
+															<tr
+																key={field}
+																className="border-b border-border last:border-0"
+															>
+																<td
+																	className="px-3 py-2 font-mono font-semibold"
+																	style={{ color }}
+																>
+																	{field}
+																</td>
+																<td className="px-3 py-2 text-text-muted">
+																	{type}
+																</td>
+																<td
+																	className="px-3 py-2 font-mono text-text-muted hidden sm:table-cell truncate max-w-[200px]"
+																	dir="ltr"
+																>
+																	{example}
+																</td>
+															</tr>
+														),
+													)}
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									{/* Parse example */}
+									<div className="space-y-2">
+										<h3 className="text-sm font-semibold text-text-primary">
+											ניתוח beads.jsonl
+										</h3>
+										<CodeBlock>{`# קריאת תקציר כל רשומה (100 תווים ראשונים)
 python3 -c "
 import json
 for line in open('~/.claude/knowledge/beads.jsonl'):
@@ -962,19 +993,20 @@ for k, v in counter.most_common(): print(f'{k}: {v}')
 
 # ייבוא ל-LanceDB אחרי שחזור
 python3 ~/.claude/scripts/hydra-v2/migrate_beads.py`}</CodeBlock>
-					</div>
+									</div>
 
-					{/* Size management */}
-					<div className="space-y-2">
-						<h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
-							ניהול גודל
-						</h3>
-						<div className="space-y-2">
-							<AlertBox type="warning">
-								סיבוב beads.jsonl מעל 500 שורות — שמור את ה-500 האחרונות. לפני
-								הסיבוב, בצע ייבוא ל-LanceDB כדי לא לאבד זיכרון.
-							</AlertBox>
-							<CodeBlock>{`# בדוק מספר שורות
+									{/* Size management */}
+									<div className="space-y-2">
+										<h3 className="text-sm font-semibold text-text-primary">
+											ניהול גודל
+										</h3>
+										<div className="space-y-2">
+											<AlertBox type="warning">
+												סיבוב beads.jsonl מעל 500 שורות — שמור את ה-500
+												האחרונות. לפני הסיבוב, בצע ייבוא ל-LanceDB כדי לא לאבד
+												זיכרון.
+											</AlertBox>
+											<CodeBlock>{`# בדוק מספר שורות
 wc -l ~/.claude/knowledge/beads.jsonl
 
 # סיבוב — שמור 500 אחרונות
@@ -983,106 +1015,122 @@ mv /tmp/beads.tmp ~/.claude/knowledge/beads.jsonl
 
 # JSONL בטוח — כתיבה נכונה (עם tr)
 echo '{"timestamp":"...","data":"..."}' | tr '\\n' ' ' >> beads.jsonl`}</CodeBlock>
-						</div>
-					</div>
-				</div>
-			</AccordionSection>
-
-			{/* ── Section 4: Rotation Table ── */}
-			<AccordionSection
-				id="log-rotation"
-				title="Log Rotation — מדיניות סיבוב"
-				subtitle="טבלה מלאה: גודל מקסימלי, מדיניות, ופקודות ניקוי"
-				icon={<RotateCcw size={18} />}
-				defaultOpen
-				accentColor="var(--color-accent-green)"
-			>
-				<div className="space-y-4">
-					<div className="glass-card overflow-hidden">
-						<div className="overflow-x-auto">
-							<table className="w-full text-xs">
-								<thead>
-									<tr className="border-b border-[var(--color-border)] bg-[var(--color-bg-tertiary)]">
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)]">
-											קובץ
-										</th>
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)] hidden sm:table-cell">
-											גודל מקס׳
-										</th>
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)]">
-											מדיניות
-										</th>
-										<th className="px-3 py-2.5 text-start font-semibold text-[var(--color-text-muted)]">
-											עדיפות
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{ROTATION_ROWS.map((row) => (
-										<tr
-											key={row.file}
-											className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-tertiary)] transition-colors"
-										>
-											<td className="px-3 py-2.5 font-mono text-[var(--color-accent-cyan)]">
-												{row.file}
-											</td>
-											<td
-												className="px-3 py-2.5 text-[var(--color-text-secondary)] hidden sm:table-cell"
-												dir="ltr"
-											>
-												{row.maxSize}
-											</td>
-											<td className="px-3 py-2.5 text-[var(--color-text-secondary)]">
-												{row.policy}
-											</td>
-											<td className="px-3 py-2.5">
-												<Badge
-													label={PRIORITY_LABEL[row.priority]}
-													color={PRIORITY_COLOR[row.priority]}
-												/>
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-					{/* Commands per file */}
-					<div className="space-y-3">
-						<h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
-							פקודות סיבוב לפי קובץ
-						</h3>
-						{ROTATION_ROWS.filter(
-							(r) =>
-								r.priority !== "low" || r.file === "hydra-structured.jsonl",
-						).map((row) => (
-							<div key={row.file} className="space-y-1">
-								<div className="flex items-center gap-2">
-									<Badge
-										label={
-											row.priority === "high"
-												? "דחוף"
-												: row.priority === "medium"
-													? "בינוני"
-													: "אוטומטי"
-										}
-										color={PRIORITY_COLOR[row.priority]}
-									/>
-									<span className="text-xs font-mono text-[var(--color-accent-cyan)]">
-										{row.file}
-									</span>
+										</div>
+									</div>
 								</div>
-								<CodeBlock>{row.command}</CodeBlock>
-							</div>
-						))}
-					</div>
+							</AccordionSection>
+						)}
 
-					<AlertBox type="info">
-						logrotate לניהול אוטומטי — הוסף ל-/etc/logrotate.d/hydra-watcher כדי
-						לסובב אוטומטית כשמגיע ל-50MB. בלעדי זה, הסיבוב נדרש ידנית.
-					</AlertBox>
-					<CodeBlock>{`# /etc/logrotate.d/hydra-watcher
+						{/* ── Section 4: Rotation Table ── */}
+						{activeTab === "rotation" && (
+							<AccordionSection
+								id="log-rotation"
+								title="Log Rotation — מדיניות סיבוב"
+								subtitle="טבלה מלאה: גודל מקסימלי, מדיניות, ופקודות ניקוי"
+								icon={<RotateCcw size={18} />}
+								defaultOpen
+								accentColor="var(--color-accent-green)"
+							>
+								<div className="space-y-4">
+									<div className="glass-card card-spotlight overflow-hidden">
+										<div className="overflow-x-auto">
+											<table className="w-full text-xs">
+												<thead>
+													<tr className="border-b border-border bg-bg-tertiary">
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted"
+														>
+															קובץ
+														</th>
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted hidden sm:table-cell"
+														>
+															גודל מקס׳
+														</th>
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted"
+														>
+															מדיניות
+														</th>
+														<th
+															scope="col"
+															className="px-3 py-2.5 text-start font-semibold text-text-muted"
+														>
+															עדיפות
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													{ROTATION_ROWS.map((row) => (
+														<tr
+															key={row.file}
+															className="border-b border-border last:border-0 hover:bg-bg-tertiary transition-colors"
+														>
+															<td className="px-3 py-2.5 font-mono text-accent-cyan">
+																{row.file}
+															</td>
+															<td
+																className="px-3 py-2.5 text-text-secondary hidden sm:table-cell"
+																dir="ltr"
+															>
+																{row.maxSize}
+															</td>
+															<td className="px-3 py-2.5 text-text-secondary">
+																{row.policy}
+															</td>
+															<td className="px-3 py-2.5">
+																<Badge
+																	label={PRIORITY_LABEL[row.priority]}
+																	color={PRIORITY_COLOR[row.priority]}
+																/>
+															</td>
+														</tr>
+													))}
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									{/* Commands per file */}
+									<div className="space-y-3">
+										<h3 className="text-sm font-semibold text-text-primary">
+											פקודות סיבוב לפי קובץ
+										</h3>
+										{ROTATION_ROWS.filter(
+											(r) =>
+												r.priority !== "low" ||
+												r.file === "hydra-structured.jsonl",
+										).map((row) => (
+											<div key={row.file} className="space-y-1">
+												<div className="flex items-center gap-2">
+													<Badge
+														label={
+															row.priority === "high"
+																? "דחוף"
+																: row.priority === "medium"
+																	? "בינוני"
+																	: "אוטומטי"
+														}
+														color={PRIORITY_COLOR[row.priority]}
+													/>
+													<span className="text-xs font-mono text-accent-cyan">
+														{row.file}
+													</span>
+												</div>
+												<CodeBlock>{row.command}</CodeBlock>
+											</div>
+										))}
+									</div>
+
+									<AlertBox type="info">
+										logrotate לניהול אוטומטי — הוסף
+										ל-/etc/logrotate.d/hydra-watcher כדי לסובב אוטומטית כשמגיע
+										ל-50MB. בלעדי זה, הסיבוב נדרש ידנית.
+									</AlertBox>
+									<CodeBlock>{`# /etc/logrotate.d/hydra-watcher
 /home/nadavcohen/.config/agents/logs/hydra-watcher.jsonl {
     size 50M
     rotate 5
@@ -1093,150 +1141,159 @@ echo '{"timestamp":"...","data":"..."}' | tr '\\n' ' ' >> beads.jsonl`}</CodeBlo
         systemctl --user restart hydra-watcher 2>/dev/null || true
     endscript
 }`}</CodeBlock>
-				</div>
-			</AccordionSection>
-
-			{/* ── Section 5: Troubleshooting ── */}
-			<AccordionSection
-				id="troubleshooting"
-				title="פתרון בעיות"
-				subtitle="בעיות נפוצות ופתרונות מוכחים"
-				icon={<AlertTriangle size={18} />}
-				defaultOpen
-				accentColor="var(--color-accent-red)"
-			>
-				<div className="space-y-4">
-					{TROUBLESHOOT_ITEMS.map((item) => (
-						<div key={item.problem} className="glass-card p-4 space-y-3">
-							{/* Problem header */}
-							<div className="flex items-start gap-3">
-								<div
-									className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-									style={{
-										background:
-											item.severity === "error"
-												? "oklch(from var(--color-accent-red) l c h / 0.15)"
-												: item.severity === "warning"
-													? "oklch(from var(--color-accent-amber) l c h / 0.15)"
-													: "oklch(from var(--color-accent-blue) l c h / 0.15)",
-									}}
-								>
-									<span
-										style={{
-											color:
-												item.severity === "error"
-													? "var(--color-accent-red)"
-													: item.severity === "warning"
-														? "var(--color-accent-amber)"
-														: "var(--color-accent-blue)",
-										}}
-										aria-hidden="true"
-									>
-										{item.severity === "error" ? (
-											<Trash2 size={14} />
-										) : item.severity === "warning" ? (
-											<AlertTriangle size={14} />
-										) : (
-											<Info size={14} />
-										)}
-									</span>
 								</div>
-								<div className="flex-1 min-w-0">
-									<div className="text-sm font-semibold text-[var(--color-text-primary)]">
-										{item.problem}
+							</AccordionSection>
+						)}
+
+						{/* ── Section 5: Troubleshooting ── */}
+						{activeTab === "rotation" && (
+							<AccordionSection
+								id="troubleshooting"
+								title="פתרון בעיות"
+								subtitle="בעיות נפוצות ופתרונות מוכחים"
+								icon={<AlertTriangle size={18} />}
+								defaultOpen
+								accentColor="var(--color-accent-red)"
+							>
+								<div className="space-y-4">
+									{TROUBLESHOOT_ITEMS.map((item) => (
+										<div
+											key={item.problem}
+											className="glass-card card-spotlight p-4 space-y-3"
+										>
+											{/* Problem header */}
+											<div className="flex items-start gap-3">
+												<div
+													className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+													style={{
+														background:
+															item.severity === "error"
+																? "oklch(from var(--color-accent-red) l c h / 0.15)"
+																: item.severity === "warning"
+																	? "oklch(from var(--color-accent-amber) l c h / 0.15)"
+																	: "oklch(from var(--color-accent-blue) l c h / 0.15)",
+													}}
+												>
+													<span
+														style={{
+															color:
+																item.severity === "error"
+																	? "var(--color-accent-red)"
+																	: item.severity === "warning"
+																		? "var(--color-accent-amber)"
+																		: "var(--color-accent-blue)",
+														}}
+														aria-hidden="true"
+													>
+														{item.severity === "error" ? (
+															<Trash2 size={14} />
+														) : item.severity === "warning" ? (
+															<AlertTriangle size={14} />
+														) : (
+															<Info size={14} />
+														)}
+													</span>
+												</div>
+												<div className="flex-1 min-w-0">
+													<div className="text-sm font-semibold text-text-primary">
+														{item.problem}
+													</div>
+													<div className="text-xs text-text-muted mt-0.5 leading-relaxed">
+														{item.symptom}
+													</div>
+												</div>
+												<Badge
+													label={
+														item.severity === "error"
+															? "שגיאה"
+															: item.severity === "warning"
+																? "אזהרה"
+																: "מידע"
+													}
+													color={
+														item.severity === "error"
+															? "var(--color-accent-red)"
+															: item.severity === "warning"
+																? "var(--color-accent-amber)"
+																: "var(--color-accent-blue)"
+													}
+												/>
+											</div>
+
+											{/* Solution */}
+											<p className="text-xs text-text-secondary leading-relaxed ps-11">
+												{item.solution}
+											</p>
+
+											{/* Command */}
+											{item.command && (
+												<div className="ps-11">
+													<CodeBlock>{item.command}</CodeBlock>
+												</div>
+											)}
+										</div>
+									))}
+
+									{/* Quick reference */}
+									<div className="glass-card card-spotlight p-4 space-y-3">
+										<div className="flex items-center gap-2">
+											<BookOpen
+												size={14}
+												className="text-accent-blue"
+												aria-hidden="true"
+											/>
+											<span className="text-sm font-semibold text-text-primary">
+												רשימת בדיקה מהירה — Checklist לניפוי שגיאות
+											</span>
+										</div>
+										<div className="space-y-1.5">
+											{[
+												"1. בדוק גודל hydra-watcher.jsonl — אם >50MB, סובב ידנית",
+												"2. הפעל health_check.py — בדוק SQLite ו-LanceDB",
+												"3. ספור תהליכי node: ps aux | grep node | grep -v grep | wc -l",
+												"4. בדוק שורות אחרונות בלוג: tail -20 hydra-watcher.jsonl",
+												"5. בדוק גודל כל הלוגים: du -sh ~/.config/agents/logs/*.jsonl",
+												"6. אם LanceDB פגום: מחק lancedb_memory/ והפעל מחדש",
+											].map((step) => (
+												<div
+													key={step}
+													className="text-xs text-text-secondary flex items-start gap-2"
+												>
+													<span
+														className="text-accent-blue shrink-0 mt-0.5"
+														aria-hidden="true"
+													>
+														›
+													</span>
+													{step}
+												</div>
+											))}
+										</div>
 									</div>
-									<div className="text-xs text-[var(--color-text-muted)] mt-0.5 leading-relaxed">
-										{item.symptom}
+
+									{/* Important rules */}
+									<div className="space-y-2">
+										<AlertBox type="error">
+											<strong>JSONL חייב להישמר בצורה נכונה</strong> — כל שורה
+											JSON עצמאי ללא newlines פנימיים. תמיד השתמש ב:{" "}
+											<code className="font-mono bg-black/20 px-1 rounded">
+												tr '\n' ' '
+											</code>{" "}
+											לפני כתיבה. שורה פגומה גורמת לשגיאת JSONDecodeError
+											שמפסיקה את כל הקריאה.
+										</AlertBox>
+										<AlertBox type="warning">
+											<strong>לעולם אל תמחק hydra-bayesian.json</strong> — קובץ
+											זה מאחסן ציוני Bayesian לכל הספקים. מחיקה מאפסת שבועות של
+											כיול נתונים ל-0.5 לכולם.
+										</AlertBox>
 									</div>
 								</div>
-								<Badge
-									label={
-										item.severity === "error"
-											? "שגיאה"
-											: item.severity === "warning"
-												? "אזהרה"
-												: "מידע"
-									}
-									color={
-										item.severity === "error"
-											? "var(--color-accent-red)"
-											: item.severity === "warning"
-												? "var(--color-accent-amber)"
-												: "var(--color-accent-blue)"
-									}
-								/>
-							</div>
-
-							{/* Solution */}
-							<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed ps-11">
-								{item.solution}
-							</p>
-
-							{/* Command */}
-							{item.command && (
-								<div className="ps-11">
-									<CodeBlock>{item.command}</CodeBlock>
-								</div>
-							)}
-						</div>
-					))}
-
-					{/* Quick reference */}
-					<div className="glass-card p-4 space-y-3">
-						<div className="flex items-center gap-2">
-							<BookOpen
-								size={14}
-								className="text-accent-blue"
-								aria-hidden="true"
-							/>
-							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
-								רשימת בדיקה מהירה — Checklist לניפוי שגיאות
-							</span>
-						</div>
-						<div className="space-y-1.5">
-							{[
-								"1. בדוק גודל hydra-watcher.jsonl — אם >50MB, סובב ידנית",
-								"2. הפעל health_check.py — בדוק SQLite ו-LanceDB",
-								"3. ספור תהליכי node: ps aux | grep node | grep -v grep | wc -l",
-								"4. בדוק שורות אחרונות בלוג: tail -20 hydra-watcher.jsonl",
-								"5. בדוק גודל כל הלוגים: du -sh ~/.config/agents/logs/*.jsonl",
-								"6. אם LanceDB פגום: מחק lancedb_memory/ והפעל מחדש",
-							].map((step) => (
-								<div
-									key={step}
-									className="text-xs text-[var(--color-text-secondary)] flex items-start gap-2"
-								>
-									<span
-										className="text-[var(--color-accent-blue)] shrink-0 mt-0.5"
-										aria-hidden="true"
-									>
-										›
-									</span>
-									{step}
-								</div>
-							))}
-						</div>
+							</AccordionSection>
+						)}
 					</div>
-
-					{/* Important rules */}
-					<div className="space-y-2">
-						<AlertBox type="error">
-							<strong>JSONL חייב להישמר בצורה נכונה</strong> — כל שורה JSON
-							עצמאי ללא newlines פנימיים. תמיד השתמש ב:{" "}
-							<code className="font-mono bg-black/20 px-1 rounded">
-								tr '\n' ' '
-							</code>{" "}
-							לפני כתיבה. שורה פגומה גורמת לשגיאת JSONDecodeError שמפסיקה את כל
-							הקריאה.
-						</AlertBox>
-						<AlertBox type="warning">
-							<strong>לעולם אל תמחק hydra-bayesian.json</strong> — קובץ זה מאחסן
-							ציוני Bayesian לכל הספקים. מחיקה מאפסת שבועות של כיול נתונים ל-0.5
-							לכולם.
-						</AlertBox>
-					</div>
-				</div>
-			</AccordionSection>
+				)}
+			</Tabs>
 		</div>
 	);
 }

@@ -1,6 +1,7 @@
-import { Activity, RefreshCw } from "lucide-react";
+import { Activity, ChevronLeft, RefreshCw, Search } from "lucide-react";
 import { useRunHealthCheck, useSystem } from "@/hooks/use-api";
 import { cn } from "@/lib/cn";
+import { CATEGORY_MAP, findRouteByHash } from "@/lib/routes";
 
 type SystemStatus = "healthy" | "degraded" | "critical";
 
@@ -33,24 +34,66 @@ const STATUS_CONFIG: Record<
 };
 
 interface HeaderProps {
+	category: string;
+	page: string;
 	onRefreshAll: () => void;
+	onOpenPalette: () => void;
 }
 
-export function Header({ onRefreshAll }: HeaderProps) {
+export function Header({
+	category,
+	page,
+	onRefreshAll,
+	onOpenPalette,
+}: HeaderProps) {
 	const { data: system, isRefetching } = useSystem();
 	const healthCheck = useRunHealthCheck();
 
 	const ramPct = system?.ram?.pct;
 	const status = deriveStatus(ramPct);
 	const cfg = STATUS_CONFIG[status];
-
 	const memPercent = ramPct != null ? Math.round(ramPct) : null;
+
+	// Breadcrumbs
+	const categoryDef = CATEGORY_MAP[category as keyof typeof CATEGORY_MAP];
+	const routeDef = findRouteByHash(category, page);
 
 	return (
 		<header className="sticky top-0 z-30 flex items-center gap-4 px-5 py-3 bg-bg-secondary/90 backdrop-blur-md border-b border-border">
+			{/* Breadcrumb */}
+			<nav
+				className="flex items-center gap-1.5 min-w-0 text-sm"
+				aria-label="מיקום"
+			>
+				{categoryDef && (
+					<>
+						<span className="text-text-muted truncate">
+							{categoryDef.label}
+						</span>
+						<ChevronLeft
+							size={12}
+							className="text-text-muted shrink-0 rtl:rotate-180"
+						/>
+					</>
+				)}
+				{routeDef && (
+					<span className="text-text-primary font-medium truncate">
+						{routeDef.title}
+					</span>
+				)}
+			</nav>
+
+			{/* Divider */}
+			<span className="w-px h-5 bg-border shrink-0" aria-hidden />
+
 			{/* Status Indicator */}
-			<div className="flex items-center gap-2 min-w-0">
-				<span className={cn("relative flex h-2.5 w-2.5 shrink-0")}>
+			<div
+				className="flex items-center gap-2 min-w-0"
+				role="status"
+				aria-label={`סטטוס מערכת: ${cfg.label}`}
+				aria-live="polite"
+			>
+				<span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
 					<span
 						className={cn(
 							"animate-ping absolute inline-flex h-full w-full rounded-full opacity-60",
@@ -69,12 +112,9 @@ export function Header({ onRefreshAll }: HeaderProps) {
 				</span>
 			</div>
 
-			{/* Divider */}
-			<span className="w-px h-5 bg-border shrink-0" aria-hidden />
-
 			{/* Memory */}
 			{memPercent !== null && (
-				<div className="flex items-center gap-1.5 hidden md:flex">
+				<div className="hidden md:flex items-center gap-1.5">
 					<Activity size={13} className="text-text-muted shrink-0" />
 					<span className="text-xs text-text-muted">RAM</span>
 					<span
@@ -89,7 +129,6 @@ export function Header({ onRefreshAll }: HeaderProps) {
 					>
 						{memPercent}%
 					</span>
-					{/* Mini progress bar */}
 					<div className="w-14 h-1.5 rounded-full bg-bg-tertiary overflow-hidden">
 						<div
 							className={cn(
@@ -106,19 +145,29 @@ export function Header({ onRefreshAll }: HeaderProps) {
 				</div>
 			)}
 
-			{/* Uptime */}
-			{system?.uptime && (
-				<span className="text-xs text-text-muted hidden lg:block">
-					פעיל:{" "}
-					<span className="text-text-secondary font-mono">{system.uptime}</span>
-				</span>
-			)}
-
 			{/* Spacer */}
 			<div className="flex-1" />
 
-			{/* Quick Actions */}
+			{/* Actions */}
 			<div className="flex items-center gap-2 shrink-0">
+				{/* Command Palette trigger */}
+				<button
+					type="button"
+					onClick={onOpenPalette}
+					className={cn(
+						"hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
+						"text-xs text-text-muted",
+						"border border-border hover:border-border-hover hover:bg-bg-tertiary",
+						"transition-all duration-150 min-h-9",
+					)}
+				>
+					<Search size={13} />
+					<span>חיפוש</span>
+					<kbd className="text-[10px] font-mono px-1 py-0.5 rounded bg-bg-primary border border-border ms-1">
+						⌘K
+					</kbd>
+				</button>
+
 				<button
 					type="button"
 					onClick={() => {
@@ -138,7 +187,7 @@ export function Header({ onRefreshAll }: HeaderProps) {
 						size={13}
 						className={cn(healthCheck.isPending && "animate-pulse")}
 					/>
-					<span className="hidden sm:inline">בדיקת בריאות</span>
+					<span className="hidden sm:inline">בדיקה</span>
 				</button>
 
 				<button

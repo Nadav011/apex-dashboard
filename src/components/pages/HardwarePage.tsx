@@ -21,8 +21,10 @@ import {
 	Wrench,
 	Zap,
 } from "lucide-react";
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { MetricGauge } from "@/components/ui/MetricGauge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Tabs } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
 
 // ── Static machine data ─────────────────────────────────────────────────────
@@ -219,7 +221,7 @@ function RamGauge({
 					roundCap: true,
 					lineStyle: {
 						width: 10,
-						color: [[1, "oklch(0.22 0.02 260)"]],
+						color: [[1, "var(--color-bg-elevated)"]],
 					},
 				},
 				axisTick: { show: false },
@@ -228,7 +230,7 @@ function RamGauge({
 				detail: {
 					valueAnimation: true,
 					formatter: `{value} GB\n${pct}%`,
-					color: "oklch(0.95 0.01 260)",
+					color: "var(--color-text-primary)",
 					fontSize: 12,
 					fontFamily: "Heebo, Inter, system-ui",
 					offsetCenter: [0, "10%"],
@@ -258,20 +260,20 @@ function CiRunnersChart({ popOs, lenovo }: { popOs: number; lenovo: number }) {
 			type: "category",
 			data: ["Lenovo", "MSI"],
 			axisLabel: {
-				color: "oklch(0.55 0.02 260)",
+				color: "var(--color-text-muted)",
 				fontSize: 11,
 				fontFamily: "Heebo, Inter, system-ui",
 			},
-			axisLine: { lineStyle: { color: "oklch(0.28 0.02 260)" } },
+			axisLine: { lineStyle: { color: "var(--color-border)" } },
 			axisTick: { show: false },
 		},
 		yAxis: {
 			type: "value",
 			axisLabel: {
-				color: "oklch(0.55 0.02 260)",
+				color: "var(--color-text-muted)",
 				fontSize: 10,
 			},
-			splitLine: { lineStyle: { color: "oklch(0.22 0.02 260)" } },
+			splitLine: { lineStyle: { color: "var(--color-bg-elevated)" } },
 		},
 		series: [
 			{
@@ -280,14 +282,14 @@ function CiRunnersChart({ popOs, lenovo }: { popOs: number; lenovo: number }) {
 					{
 						value: popOs,
 						itemStyle: {
-							color: "oklch(0.65 0.18 250)",
+							color: "var(--color-accent-blue)",
 							borderRadius: [4, 4, 0, 0],
 						},
 					},
 					{
 						value: lenovo,
 						itemStyle: {
-							color: "oklch(0.62 0.2 290)",
+							color: "var(--color-accent-purple)",
 							borderRadius: [4, 4, 0, 0],
 						},
 					},
@@ -296,7 +298,7 @@ function CiRunnersChart({ popOs, lenovo }: { popOs: number; lenovo: number }) {
 				label: {
 					show: true,
 					position: "top",
-					color: "oklch(0.95 0.01 260)",
+					color: "var(--color-text-primary)",
 					fontSize: 13,
 					fontWeight: "bold",
 					fontFamily: "Heebo, Inter, system-ui",
@@ -506,14 +508,14 @@ function CompareTable() {
 						</th>
 						<th
 							className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider w-1/3"
-							style={{ color: "oklch(0.65 0.18 250)" }}
+							style={{ color: "var(--color-accent-blue)" }}
 							scope="col"
 						>
 							Lenovo
 						</th>
 						<th
 							className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider w-1/3"
-							style={{ color: "oklch(0.62 0.2 290)" }}
+							style={{ color: "var(--color-accent-purple)" }}
 							scope="col"
 						>
 							MSI
@@ -602,7 +604,7 @@ function ResourcePanel({
 	const ciPct = Math.round((ciRunners / totalCiRunners) * 100);
 
 	return (
-		<div className="glass-card p-5 space-y-5">
+		<div className="glass-card card-spotlight p-5 space-y-5">
 			{/* Header */}
 			<div className="flex items-center gap-2">
 				<span
@@ -629,35 +631,18 @@ function ResourcePanel({
 				<RamGauge usedGb={ramUsed} totalGb={ramTotal} color={color} />
 			</div>
 
-			{/* Progress bars */}
-			<div className="space-y-3">
-				<ProgressBar
-					label="אחסון דיסק"
+			{/* Metric gauges */}
+			<div className="grid grid-cols-2 gap-3">
+				<MetricGauge
 					value={diskPct}
-					color={color}
-					size="sm"
-					showValue
+					label="אחסון דיסק"
+					detail={`${diskUsed} / ${diskTotal} GB`}
 				/>
-				<div>
-					<div className="flex items-center justify-between mb-1.5">
-						<span className="text-xs font-medium text-text-secondary flex items-center gap-1">
-							<GitBranch size={11} aria-hidden="true" />
-							ריצות CI
-						</span>
-						<span
-							className="text-xs font-mono tabular-nums text-text-muted"
-							dir="ltr"
-						>
-							{ciRunners}
-						</span>
-					</div>
-					<ProgressBar
-						value={ciPct}
-						color={color}
-						size="sm"
-						showValue={false}
-					/>
-				</div>
+				<MetricGauge
+					value={ciPct}
+					label="ריצות CI"
+					detail={`${ciRunners} / ${totalCiRunners}`}
+				/>
 			</div>
 
 			{/* CPU cores grid */}
@@ -731,7 +716,7 @@ function MachineCard({
 }: MachineCardProps) {
 	return (
 		<article
-			className="glass-card p-6 flex flex-col gap-5"
+			className="glass-card card-spotlight p-6 flex flex-col gap-5"
 			style={{ borderColor: `${accentColor}30` }}
 			aria-label={`מחשב ${nickname}`}
 		>
@@ -886,434 +871,465 @@ function MachineCard({
 export function HardwarePage() {
 	return (
 		<div className="space-y-8" dir="rtl">
-			{/* Page header */}
-			<header>
-				<div className="flex items-center gap-3">
-					<div className="flex items-center justify-center w-10 h-10 rounded-xl bg-accent-blue/15 border border-accent-blue/30">
-						<Monitor
-							size={20}
-							className="text-accent-blue"
-							aria-hidden="true"
-						/>
-					</div>
-					<div>
-						<h1 className="text-xl font-bold text-text-primary">
-							חומרה ומכונות
-						</h1>
-						<p className="text-sm text-text-muted mt-0.5">
-							מפרט מלא וניטור שתי מכונות הפיתוח
-						</p>
-					</div>
-				</div>
-			</header>
+			<PageHeader
+				icon={Cpu}
+				title="חומרה"
+				description="מצב חומרה של שתי המכונות — Pop-OS ו-MSI"
+			/>
 
-			{/* Machine cards side by side */}
-			<section aria-label="מכונות פיתוח">
-				<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
-					מכונות
-				</h2>
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-					<MachineCard
-						isPrimary
-						nickname="Lenovo"
-						fullName="Lenovo"
-						hostname="pop-os"
-						ip="100.82.33.122"
-						cpu="Intel Core Ultra 9 275HX — 24 ליבות"
-						ram="64 GB"
-						gpu="RTX 5070 Ti Laptop"
-						storage="~500 GB SSD"
-						os="Pop!_OS 24.04"
-						machineRole="מכונת הפיתוח הראשית"
-						projects={POPOS_PROJECTS}
-						ciRunners="~17"
-						services={POPOS_SERVICES}
-						memOptimizations={[
-							"ZRAM 200 GB lz4",
-							"swappiness=180",
-							"THP=defer+madvise",
-							"earlyoom פעיל",
-						]}
-						nodejsVersion="v24.14.0 (fnm)"
-						tools={POPOS_TOOLS}
-						accentColor="oklch(0.65 0.18 250)"
-						roleIcon={<Monitor size={28} />}
-					/>
-
-					<MachineCard
-						isPrimary={false}
-						nickname="MSI"
-						fullName="MSI"
-						hostname="msi"
-						ip="100.87.247.87"
-						cpu="סטנדרטי"
-						ram="64 GB"
-						storage="SSD"
-						gpu="RTX 4060 Mobile"
-						os="Windows 11"
-						machineRole="פיתוח משני + Flutter"
-						projects={LENOVO_PROJECTS}
-						ciRunners="5"
-						criticalNote="ROLLUP_NATIVE_THREADS=0"
-						flutterPath="~/.flutter-sdk/bin/flutter"
-						connectionNote="Tailscale SSH מ-Lenovo"
-						nodejsVersion="v24.x (fnm)"
-						accentColor="oklch(0.62 0.2 290)"
-						roleIcon={<Server size={28} />}
-					/>
-				</div>
-			</section>
-
-			{/* Resource charts */}
-			<section aria-label="משאבים">
-				<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
-					ניצול משאבים (הערכה)
-				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<ResourcePanel
-						machineName="Lenovo"
-						ramUsed={28}
-						ramTotal={64}
-						diskUsed={220}
-						diskTotal={500}
-						cpuCores={24}
-						ciRunners={17}
-						totalCiRunners={22}
-						color="oklch(0.65 0.18 250)"
-					/>
-					<ResourcePanel
-						machineName="MSI"
-						ramUsed={14}
-						ramTotal={64}
-						diskUsed={150}
-						diskTotal={300}
-						cpuCores={null}
-						ciRunners={5}
-						totalCiRunners={22}
-						color="oklch(0.62 0.2 290)"
-					/>
-				</div>
-			</section>
-
-			{/* CI runners comparison chart */}
-			<section aria-label="השוואת ריצות CI">
-				<div className="glass-card p-5">
-					<div className="flex items-center gap-2 mb-4">
-						<GitBranch
-							size={16}
-							className="text-accent-blue"
-							aria-hidden="true"
-						/>
-						<h2 className="text-sm font-semibold text-text-primary">
-							ריצות CI לפי מכונה
-						</h2>
-					</div>
-					<CiRunnersChart popOs={17} lenovo={5} />
-				</div>
-			</section>
-
-			{/* Network section */}
-			<section aria-label="רשת ותקשורת">
-				<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
-					רשת ותקשורת
-				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					{/* Topology */}
-					<div className="glass-card p-5">
-						<div className="flex items-center gap-2 mb-1">
-							<Network
-								size={16}
-								className="text-accent-cyan"
-								aria-hidden="true"
-							/>
-							<h3 className="text-sm font-semibold text-text-primary">
-								Tailscale Mesh
-							</h3>
-						</div>
-						<p className="text-xs text-text-muted mb-2">
-							רשת mesh מוצפנת בין המכונות
-						</p>
-						<NetworkTopology />
-						<div className="mt-3 grid grid-cols-2 gap-3 text-xs">
-							<div className="flex items-center gap-2 p-2 rounded-lg bg-bg-elevated/60">
-								<Globe
-									size={12}
-									className="text-accent-blue"
-									aria-hidden="true"
-								/>
-								<div>
-									<div className="font-medium text-text-secondary">
-										IP Lenovo
-									</div>
-									<code className="text-text-muted font-mono" dir="ltr">
-										100.82.33.122
-									</code>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 p-2 rounded-lg bg-bg-elevated/60">
-								<Globe
-									size={12}
-									className="text-accent-purple"
-									aria-hidden="true"
-								/>
-								<div>
-									<div className="font-medium text-text-secondary">IP MSI</div>
-									<code className="text-text-muted font-mono" dir="ltr">
-										100.87.247.87
-									</code>
-								</div>
-							</div>
-						</div>
-					</div>
-					{/* Sync operations */}
-					<div className="glass-card p-5">
-						<div className="flex items-center gap-2 mb-1">
-							<ArrowLeftRight
-								size={16}
-								className="text-accent-amber"
-								aria-hidden="true"
-							/>
-							<h3 className="text-sm font-semibold text-text-primary">
-								פעולות סנכרון
-							</h3>
-						</div>
-						<p className="text-xs text-text-muted mb-4">
-							סנכרון קבצי קונפיגורציה ותצורה
-						</p>
-						<div className="space-y-0">
-							<SyncOpRow
-								cmd="claude-sync push"
-								desc="דחיפת הגדרות מ-Lenovo ל-MSI"
-							/>
-							<SyncOpRow cmd="claude-sync pull" desc="משיכת עדכונים מ-MSI" />
-							<SyncOpRow
-								cmd="rsync -avz ~/.claude/ msi:~/.claude/"
-								desc="סנכרון ספריות שאינן git"
-							/>
-							<SyncOpRow
-								cmd="ssh 100.87.247.87"
-								desc="גישה ישירה ל-MSI ב-Tailscale"
-							/>
-						</div>
-						<div className="mt-4 p-3 rounded-lg bg-accent-amber/8 border border-accent-amber/20">
-							<div className="flex items-start gap-2">
-								<Layers
-									size={13}
-									className="text-accent-amber shrink-0 mt-0.5"
-									aria-hidden="true"
-								/>
-								<p className="text-xs text-text-secondary">
-									<span className="font-semibold text-accent-amber">
-										סדר סנכרון:
-									</span>{" "}
-									push במקור ← pull ביעד ← פתרון קונפליקטים JSONL עם{" "}
-									<code className="font-mono">git checkout --theirs</code>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			{/* Comparison table */}
-			<section aria-label="טבלת השוואה">
-				<div className="glass-card p-5">
-					<div className="flex items-center gap-2 mb-5">
-						<ArrowLeftRight
-							size={16}
-							className="text-accent-blue"
-							aria-hidden="true"
-						/>
-						<h2 className="text-sm font-semibold text-text-primary">
-							השוואה מלאה
-						</h2>
-					</div>
-					<CompareTable />
-				</div>
-			</section>
-
-			{/* Quick-fact stat cards */}
-			<section aria-label="עובדות מהירות">
-				<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
-					עובדות מהירות
-				</h2>
-				<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-					{[
-						{
-							icon: <MemoryStick size={18} />,
-							label: "סה״כ RAM",
-							value: "94 GB",
-							color: "oklch(0.65 0.18 250)",
-						},
-						{
-							icon: <GitBranch size={18} />,
-							label: "סה״כ ריצות CI",
-							value: "~22",
-							color: "oklch(0.72 0.19 155)",
-						},
-						{
-							icon: <FolderGit2 size={18} />,
-							label: "סה״כ פרויקטים",
-							value: "21",
-							color: "oklch(0.78 0.16 75)",
-						},
-						{
-							icon: <Wifi size={18} />,
-							label: "רשת Tailscale",
-							value: "פעיל",
-							color: "oklch(0.72 0.19 155)",
-						},
-					].map(({ icon, label, value, color }) => (
-						<div key={label} className="glass-card p-4 flex items-center gap-4">
-							<div
-								className="flex items-center justify-center w-10 h-10 rounded-xl shrink-0"
-								style={{
-									background: `${color}15`,
-									border: `1px solid ${color}30`,
-								}}
-							>
-								<span style={{ color }}>{icon}</span>
-							</div>
-							<div>
-								<div className="text-xl font-bold" dir="ltr" style={{ color }}>
-									{value}
-								</div>
-								<div className="text-xs text-text-muted">{label}</div>
-							</div>
-						</div>
-					))}
-				</div>
-			</section>
-
-			{/* Lenovo critical rules */}
-			<section aria-label="כללים קריטיים MSI">
-				<div
-					className="glass-card p-5"
-					style={{ borderColor: "oklch(0.78 0.16 75 / 0.25)" }}
-				>
-					<div className="flex items-center gap-2 mb-4">
-						<Shield
-							size={16}
-							className="text-accent-amber"
-							aria-hidden="true"
-						/>
-						<h2 className="text-sm font-semibold text-text-primary">
-							כללים קריטיים — MSI
-						</h2>
-					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-						{[
-							{
-								title: "ROLLUP_NATIVE_THREADS=0",
-								desc: "חובה בכל build Vite/Rollup — ללא זה Rollup קורס",
-							},
-							{
-								title: "~/.flutter-sdk/bin/flutter",
-								desc: "נתיב Flutter הנכון — לא ~/.local/bin/flutter",
-							},
-							{
-								title: "Z (cash-control) — npm בלבד",
-								desc: "packageManager: npm@10.9.2 — לא pnpm",
-							},
-							{
-								title: "git operations ב-SSH",
-								desc: "פעולות git ב-MSI דרך Python subprocess",
-							},
-						].map(({ title, desc }) => (
-							<div
-								key={title}
-								className="flex items-start gap-3 p-3 rounded-lg bg-accent-amber/8 border border-accent-amber/15"
-							>
-								<Shield
-									size={13}
-									className="text-accent-amber shrink-0 mt-0.5"
-									aria-hidden="true"
-								/>
-								<div>
-									<code className="text-xs font-mono text-accent-amber block">
-										{title}
-									</code>
-									<span className="text-xs text-text-muted mt-0.5 block">
-										{desc}
-									</span>
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-
-			{/* Lenovo services detail */}
-			<section aria-label="שירותי Lenovo">
-				<div className="glass-card p-5">
-					<div className="flex items-center gap-2 mb-4">
-						<Server size={16} className="text-accent-blue" aria-hidden="true" />
-						<h2 className="text-sm font-semibold text-text-primary">
-							שירותים פעילים — Lenovo
-						</h2>
-					</div>
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-						{[
-							{
-								name: "Hydra Watcher",
-								desc: "מנהל תורי משימות LangGraph",
-								port: null,
-								color: "oklch(0.72 0.19 155)",
-							},
-							{
-								name: "Turbo Cache",
-								desc: "Turborepo Remote Cache Server",
-								port: 3030,
-								color: "oklch(0.78 0.16 75)",
-							},
-							{
-								name: "Dashboard API",
-								desc: "API לדשבורד זה",
-								port: 8743,
-								color: "oklch(0.65 0.18 250)",
-							},
-						].map(({ name, desc, port, color }) => (
-							<div
-								key={name}
-								className="flex flex-col gap-2 p-4 rounded-xl"
-								style={{
-									background: `${color}0a`,
-									border: `1px solid ${color}25`,
-								}}
-							>
-								<div className="flex items-center justify-between">
-									<span className="text-sm font-semibold text-text-primary">
-										{name}
-									</span>
-									{port && (
-										<code
-											className="text-xs font-mono rounded px-1.5 py-0.5"
-											dir="ltr"
-											style={{
-												background: `${color}15`,
-												color,
-											}}
-										>
-											:{port}
-										</code>
-									)}
-								</div>
-								<span className="text-xs text-text-muted">{desc}</span>
-								<div className="flex items-center gap-1.5 mt-1">
-									<span
-										className="w-1.5 h-1.5 rounded-full animate-pulse-status"
-										style={{ background: color }}
-										aria-hidden="true"
+			<Tabs
+				tabs={[
+					{ id: "lenovo", label: "Pop-OS" },
+					{ id: "msi", label: "MSI" },
+					{ id: "tools", label: "כלים" },
+				]}
+			>
+				{(activeTab) => (
+					<div className="space-y-8">
+						{/* Machine cards side by side */}
+						{activeTab === "lenovo" && (
+							<section aria-label="מכונות פיתוח">
+								<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
+									מכונות
+								</h2>
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 grid-cards stagger-grid">
+									<MachineCard
+										isPrimary
+										nickname="Lenovo"
+										fullName="Lenovo"
+										hostname="pop-os"
+										ip="100.82.33.122"
+										cpu="Intel Core Ultra 9 275HX — 24 ליבות"
+										ram="64 GB"
+										gpu="RTX 5070 Ti Laptop"
+										storage="~500 GB SSD"
+										os="Pop!_OS 24.04"
+										machineRole="מכונת הפיתוח הראשית"
+										projects={POPOS_PROJECTS}
+										ciRunners="~17"
+										services={POPOS_SERVICES}
+										memOptimizations={[
+											"ZRAM 200 GB lz4",
+											"swappiness=180",
+											"THP=defer+madvise",
+											"earlyoom פעיל",
+										]}
+										nodejsVersion="v24.14.0 (fnm)"
+										tools={POPOS_TOOLS}
+										accentColor="var(--color-accent-blue)"
+										roleIcon={<Monitor size={28} />}
 									/>
-									<span className="text-xs" style={{ color }}>
-										פעיל
-									</span>
+
+									<MachineCard
+										isPrimary={false}
+										nickname="MSI"
+										fullName="MSI"
+										hostname="msi"
+										ip="100.87.247.87"
+										cpu="סטנדרטי"
+										ram="64 GB"
+										storage="SSD"
+										gpu="RTX 4060 Mobile"
+										os="Windows 11"
+										machineRole="פיתוח משני + Flutter"
+										projects={LENOVO_PROJECTS}
+										ciRunners="5"
+										criticalNote="ROLLUP_NATIVE_THREADS=0"
+										flutterPath="~/.flutter-sdk/bin/flutter"
+										connectionNote="Tailscale SSH מ-Lenovo"
+										nodejsVersion="v24.x (fnm)"
+										accentColor="var(--color-accent-purple)"
+										roleIcon={<Server size={28} />}
+									/>
 								</div>
-							</div>
-						))}
+							</section>
+						)}
+
+						{/* Resource charts */}
+						{activeTab === "lenovo" && (
+							<section aria-label="משאבים">
+								<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
+									ניצול משאבים (הערכה)
+								</h2>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<ResourcePanel
+										machineName="Lenovo"
+										ramUsed={28}
+										ramTotal={64}
+										diskUsed={220}
+										diskTotal={500}
+										cpuCores={24}
+										ciRunners={17}
+										totalCiRunners={22}
+										color="var(--color-accent-blue)"
+									/>
+									<ResourcePanel
+										machineName="MSI"
+										ramUsed={14}
+										ramTotal={64}
+										diskUsed={150}
+										diskTotal={300}
+										cpuCores={null}
+										ciRunners={5}
+										totalCiRunners={22}
+										color="var(--color-accent-purple)"
+									/>
+								</div>
+							</section>
+						)}
+
+						{/* CI runners comparison chart */}
+						{activeTab === "lenovo" && (
+							<section aria-label="השוואת ריצות CI">
+								<div className="glass-card card-spotlight p-5">
+									<div className="flex items-center gap-2 mb-4">
+										<GitBranch
+											size={16}
+											className="text-accent-blue"
+											aria-hidden="true"
+										/>
+										<h2 className="text-sm font-semibold text-text-primary">
+											ריצות CI לפי מכונה
+										</h2>
+									</div>
+									<CiRunnersChart popOs={17} lenovo={5} />
+								</div>
+							</section>
+						)}
+
+						{/* Network section */}
+						{activeTab === "msi" && (
+							<section aria-label="רשת ותקשורת">
+								<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
+									רשת ותקשורת
+								</h2>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									{/* Topology */}
+									<div className="glass-card card-spotlight p-5">
+										<div className="flex items-center gap-2 mb-1">
+											<Network
+												size={16}
+												className="text-accent-cyan"
+												aria-hidden="true"
+											/>
+											<h3 className="text-sm font-semibold text-text-primary">
+												Tailscale Mesh
+											</h3>
+										</div>
+										<p className="text-xs text-text-muted mb-2">
+											רשת mesh מוצפנת בין המכונות
+										</p>
+										<NetworkTopology />
+										<div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+											<div className="flex items-center gap-2 p-2 rounded-lg bg-bg-elevated/60">
+												<Globe
+													size={12}
+													className="text-accent-blue"
+													aria-hidden="true"
+												/>
+												<div>
+													<div className="font-medium text-text-secondary">
+														IP Lenovo
+													</div>
+													<code className="text-text-muted font-mono" dir="ltr">
+														100.82.33.122
+													</code>
+												</div>
+											</div>
+											<div className="flex items-center gap-2 p-2 rounded-lg bg-bg-elevated/60">
+												<Globe
+													size={12}
+													className="text-accent-purple"
+													aria-hidden="true"
+												/>
+												<div>
+													<div className="font-medium text-text-secondary">
+														IP MSI
+													</div>
+													<code className="text-text-muted font-mono" dir="ltr">
+														100.87.247.87
+													</code>
+												</div>
+											</div>
+										</div>
+									</div>
+									{/* Sync operations */}
+									<div className="glass-card card-spotlight p-5">
+										<div className="flex items-center gap-2 mb-1">
+											<ArrowLeftRight
+												size={16}
+												className="text-accent-amber"
+												aria-hidden="true"
+											/>
+											<h3 className="text-sm font-semibold text-text-primary">
+												פעולות סנכרון
+											</h3>
+										</div>
+										<p className="text-xs text-text-muted mb-4">
+											סנכרון קבצי קונפיגורציה ותצורה
+										</p>
+										<div className="space-y-0">
+											<SyncOpRow
+												cmd="claude-sync push"
+												desc="דחיפת הגדרות מ-Lenovo ל-MSI"
+											/>
+											<SyncOpRow
+												cmd="claude-sync pull"
+												desc="משיכת עדכונים מ-MSI"
+											/>
+											<SyncOpRow
+												cmd="rsync -avz ~/.claude/ msi:~/.claude/"
+												desc="סנכרון ספריות שאינן git"
+											/>
+											<SyncOpRow
+												cmd="ssh 100.87.247.87"
+												desc="גישה ישירה ל-MSI ב-Tailscale"
+											/>
+										</div>
+										<div className="mt-4 p-3 rounded-lg bg-accent-amber/8 border border-accent-amber/20">
+											<div className="flex items-start gap-2">
+												<Layers
+													size={13}
+													className="text-accent-amber shrink-0 mt-0.5"
+													aria-hidden="true"
+												/>
+												<p className="text-xs text-text-secondary">
+													<span className="font-semibold text-accent-amber">
+														סדר סנכרון:
+													</span>{" "}
+													push במקור ← pull ביעד ← פתרון קונפליקטים JSONL עם{" "}
+													<code className="font-mono">
+														git checkout --theirs
+													</code>
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</section>
+						)}
+
+						{/* Comparison table */}
+						{activeTab === "tools" && (
+							<section aria-label="טבלת השוואה">
+								<div className="glass-card card-spotlight p-5">
+									<div className="flex items-center gap-2 mb-5">
+										<ArrowLeftRight
+											size={16}
+											className="text-accent-blue"
+											aria-hidden="true"
+										/>
+										<h2 className="text-sm font-semibold text-text-primary">
+											השוואה מלאה
+										</h2>
+									</div>
+									<CompareTable />
+								</div>
+							</section>
+						)}
+
+						{/* Quick-fact stat cards */}
+						{activeTab === "tools" && (
+							<section aria-label="עובדות מהירות">
+								<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">
+									עובדות מהירות
+								</h2>
+								<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+									{[
+										{
+											icon: <MemoryStick size={18} />,
+											label: "סה״כ RAM",
+											value: "94 GB",
+											color: "var(--color-accent-blue)",
+										},
+										{
+											icon: <GitBranch size={18} />,
+											label: "סה״כ ריצות CI",
+											value: "~22",
+											color: "var(--color-accent-green)",
+										},
+										{
+											icon: <FolderGit2 size={18} />,
+											label: "סה״כ פרויקטים",
+											value: "21",
+											color: "var(--color-accent-amber)",
+										},
+										{
+											icon: <Wifi size={18} />,
+											label: "רשת Tailscale",
+											value: "פעיל",
+											color: "var(--color-accent-green)",
+										},
+									].map(({ icon, label, value, color }) => (
+										<div
+											key={label}
+											className="glass-card card-spotlight p-4 flex items-center gap-4"
+										>
+											<div
+												className="flex items-center justify-center w-10 h-10 rounded-xl shrink-0"
+												style={{
+													background: `${color}15`,
+													border: `1px solid ${color}30`,
+												}}
+											>
+												<span style={{ color }}>{icon}</span>
+											</div>
+											<div>
+												<div
+													className="text-xl font-bold"
+													dir="ltr"
+													style={{ color }}
+												>
+													{value}
+												</div>
+												<div className="text-xs text-text-muted">{label}</div>
+											</div>
+										</div>
+									))}
+								</div>
+							</section>
+						)}
+
+						{/* Lenovo critical rules */}
+						{activeTab === "msi" && (
+							<section aria-label="כללים קריטיים MSI">
+								<div
+									className="glass-card card-spotlight p-5"
+									style={{ borderColor: "oklch(0.78 0.16 75 / 0.25)" }}
+								>
+									<div className="flex items-center gap-2 mb-4">
+										<Shield
+											size={16}
+											className="text-accent-amber"
+											aria-hidden="true"
+										/>
+										<h2 className="text-sm font-semibold text-text-primary">
+											כללים קריטיים — MSI
+										</h2>
+									</div>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+										{[
+											{
+												title: "ROLLUP_NATIVE_THREADS=0",
+												desc: "חובה בכל build Vite/Rollup — ללא זה Rollup קורס",
+											},
+											{
+												title: "~/.flutter-sdk/bin/flutter",
+												desc: "נתיב Flutter הנכון — לא ~/.local/bin/flutter",
+											},
+											{
+												title: "Z (cash-control) — npm בלבד",
+												desc: "packageManager: npm@10.9.2 — לא pnpm",
+											},
+											{
+												title: "git operations ב-SSH",
+												desc: "פעולות git ב-MSI דרך Python subprocess",
+											},
+										].map(({ title, desc }) => (
+											<div
+												key={title}
+												className="flex items-start gap-3 p-3 rounded-lg bg-accent-amber/8 border border-accent-amber/15"
+											>
+												<Shield
+													size={13}
+													className="text-accent-amber shrink-0 mt-0.5"
+													aria-hidden="true"
+												/>
+												<div>
+													<code className="text-xs font-mono text-accent-amber block">
+														{title}
+													</code>
+													<span className="text-xs text-text-muted mt-0.5 block">
+														{desc}
+													</span>
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
+							</section>
+						)}
+
+						{/* Lenovo services detail */}
+						{activeTab === "lenovo" && (
+							<section aria-label="שירותי Lenovo">
+								<div className="glass-card card-spotlight p-5">
+									<div className="flex items-center gap-2 mb-4">
+										<Server
+											size={16}
+											className="text-accent-blue"
+											aria-hidden="true"
+										/>
+										<h2 className="text-sm font-semibold text-text-primary">
+											שירותים פעילים — Lenovo
+										</h2>
+									</div>
+									<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+										{[
+											{
+												name: "Hydra Watcher",
+												desc: "מנהל תורי משימות LangGraph",
+												port: null,
+												color: "var(--color-accent-green)",
+											},
+											{
+												name: "Turbo Cache",
+												desc: "Turborepo Remote Cache Server",
+												port: 3030,
+												color: "var(--color-accent-amber)",
+											},
+											{
+												name: "Dashboard API",
+												desc: "API לדשבורד זה",
+												port: 8743,
+												color: "var(--color-accent-blue)",
+											},
+										].map(({ name, desc, port, color }) => (
+											<div
+												key={name}
+												className="flex flex-col gap-2 p-4 rounded-xl"
+												style={{
+													background: `${color}0a`,
+													border: `1px solid ${color}25`,
+												}}
+											>
+												<div className="flex items-center justify-between">
+													<span className="text-sm font-semibold text-text-primary">
+														{name}
+													</span>
+													{port && (
+														<code
+															className="text-xs font-mono rounded px-1.5 py-0.5"
+															dir="ltr"
+															style={{
+																background: `${color}15`,
+																color,
+															}}
+														>
+															:{port}
+														</code>
+													)}
+												</div>
+												<span className="text-xs text-text-muted">{desc}</span>
+												<div className="flex items-center gap-1.5 mt-1">
+													<span
+														className="w-1.5 h-1.5 rounded-full animate-pulse-status"
+														style={{ background: color }}
+														aria-hidden="true"
+													/>
+													<span className="text-xs" style={{ color }}>
+														פעיל
+													</span>
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
+							</section>
+						)}
 					</div>
-				</div>
-			</section>
+				)}
+			</Tabs>
 		</div>
 	);
 }

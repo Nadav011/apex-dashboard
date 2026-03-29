@@ -1,4 +1,5 @@
 import {
+	Activity,
 	AlertTriangle,
 	CheckCircle2,
 	Database,
@@ -9,6 +10,8 @@ import {
 	XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import {
 	useBackup,
 	useCleanOrphans,
@@ -16,6 +19,7 @@ import {
 	useStopHydra,
 	useSyncMsi,
 } from "@/hooks/use-api";
+import { toast } from "@/hooks/use-toast";
 import type { ControlResponse } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
@@ -212,10 +216,10 @@ function ActionCard({
 
 	const iconBgColor =
 		variant === "primary"
-			? "oklch(0.65 0.18 250)"
+			? "var(--color-accent-blue)"
 			: variant === "danger"
-				? "oklch(0.62 0.22 25)"
-				: "oklch(0.78 0.16 75)";
+				? "var(--color-accent-red)"
+				: "var(--color-accent-amber)";
 
 	return (
 		<>
@@ -229,7 +233,7 @@ function ActionCard({
 				/>
 			)}
 
-			<div className="glass-card p-5 flex flex-col gap-3">
+			<div className="glass-card card-spotlight p-5 flex flex-col gap-3">
 				{/* Icon + label */}
 				<div className="flex items-center gap-3">
 					<div
@@ -300,6 +304,7 @@ function ActionCard({
 // ── Action log entry ────────────────────────────────────────────────────
 function LogEntry({ entry }: { entry: ActionResult }) {
 	const isOk = entry.response.status === "ok";
+	const isWarn = entry.response.status === "warn";
 	return (
 		<div className="flex items-start gap-3 py-2.5 border-b border-border/40 last:border-0">
 			{isOk ? (
@@ -320,6 +325,9 @@ function LogEntry({ entry }: { entry: ActionResult }) {
 					<span className="text-sm font-medium text-text-primary">
 						{entry.actionLabel}
 					</span>
+					<Badge variant={isOk ? "success" : isWarn ? "warning" : "error"}>
+						{isOk ? "הצלחה" : isWarn ? "אזהרה" : "שגיאה"}
+					</Badge>
 					<span className="text-xs text-text-muted">
 						{entry.ts.toLocaleTimeString("he-IL")}
 					</span>
@@ -353,24 +361,27 @@ export function ControlPage() {
 				50,
 			),
 		);
+		if (result.status === "ok") {
+			toast("פעולה הושלמה בהצלחה", "success");
+		} else {
+			toast("שגיאה בביצוע פעולה", "error");
+		}
 	};
 
 	return (
 		<div className="space-y-6" dir="rtl">
-			{/* Header */}
-			<div>
-				<h1 className="text-xl font-bold text-text-primary">שליטה</h1>
-				<p className="text-sm text-text-muted mt-0.5">
-					פעולות ניהול מערכת APEX ו-Hydra
-				</p>
-			</div>
+			<PageHeader
+				icon={Activity}
+				title="שליטה"
+				description="פעולות שליטה — הפעלה/עצירה של שירותים, גיבוי, וניקוי"
+			/>
 
 			{/* Action cards grid */}
 			<section aria-label="פעולות שליטה">
 				<h2 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
 					פעולות זמינות
 				</h2>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-grid">
 					<ActionCard
 						label="הפעל הידרה"
 						description="מפעיל את תהליך Hydra v2 ומתחיל לעבד תוכניות מ-pending/"
@@ -431,7 +442,7 @@ export function ControlPage() {
 			</section>
 
 			{/* Action log */}
-			<div className="glass-card overflow-hidden">
+			<div className="glass-card card-spotlight overflow-hidden">
 				<div className="p-4 border-b border-border flex items-center justify-between">
 					<h2 className="text-sm font-semibold text-text-primary">
 						יומן פעולות

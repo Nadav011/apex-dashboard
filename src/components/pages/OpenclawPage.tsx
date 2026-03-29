@@ -2,6 +2,7 @@ import ReactECharts from "echarts-for-react";
 import { Cpu, FolderOpen, Package, Puzzle, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useOpenclawDetails } from "@/hooks/use-api";
 import type { OpenclawSkill } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -9,13 +10,13 @@ import { cn } from "@/lib/cn";
 // ── Category classification ────────────────────────────────────────────────────
 
 const CATEGORY_COLORS: Record<string, string> = {
-	"apex-": "oklch(0.65 0.18 250)",
-	"ui-": "oklch(0.75 0.14 200)",
-	"flutter-": "oklch(0.72 0.19 155)",
-	security: "oklch(0.62 0.22 25)",
-	"openclaw-": "oklch(0.62 0.2 290)",
-	"agent-": "oklch(0.78 0.16 75)",
-	other: "oklch(0.55 0.02 260)",
+	"apex-": "var(--color-accent-blue)",
+	"ui-": "var(--color-accent-cyan)",
+	"flutter-": "var(--color-accent-green)",
+	security: "var(--color-accent-red)",
+	"openclaw-": "var(--color-accent-purple)",
+	"agent-": "var(--color-accent-amber)",
+	other: "var(--color-text-muted)",
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -63,7 +64,7 @@ function StatCard({
 }) {
 	return (
 		<div
-			className="glass-card p-4 flex items-center gap-4"
+			className="glass-card card-spotlight p-4 flex items-center gap-4"
 			style={{ borderColor: `${color}4d` }}
 		>
 			<span
@@ -81,9 +82,7 @@ function StatCard({
 				>
 					{value}
 				</div>
-				<div className="mt-0.5 text-xs text-[var(--color-text-muted)]">
-					{label}
-				</div>
+				<div className="mt-0.5 text-xs text-text-muted">{label}</div>
 			</div>
 		</div>
 	);
@@ -111,12 +110,12 @@ function SkillCard({ skill }: { skill: OpenclawSkill }) {
 
 	return (
 		<div
-			className="glass-card p-4 flex flex-col gap-2.5 hover:shadow-[0_0_16px_oklch(0.65_0.18_250/0.15)] transition-shadow duration-200"
+			className="glass-card card-spotlight p-4 flex flex-col gap-2.5 hover:shadow-[0_0_16px_oklch(0.65_0.18_250/0.15)] transition-shadow duration-200"
 			style={{ borderColor: `${color}33` }}
 		>
 			{/* Top row: name + badge */}
 			<div className="flex items-start justify-between gap-2">
-				<span className="text-sm font-semibold text-[var(--color-text-primary)] truncate leading-tight">
+				<span className="text-sm font-semibold text-text-primary truncate leading-tight">
 					{skill.name}
 				</span>
 				<CategoryBadge cat={cat} />
@@ -124,7 +123,7 @@ function SkillCard({ skill }: { skill: OpenclawSkill }) {
 
 			{/* Description */}
 			{skill.description && (
-				<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
+				<p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
 					{skill.description}
 				</p>
 			)}
@@ -132,7 +131,7 @@ function SkillCard({ skill }: { skill: OpenclawSkill }) {
 			{/* Footer: size + version */}
 			<div className="flex items-center justify-between mt-auto pt-1">
 				<span
-					className="text-xs font-mono text-[var(--color-text-muted)] tabular-nums"
+					className="text-xs font-mono text-text-muted tabular-nums"
 					dir="ltr"
 				>
 					{skill.size_kb} KB
@@ -166,8 +165,8 @@ function CategoryPieChart({
 		tooltip: {
 			trigger: "item",
 			backgroundColor: "oklch(0.19 0.015 260)",
-			borderColor: "oklch(0.28 0.02 260)",
-			textStyle: { color: "oklch(0.95 0.01 260)", fontSize: 12 },
+			borderColor: "var(--color-border)",
+			textStyle: { color: "var(--color-text-primary)", fontSize: 12 },
 			formatter: "{b}: {c} ({d}%)",
 		},
 		legend: {
@@ -207,7 +206,7 @@ function CategoryPieChart({
 							style: {
 								text: String(total),
 								textAlign: "center",
-								fill: "oklch(0.95 0.01 260)",
+								fill: "var(--color-text-primary)",
 								fontSize: 18,
 								fontWeight: "bold",
 							},
@@ -228,19 +227,17 @@ function CategoryPieChart({
 
 function SubagentRow({ name, path }: { name: string; path: string }) {
 	return (
-		<div className="flex items-center gap-3 py-2.5 border-b border-[var(--color-border)] last:border-0">
+		<div className="flex items-center gap-3 py-2.5 border-b border-border last:border-0">
 			<Cpu
 				size={14}
-				className="shrink-0 text-[var(--color-accent-purple)]"
+				className="shrink-0 text-accent-purple"
 				aria-hidden="true"
 			/>
 			<div className="flex-1 min-w-0">
-				<span className="text-sm font-medium text-[var(--color-text-primary)]">
-					{name}
-				</span>
+				<span className="text-sm font-medium text-text-primary">{name}</span>
 			</div>
 			<span
-				className="text-xs font-mono text-[var(--color-text-muted)] truncate max-w-[200px]"
+				className="text-xs font-mono text-text-muted truncate max-w-[200px]"
 				dir="ltr"
 			>
 				{path}
@@ -287,65 +284,57 @@ export function OpenclawPage() {
 	if (error) {
 		return (
 			<div className="flex items-center justify-center min-h-64">
-				<div className="glass-card p-8 text-center">
+				<div className="glass-card card-spotlight p-8 text-center">
 					<Puzzle
 						size={32}
-						className="mx-auto mb-3 text-[var(--color-status-critical)] opacity-60"
+						className="mx-auto mb-3 text-status-critical opacity-60"
 					/>
-					<p className="text-sm text-[var(--color-text-muted)]">
-						שגיאה בטעינת נתוני OpenClaw
-					</p>
+					<p className="text-sm text-text-muted">שגיאה בטעינת נתוני OpenClaw</p>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
+		<div className="flex flex-col gap-6 min-h-screen p-6">
+			<PageHeader
+				icon={Puzzle}
+				title="OpenClaw"
+				description="מערכת ה-Skills הפתוחה — גרסה, רשימת Skills, וסאב-אגנטים"
+			/>
+
 			{/* Header */}
 			<div className="flex items-center gap-3">
-				<Puzzle
-					size={20}
-					className="text-[var(--color-accent-purple)]"
-					aria-hidden="true"
-				/>
-				<div>
-					<h1 className="text-lg font-bold text-[var(--color-text-primary)]">
-						OpenClaw
-					</h1>
-					<p className="text-sm text-[var(--color-text-muted)]">
-						מיומנויות · סוכנים · פלאגינים · ניהול יכולות
-					</p>
-				</div>
+				<Puzzle size={20} className="text-accent-purple" aria-hidden="true" />
 			</div>
 
 			{/* Summary stats */}
-			<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+			<div className="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger-grid">
 				<StatCard
 					icon={<Package size={20} />}
 					label="מיומנויות"
 					value={isLoading ? "—" : (data?.skills_count ?? 0)}
-					color="oklch(0.62 0.2 290)"
+					color="var(--color-accent-purple)"
 				/>
 				<StatCard
 					icon={<Cpu size={20} />}
 					label="סוכנים"
 					value={isLoading ? "—" : (data?.subagents_count ?? 0)}
-					color="oklch(0.65 0.18 250)"
+					color="var(--color-accent-blue)"
 				/>
 				<StatCard
 					icon={<FolderOpen size={20} />}
 					label="גרסה"
 					value={isLoading ? "—" : data?.version || "—"}
-					color="oklch(0.72 0.19 155)"
+					color="var(--color-accent-green)"
 				/>
 			</div>
 
 			{/* Charts row + subagents */}
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-grid">
 				<GlassCard title="קטגוריות מיומנויות" icon={<Puzzle size={16} />}>
 					{isLoading ? (
-						<div className="h-[200px] flex items-center justify-center text-sm text-[var(--color-text-muted)]">
+						<div className="h-[200px] flex items-center justify-center text-sm text-text-muted">
 							טוען...
 						</div>
 					) : (
@@ -358,11 +347,11 @@ export function OpenclawPage() {
 					icon={<Cpu size={16} />}
 				>
 					{isLoading ? (
-						<div className="py-6 text-center text-sm text-[var(--color-text-muted)]">
+						<div className="py-6 text-center text-sm text-text-muted">
 							טוען...
 						</div>
 					) : subagents.length === 0 ? (
-						<p className="text-sm text-[var(--color-text-muted)] text-center py-6">
+						<p className="text-sm text-text-muted text-center py-6">
 							אין סוכנים
 						</p>
 					) : (
@@ -378,7 +367,7 @@ export function OpenclawPage() {
 			{/* Skills grid with search */}
 			<div className="flex flex-col gap-4">
 				<div className="flex items-center justify-between flex-wrap gap-3">
-					<h2 className="text-sm font-semibold text-[var(--color-text-secondary)]">
+					<h2 className="text-sm font-semibold text-text-secondary">
 						מיומנויות ({filteredSkills.length}
 						{search ? `/${skills.length}` : ""})
 					</h2>
@@ -387,7 +376,7 @@ export function OpenclawPage() {
 					<label className="relative flex items-center">
 						<Search
 							size={14}
-							className="absolute inset-s-3 text-[var(--color-text-muted)] pointer-events-none"
+							className="absolute inset-s-3 text-text-muted pointer-events-none"
 							aria-hidden="true"
 						/>
 						<input
@@ -397,10 +386,10 @@ export function OpenclawPage() {
 							onChange={(e) => setSearch(e.target.value)}
 							className={cn(
 								"ps-8 pe-3 py-2 text-sm rounded-lg w-56",
-								"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
-								"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
+								"bg-bg-elevated border border-border",
+								"text-text-primary placeholder:text-text-muted",
 								"focus:outline-none focus:ring-1 focus:ring-[var(--color-accent-blue)]",
-								"focus:border-[var(--color-accent-blue)] transition-colors duration-150",
+								"focus:border-accent-blue transition-colors duration-150",
 							)}
 							aria-label="חיפוש מיומנות"
 						/>
@@ -408,28 +397,28 @@ export function OpenclawPage() {
 				</div>
 
 				{isLoading ? (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger-grid">
 						{Array.from({ length: 6 }).map((_, i) => (
 							<div
 								// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder
 								key={i}
-								className="glass-card h-28 animate-pulse"
+								className="glass-card card-spotlight h-28 animate-pulse"
 								aria-hidden="true"
 							/>
 						))}
 					</div>
 				) : filteredSkills.length === 0 ? (
-					<div className="glass-card p-10 text-center">
+					<div className="glass-card card-spotlight p-10 text-center">
 						<Search
 							size={28}
-							className="mx-auto mb-3 text-[var(--color-text-muted)] opacity-40"
+							className="mx-auto mb-3 text-text-muted opacity-40"
 						/>
-						<p className="text-sm text-[var(--color-text-muted)]">
+						<p className="text-sm text-text-muted">
 							{search ? "לא נמצאו תוצאות" : "אין מיומנויות"}
 						</p>
 					</div>
 				) : (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger-grid">
 						{filteredSkills.map((skill) => (
 							<SkillCard key={skill.slug} skill={skill} />
 						))}
