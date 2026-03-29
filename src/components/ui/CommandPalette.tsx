@@ -115,8 +115,6 @@ export function CommandPalette({
 		[flatResults, selectedIdx, handleSelect, onClose],
 	);
 
-	if (!open) return null;
-
 	let flatIdx = -1;
 
 	return (

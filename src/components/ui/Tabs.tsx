@@ -19,13 +19,22 @@ export function Tabs({ tabs, defaultTab, children, className }: TabsProps) {
 	const [activeTab, setActiveTab] = useState(defaultTab ?? tabs[0]?.id ?? "");
 	const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
 	const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	const updateIndicator = useCallback(() => {
 		const el = tabRefs.current.get(activeTab);
-		if (el) {
+		const container = containerRef.current;
+		if (el && container) {
+			const containerRect = container.getBoundingClientRect();
+			const elRect = el.getBoundingClientRect();
+			// Use inset-inline-start for RTL-safe positioning
+			const inlineStart =
+				document.dir === "rtl" || document.documentElement.dir === "rtl"
+					? containerRect.right - elRect.right
+					: elRect.left - containerRect.left;
 			setIndicatorStyle({
-				width: el.offsetWidth,
-				transform: `translateX(${el.offsetLeft}px)`,
+				width: elRect.width,
+				insetInlineStart: inlineStart,
 			});
 		}
 	}, [activeTab]);
@@ -39,7 +48,7 @@ export function Tabs({ tabs, defaultTab, children, className }: TabsProps) {
 	return (
 		<div className={className}>
 			{/* Tab bar */}
-			<div className="relative mb-5 border-b border-border">
+			<div className="relative mb-5 border-b border-border" ref={containerRef}>
 				<div
 					className="flex gap-1 overflow-x-auto scrollbar-hide"
 					role="tablist"
@@ -52,6 +61,7 @@ export function Tabs({ tabs, defaultTab, children, className }: TabsProps) {
 								key={tab.id}
 								ref={(el) => {
 									if (el) tabRefs.current.set(tab.id, el);
+									else tabRefs.current.delete(tab.id);
 								}}
 								type="button"
 								role="tab"
@@ -71,7 +81,7 @@ export function Tabs({ tabs, defaultTab, children, className }: TabsProps) {
 						);
 					})}
 				</div>
-				{/* Animated underline */}
+				{/* Animated underline — uses inset-inline-start for RTL support */}
 				<span
 					className="absolute bottom-0 h-0.5 bg-accent-blue rounded-full transition-all duration-200 ease-out"
 					style={indicatorStyle}

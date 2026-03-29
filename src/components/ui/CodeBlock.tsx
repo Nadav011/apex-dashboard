@@ -1,5 +1,5 @@
 import { Check, Copy } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 interface CodeBlockProps {
@@ -10,12 +10,26 @@ interface CodeBlockProps {
 
 export function CodeBlock({ code, title, className }: CodeBlockProps) {
 	const [copied, setCopied] = useState(false);
+	const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+	useEffect(
+		() => () => {
+			if (timerRef.current) clearTimeout(timerRef.current);
+		},
+		[],
+	);
 
 	const handleCopy = useCallback(() => {
-		void navigator.clipboard.writeText(code).then(() => {
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
-		});
+		navigator.clipboard.writeText(code).then(
+			() => {
+				setCopied(true);
+				clearTimeout(timerRef.current);
+				timerRef.current = setTimeout(() => setCopied(false), 2000);
+			},
+			() => {
+				// Clipboard API unavailable — silent fallback
+			},
+		);
 	}, [code]);
 
 	return (

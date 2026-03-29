@@ -44,7 +44,9 @@ function getSnapshot() {
 }
 
 function onHashChange() {
-	currentHash = window.location.hash;
+	const next = window.location.hash;
+	if (next === currentHash) return; // deduplicate — navigate() already notified
+	currentHash = next;
 	for (const l of listeners) l();
 }
 

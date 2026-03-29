@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, Search, Zap } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import {
 	CATEGORIES,
@@ -148,10 +148,10 @@ function CategoryGroup({
 		[onNavigate],
 	);
 
-	// Keep expanded when active
-	if (isActiveCategory && !expanded) {
-		setExpanded(true);
-	}
+	// Auto-expand when navigating into this category
+	useEffect(() => {
+		if (isActiveCategory) setExpanded(true);
+	}, [isActiveCategory]);
 
 	const Icon = cat.icon;
 

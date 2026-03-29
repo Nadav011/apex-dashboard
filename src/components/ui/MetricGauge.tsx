@@ -30,7 +30,7 @@ export function MetricGauge({
 	return (
 		<div
 			className={cn(
-				"glass-card flex flex-col items-center gap-3 p-4",
+				"glass-card relative flex flex-col items-center gap-3 p-4",
 				className,
 			)}
 		>
@@ -66,8 +66,8 @@ export function MetricGauge({
 			</svg>
 			{/* Center value overlay */}
 			<div
-				className="absolute flex flex-col items-center justify-center"
-				style={{ width: size, height: size }}
+				className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+				style={{ height: size, marginTop: 16 }}
 			>
 				<span
 					className="text-xl font-bold text-text-primary"
