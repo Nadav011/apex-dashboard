@@ -1,300 +1,31 @@
-import {
-	BarChart3,
-	Bell,
-	BookOpen,
-	Bot,
-	Brain,
-	ChevronLeft,
-	Cpu,
-	DollarSign,
-	FileCode2,
-	FolderGit2,
-	GitBranch,
-	Globe,
-	HeartPulse,
-	LayoutDashboard,
-	MoreHorizontal,
-	Network,
-	Package,
-	Puzzle,
-	RefreshCw,
-	Rocket,
-	ScrollText,
-	Search,
-	Send,
-	Server,
-	Settings,
-	Shield,
-	ShieldCheck,
-	Sparkles,
-	TestTube2,
-	Users,
-	Webhook,
-	X,
-	Zap,
-} from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, ChevronLeft, Search, Zap } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-
-interface NavItem {
-	label: string;
-	icon: React.ComponentType<{ className?: string; size?: number }>;
-	page: string;
-	separator?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-	{ label: "סקירה כללית", icon: LayoutDashboard, page: "overview" },
-	{ label: "צי סוכנים", icon: Users, page: "fleet" },
-	{ label: "פרויקטים", icon: FolderGit2, page: "projects" },
-	{ label: "מדריך סוכנים", icon: BookOpen, page: "agent-guide" },
-	{ label: "הידרה", icon: Zap, page: "hydra" },
-	{ label: "Dispatch", icon: Send, page: "dispatch-guide" },
-	{ label: "בריאות", icon: HeartPulse, page: "health" },
-	{ label: "מערכת", icon: Server, page: "system" },
-	{ label: "חומרה", icon: Cpu, page: "hardware" },
-	{ label: "סנכרון", icon: RefreshCw, page: "sync" },
-	{ label: "הוקים", icon: Webhook, page: "hooks" },
-	{ label: "הוקים מדריך", icon: BookOpen, page: "hooks-deep" },
-	{ label: "חוקים", icon: Shield, page: "rules-explorer" },
-	{ label: "אבטחה מדריך", icon: ShieldCheck, page: "security-guide" },
-	{ label: "מטריקות", icon: BarChart3, page: "metrics" },
-	{ label: "עלויות", icon: DollarSign, page: "costs" },
-	{ label: "לוגים", icon: ScrollText, page: "logs" },
-	{ label: "שליטה", icon: Settings, page: "control" },
-	{ label: "אוטומציה", icon: Bot, page: "automation" },
-	{ label: "GSD", icon: Rocket, page: "gsd-guide" },
-	{ label: "Deploys", icon: Globe, page: "deploys" },
-	{ label: "דומיינים", icon: Globe, page: "domains" },
-	{ label: "CI/CD", icon: GitBranch, page: "cicd" },
-	{ label: "CI תבניות", icon: FileCode2, page: "ci-templates" },
-	{ label: "בדיקות", icon: TestTube2, page: "testing" },
-	{ label: "חבילות", icon: Package, page: "bundles" },
-	{ label: "OpenClaw", icon: Puzzle, page: "openclaw", separator: true },
-	{ label: "מיומנויות", icon: Sparkles, page: "skills-guide" },
-	{ label: "התראות", icon: Bell, page: "notifications" },
-	{ label: "ארכיטקטורה", icon: Network, page: "architecture" },
-	{ label: "זיכרון", icon: Brain, page: "memory-guide" },
-	{ label: "שרתי MCP", icon: Server, page: "mcp-guide" },
-	{ label: "מדריך", icon: BookOpen, page: "faq" },
-];
-
-// Top 5 items shown in mobile bottom bar; rest go behind "more"
-const MOBILE_PRIMARY_PAGES = ["overview", "fleet", "hydra", "health", "system"];
-const MOBILE_PRIMARY = NAV_ITEMS.filter((i) =>
-	MOBILE_PRIMARY_PAGES.includes(i.page),
-);
+import {
+	CATEGORIES,
+	CATEGORY_MAP,
+	type CategoryId,
+	getRoutesByCategory,
+	type RouteDef,
+} from "@/lib/routes";
 
 interface SidebarProps {
+	activeCategory: string;
 	activePage: string;
-	onNavigate: (page: string) => void;
+	onNavigate: (path: string) => void;
 	collapsed: boolean;
 	onToggleCollapse: () => void;
-	isMobile: boolean;
+	onOpenPalette: () => void;
 }
 
 export function Sidebar({
+	activeCategory,
 	activePage,
 	onNavigate,
 	collapsed,
 	onToggleCollapse,
-	isMobile,
+	onOpenPalette,
 }: SidebarProps) {
-	const [moreOpen, setMoreOpen] = useState(false);
-	const [searchQuery, setSearchQuery] = useState("");
-
-	const filteredNavItems = searchQuery.trim()
-		? NAV_ITEMS.filter((item) =>
-				item.label.toLowerCase().includes(searchQuery.toLowerCase()),
-			)
-		: NAV_ITEMS;
-
-	// ── Mobile: Bottom Tab Bar ───────────────────────────────────────────
-	if (isMobile) {
-		const isMoreActive =
-			!MOBILE_PRIMARY_PAGES.includes(activePage) && activePage !== "";
-
-		return (
-			<>
-				{/* "More" drawer — slides up from bottom */}
-				{moreOpen && (
-					<>
-						{/* Backdrop */}
-						<button
-							type="button"
-							aria-label="סגור תפריט"
-							className="fixed inset-0 z-40 bg-bg-primary/70 backdrop-blur-sm"
-							onClick={() => setMoreOpen(false)}
-						/>
-						{/* Drawer */}
-						<div
-							className={cn(
-								"fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+60px)] z-50",
-								"bg-bg-secondary border-t border-border",
-								"rounded-t-2xl shadow-[0_-8px_32px_oklch(0_0_0/0.5)]",
-								"max-h-[60dvh] overflow-y-auto",
-								"py-3 px-2",
-							)}
-						>
-							{/* Mobile search */}
-							<div className="relative mb-2 mx-1">
-								<Search
-									size={13}
-									className="absolute inset-y-0 end-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
-									aria-hidden="true"
-								/>
-								<input
-									type="search"
-									placeholder="חיפוש..."
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-									className={cn(
-										"w-full text-xs rounded-lg pe-8 ps-3 py-2",
-										"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
-										"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
-										"focus:outline-none focus:border-[var(--color-accent-blue)]",
-										"transition-colors duration-150",
-									)}
-									dir="rtl"
-								/>
-							</div>
-							<div className="grid grid-cols-4 gap-1">
-								{filteredNavItems
-									.filter((i) => !MOBILE_PRIMARY_PAGES.includes(i.page))
-									.map(({ label, icon: Icon, page }) => {
-										const isActive = activePage === page;
-										return (
-											<button
-												key={page}
-												type="button"
-												onClick={() => {
-													onNavigate(page);
-													setMoreOpen(false);
-												}}
-												aria-current={isActive ? "page" : undefined}
-												className={cn(
-													"flex flex-col items-center gap-1 rounded-xl",
-													"min-h-[64px] px-1 py-2",
-													"transition-all duration-150",
-													isActive
-														? "bg-accent-blue/15 text-accent-blue"
-														: "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary",
-												)}
-											>
-												<Icon
-													size={20}
-													className={cn(
-														"shrink-0",
-														isActive ? "text-accent-blue" : "text-current",
-													)}
-												/>
-												<span className="text-[10px] font-medium text-center leading-tight line-clamp-2">
-													{label}
-												</span>
-											</button>
-										);
-									})}
-							</div>
-						</div>
-					</>
-				)}
-
-				{/* Bottom Tab Bar */}
-				<nav
-					aria-label="ניווט תחתון"
-					className={cn(
-						"fixed inset-x-0 bottom-0 z-40",
-						"bg-bg-secondary/95 backdrop-blur-md",
-						"border-t border-border",
-						"flex items-center justify-around",
-						"h-[calc(env(safe-area-inset-bottom)+60px)]",
-						"pb-[env(safe-area-inset-bottom)]",
-					)}
-				>
-					{MOBILE_PRIMARY.map(({ label, icon: Icon, page }) => {
-						const isActive = activePage === page;
-						return (
-							<button
-								key={page}
-								type="button"
-								onClick={() => {
-									onNavigate(page);
-									setMoreOpen(false);
-								}}
-								aria-current={isActive ? "page" : undefined}
-								title={label}
-								className={cn(
-									"flex flex-col items-center justify-center gap-0.5",
-									"min-w-[44px] min-h-[44px] flex-1 py-1",
-									"transition-all duration-150",
-									isActive
-										? "text-accent-blue"
-										: "text-text-muted hover:text-text-secondary",
-								)}
-							>
-								<div
-									className={cn(
-										"flex items-center justify-center w-10 h-7 rounded-xl",
-										"transition-all duration-150",
-										isActive ? "bg-accent-blue/20" : "bg-transparent",
-									)}
-								>
-									<Icon
-										size={20}
-										className={cn(
-											isActive ? "text-accent-blue" : "text-current",
-										)}
-									/>
-								</div>
-								<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
-									{label}
-								</span>
-							</button>
-						);
-					})}
-
-					{/* More button */}
-					<button
-						type="button"
-						onClick={() => setMoreOpen((prev) => !prev)}
-						title="עוד"
-						className={cn(
-							"flex flex-col items-center justify-center gap-0.5",
-							"min-w-[44px] min-h-[44px] flex-1 py-1",
-							"transition-all duration-150",
-							isMoreActive || moreOpen
-								? "text-accent-blue"
-								: "text-text-muted hover:text-text-secondary",
-						)}
-					>
-						<div
-							className={cn(
-								"flex items-center justify-center w-10 h-7 rounded-xl",
-								"transition-all duration-150",
-								isMoreActive || moreOpen
-									? "bg-accent-blue/20"
-									: "bg-transparent",
-							)}
-						>
-							<MoreHorizontal
-								size={20}
-								className={cn(
-									isMoreActive || moreOpen
-										? "text-accent-blue"
-										: "text-current",
-								)}
-							/>
-						</div>
-						<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
-							עוד
-						</span>
-					</button>
-				</nav>
-			</>
-		);
-	}
-
-	// ── Desktop: Vertical Sidebar ────────────────────────────────────────
 	return (
 		<aside
 			className={cn(
@@ -304,7 +35,7 @@ export function Sidebar({
 				collapsed ? "w-16" : "w-[260px]",
 			)}
 		>
-			{/* Logo / Title */}
+			{/* Logo */}
 			<div
 				className={cn(
 					"flex items-center gap-3 px-4 py-5",
@@ -327,105 +58,44 @@ export function Sidebar({
 				)}
 			</div>
 
-			{/* Desktop search — hidden when collapsed */}
+			{/* Search trigger — opens command palette */}
 			{!collapsed && (
 				<div className="shrink-0 px-3 py-2 border-b border-border">
-					<div className="relative">
-						<Search
-							size={13}
-							className="absolute inset-y-0 end-3 my-auto text-[var(--color-text-muted)] pointer-events-none"
-							aria-hidden="true"
-						/>
-						<input
-							type="search"
-							placeholder="חיפוש בתפריט..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							data-search
-							className={cn(
-								"w-full text-xs rounded-lg pe-8 ps-3 py-2",
-								"bg-[var(--color-bg-elevated)] border border-[var(--color-border)]",
-								"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
-								"focus:outline-none focus:border-[var(--color-accent-blue)]",
-								"transition-colors duration-150",
-							)}
-							dir="rtl"
-						/>
-						{searchQuery && (
-							<button
-								type="button"
-								onClick={() => setSearchQuery("")}
-								aria-label="נקה חיפוש"
-								className="absolute inset-y-0 start-2 my-auto flex items-center justify-center w-4 h-4 rounded-full bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-							>
-								<X size={10} />
-							</button>
+					<button
+						type="button"
+						onClick={onOpenPalette}
+						data-search
+						className={cn(
+							"w-full flex items-center gap-2 text-xs rounded-lg pe-3 ps-3 py-2",
+							"bg-bg-elevated border border-border",
+							"text-text-muted hover:text-text-secondary hover:border-border-hover",
+							"transition-colors duration-150",
 						)}
-					</div>
+					>
+						<Search size={13} aria-hidden="true" />
+						<span className="flex-1 text-start">חפש עמוד...</span>
+						<kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-primary border border-border">
+							⌘K
+						</kbd>
+					</button>
 				</div>
 			)}
 
-			{/* Navigation */}
-			<nav
-				className="flex-1 overflow-y-auto py-3 px-2 space-y-1"
-				aria-label="ניווט ראשי"
-			>
-				{filteredNavItems.length === 0 && (
-					<p className="text-xs text-[var(--color-text-muted)] text-center py-6 px-2">
-						אין תוצאות עבור "{searchQuery}"
-					</p>
-				)}
-				{filteredNavItems.map(({ label, icon: Icon, page, separator }) => {
-					const isActive = activePage === page;
-					return (
-						<div key={page}>
-							{separator && (
-								<div
-									className="mx-2 my-1.5 border-t border-border"
-									aria-hidden="true"
-								/>
-							)}
-							<button
-								type="button"
-								onClick={() => onNavigate(page)}
-								aria-current={isActive ? "page" : undefined}
-								title={collapsed ? label : undefined}
-								className={cn(
-									"w-full flex items-center gap-3 rounded-lg",
-									"transition-all duration-150 cursor-pointer",
-									"min-h-11 text-start",
-									collapsed ? "justify-center px-0 py-3" : "px-3 py-2.5",
-									isActive
-										? [
-												"bg-accent-blue/15 text-accent-blue",
-												"shadow-[0_0_12px_oklch(0.65_0.18_250/0.2)]",
-											]
-										: [
-												"text-text-secondary hover:text-text-primary",
-												"hover:bg-bg-tertiary",
-											],
-								)}
-							>
-								<Icon
-									size={18}
-									className={cn(
-										"shrink-0",
-										isActive ? "text-accent-blue" : "text-current",
-									)}
-								/>
-								{!collapsed && (
-									<span className="text-sm font-medium truncate">{label}</span>
-								)}
-								{isActive && !collapsed && (
-									<span className="ms-auto w-1.5 h-1.5 rounded-full bg-accent-blue shrink-0" />
-								)}
-							</button>
-						</div>
-					);
-				})}
+			{/* Category groups */}
+			<nav className="flex-1 overflow-y-auto py-2 px-2" aria-label="ניווט ראשי">
+				{CATEGORIES.map((cat) => (
+					<CategoryGroup
+						key={cat.id}
+						category={cat.id}
+						activeCategory={activeCategory}
+						activePage={activePage}
+						onNavigate={onNavigate}
+						collapsed={collapsed}
+					/>
+				))}
 			</nav>
 
-			{/* Collapse Toggle */}
+			{/* Collapse toggle */}
 			<div className="shrink-0 p-2 border-t border-border">
 				<button
 					type="button"
@@ -447,5 +117,240 @@ export function Sidebar({
 				</button>
 			</div>
 		</aside>
+	);
+}
+
+// ── Category Group ────────────────────────────────────────────────────
+
+function CategoryGroup({
+	category,
+	activeCategory,
+	activePage,
+	onNavigate,
+	collapsed,
+}: {
+	category: CategoryId;
+	activeCategory: string;
+	activePage: string;
+	onNavigate: (path: string) => void;
+	collapsed: boolean;
+}) {
+	const cat = CATEGORY_MAP[category];
+	const routes = getRoutesByCategory(category);
+	const isActiveCategory = activeCategory === category;
+	const [expanded, setExpanded] = useState(isActiveCategory);
+
+	// Auto-expand when navigating into this category
+	const handleNavigateAndExpand = useCallback(
+		(path: string) => {
+			onNavigate(path);
+		},
+		[onNavigate],
+	);
+
+	// Auto-expand when navigating into this category
+	useEffect(() => {
+		if (isActiveCategory) setExpanded(true);
+	}, [isActiveCategory]);
+
+	const Icon = cat.icon;
+
+	if (collapsed) {
+		// In collapsed mode: just show the category icon, navigate to first page on click
+		return (
+			<div className="mb-1">
+				<button
+					type="button"
+					onClick={() => handleNavigateAndExpand(routes[0]?.path ?? "#/")}
+					title={cat.label}
+					className={cn(
+						"w-full flex items-center justify-center rounded-lg py-3",
+						"transition-all duration-150",
+						isActiveCategory
+							? "bg-accent-blue/15 text-accent-blue"
+							: "text-text-muted hover:text-text-secondary hover:bg-bg-tertiary",
+					)}
+				>
+					<Icon
+						size={18}
+						style={{ color: isActiveCategory ? undefined : cat.color }}
+					/>
+				</button>
+			</div>
+		);
+	}
+
+	return (
+		<div className="mb-1">
+			{/* Category header */}
+			<button
+				type="button"
+				onClick={() => setExpanded((prev) => !prev)}
+				className={cn(
+					"w-full flex items-center gap-2 px-3 py-2 rounded-lg",
+					"text-xs font-semibold uppercase tracking-wider",
+					"transition-colors duration-150",
+					isActiveCategory
+						? "text-text-primary"
+						: "text-text-muted hover:text-text-secondary",
+				)}
+			>
+				<Icon size={14} style={{ color: cat.color }} aria-hidden="true" />
+				<span className="flex-1 text-start">{cat.label}</span>
+				<span className="text-[10px] font-normal text-text-muted tabular-nums">
+					{routes.length}
+				</span>
+				<ChevronDown
+					size={12}
+					className={cn(
+						"text-text-muted transition-transform duration-200",
+						!expanded && "-rotate-90",
+					)}
+				/>
+			</button>
+
+			{/* Routes in this category */}
+			<div
+				className={cn(
+					"overflow-hidden transition-all duration-200 ease-out",
+					expanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
+				)}
+			>
+				<div className="space-y-0.5 py-0.5">
+					{routes.map((route) => (
+						<NavItem
+							key={route.id}
+							route={route}
+							isActive={isRouteActive(route, activeCategory, activePage)}
+							onNavigate={handleNavigateAndExpand}
+							categoryColor={cat.color}
+						/>
+					))}
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// ── Nav Item ──────────────────────────────────────────────────────────
+
+function NavItem({
+	route,
+	isActive,
+	onNavigate,
+	categoryColor,
+}: {
+	route: RouteDef;
+	isActive: boolean;
+	onNavigate: (path: string) => void;
+	categoryColor: string;
+}) {
+	const Icon = route.icon;
+
+	return (
+		<button
+			type="button"
+			onClick={() => onNavigate(route.path)}
+			aria-current={isActive ? "page" : undefined}
+			className={cn(
+				"w-full flex items-center gap-3 rounded-lg",
+				"transition-all duration-150 cursor-pointer",
+				"min-h-10 px-3 py-2 text-start ms-2",
+				isActive
+					? [
+							"bg-accent-blue/12 text-accent-blue",
+							"shadow-[0_0_12px_oklch(0.65_0.18_250/0.15)]",
+						]
+					: [
+							"text-text-secondary hover:text-text-primary",
+							"hover:bg-bg-tertiary",
+						],
+			)}
+		>
+			<Icon
+				size={16}
+				className="shrink-0"
+				style={{ color: isActive ? undefined : categoryColor }}
+			/>
+			<span className="text-sm font-medium truncate">{route.title}</span>
+			{isActive && (
+				<span className="ms-auto w-1.5 h-1.5 rounded-full bg-accent-blue shrink-0 animate-pulse-status" />
+			)}
+		</button>
+	);
+}
+
+function isRouteActive(
+	route: RouteDef,
+	activeCategory: string,
+	activePage: string,
+): boolean {
+	const parts = route.path.replace("#/", "").split("/");
+	return parts[0] === activeCategory && parts[1] === activePage;
+}
+
+// ── Mobile Bottom Tab Bar ─────────────────────────────────────────────
+
+export function MobileTabBar({
+	activeCategory,
+	onNavigate,
+}: {
+	activeCategory: string;
+	onNavigate: (path: string) => void;
+}) {
+	return (
+		<nav
+			aria-label="ניווט תחתון"
+			className={cn(
+				"fixed inset-x-0 bottom-0 z-40",
+				"bg-bg-secondary/95 backdrop-blur-md",
+				"border-t border-border",
+				"flex items-center justify-around",
+				"h-[calc(env(safe-area-inset-bottom)+60px)]",
+				"pb-[env(safe-area-inset-bottom)]",
+			)}
+		>
+			{CATEGORIES.map((cat) => {
+				const isActive = activeCategory === cat.id;
+				const Icon = cat.icon;
+				const firstRoute = getRoutesByCategory(cat.id)[0];
+
+				return (
+					<button
+						key={cat.id}
+						type="button"
+						onClick={() => {
+							if (firstRoute) onNavigate(firstRoute.path);
+						}}
+						aria-current={isActive ? "page" : undefined}
+						title={cat.label}
+						className={cn(
+							"flex flex-col items-center justify-center gap-0.5",
+							"min-w-[44px] min-h-[44px] flex-1 py-1",
+							"transition-all duration-150",
+							isActive
+								? "text-accent-blue"
+								: "text-text-muted hover:text-text-secondary",
+						)}
+					>
+						<div
+							className={cn(
+								"flex items-center justify-center w-10 h-7 rounded-xl",
+								"transition-all duration-150",
+								isActive ? "bg-accent-blue/20" : "bg-transparent",
+							)}
+						>
+							<Icon
+								size={20}
+								className={cn(isActive ? "text-accent-blue" : "text-current")}
+							/>
+						</div>
+						<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
+							{cat.label}
+						</span>
+					</button>
+				);
+			})}
+		</nav>
 	);
 }

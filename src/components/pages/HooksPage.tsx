@@ -1,16 +1,18 @@
 import ReactECharts from "echarts-for-react";
 import { RefreshCw, Webhook } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useHooks } from "@/hooks/use-api";
 import { cn } from "@/lib/cn";
 
 // ── Event type color mapping ────────────────────────────────────────────
 const EVENT_COLORS: Record<string, string> = {
-	PreToolUse: "oklch(0.65 0.18 250)",
-	PostToolUse: "oklch(0.72 0.19 155)",
-	Stop: "oklch(0.62 0.22 25)",
-	SessionStart: "oklch(0.78 0.16 75)",
-	PostCompact: "oklch(0.62 0.2 290)",
-	UserPromptSubmit: "oklch(0.75 0.14 200)",
+	PreToolUse: "var(--color-accent-blue)",
+	PostToolUse: "var(--color-accent-green)",
+	Stop: "var(--color-accent-red)",
+	SessionStart: "var(--color-accent-amber)",
+	PostCompact: "var(--color-accent-purple)",
+	UserPromptSubmit: "var(--color-accent-cyan)",
 };
 
 const EVENT_LABELS: Record<string, string> = {
@@ -22,12 +24,33 @@ const EVENT_LABELS: Record<string, string> = {
 	UserPromptSubmit: "שליחת פרומפט",
 };
 
+type BadgeVariant =
+	| "info"
+	| "success"
+	| "error"
+	| "warning"
+	| "purple"
+	| "default";
+
+const EVENT_BADGE_VARIANTS: Record<string, BadgeVariant> = {
+	PreToolUse: "info",
+	PostToolUse: "success",
+	Stop: "error",
+	SessionStart: "warning",
+	PostCompact: "purple",
+	UserPromptSubmit: "default",
+};
+
 function getEventColor(event: string): string {
 	return EVENT_COLORS[event] ?? "oklch(0.62 0.05 260)";
 }
 
 function getEventLabel(event: string): string {
 	return EVENT_LABELS[event] ?? event;
+}
+
+function getEventBadgeVariant(event: string): BadgeVariant {
+	return EVENT_BADGE_VARIANTS[event] ?? "default";
 }
 
 // ── Main page ───────────────────────────────────────────────────────────
@@ -47,9 +70,7 @@ export function HooksPage() {
 
 	if (error)
 		return (
-			<div className="p-8 text-center text-[var(--color-accent-red)]">
-				שגיאה בטעינת נתונים
-			</div>
+			<div className="p-8 text-center text-accent-red">שגיאה בטעינת נתונים</div>
 		);
 
 	const sortedEvents = Object.entries(data.by_event).sort(
@@ -60,9 +81,9 @@ export function HooksPage() {
 		backgroundColor: "transparent",
 		tooltip: {
 			trigger: "axis",
-			backgroundColor: "oklch(0.22 0.02 260)",
-			borderColor: "oklch(0.28 0.02 260)",
-			textStyle: { color: "oklch(0.95 0.01 260)", fontSize: 12 },
+			backgroundColor: "var(--color-bg-elevated)",
+			borderColor: "var(--color-border)",
+			textStyle: { color: "var(--color-text-primary)", fontSize: 12 },
 			axisPointer: { type: "shadow" },
 			formatter: (params: Array<{ name: string; value: number }>) => {
 				const p = params[0];
@@ -73,16 +94,16 @@ export function HooksPage() {
 		xAxis: {
 			type: "category",
 			data: sortedEvents.map(([e]) => getEventLabel(e)),
-			axisLine: { lineStyle: { color: "oklch(0.28 0.02 260)" } },
-			axisLabel: { color: "oklch(0.55 0.02 260)", fontSize: 11, rotate: 20 },
+			axisLine: { lineStyle: { color: "var(--color-border)" } },
+			axisLabel: { color: "var(--color-text-muted)", fontSize: 11, rotate: 20 },
 			axisTick: { show: false },
 		},
 		yAxis: {
 			type: "value",
 			minInterval: 1,
 			axisLine: { show: false },
-			splitLine: { lineStyle: { color: "oklch(0.22 0.02 260)" } },
-			axisLabel: { color: "oklch(0.55 0.02 260)", fontSize: 11 },
+			splitLine: { lineStyle: { color: "var(--color-bg-elevated)" } },
+			axisLabel: { color: "var(--color-text-muted)", fontSize: 11 },
 		},
 		series: [
 			{
@@ -113,18 +134,17 @@ export function HooksPage() {
 	};
 
 	return (
-		<div className="space-y-6 bg-zinc-950 min-h-screen p-6" dir="rtl">
-			<div>
-				<h1 className="text-xl font-bold text-text-primary">הוקים</h1>
-				<p className="text-sm text-text-muted mt-0.5">
-					{data.total} הוקים רשומים ב-{sortedEvents.length} סוגי אירועים
-				</p>
-			</div>
+		<div className="space-y-6 min-h-screen p-6" dir="rtl">
+			<PageHeader
+				icon={Webhook}
+				title="הוקים"
+				description="80 הוקים רשומים — אירועי Claude Code, סטטיסטיקות, ומדריך"
+			/>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-grid">
 				{/* Stat + breakdown */}
 				<div className="flex flex-col gap-3 md:col-span-1">
-					<div className="glass-card p-4 flex items-center gap-4">
+					<div className="glass-card card-spotlight p-4 flex items-center gap-4">
 						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent-blue/15 shrink-0">
 							<Webhook
 								size={18}
@@ -140,7 +160,7 @@ export function HooksPage() {
 						</div>
 					</div>
 
-					<div className="glass-card p-4 space-y-2">
+					<div className="glass-card card-spotlight p-4 space-y-2">
 						<h3 className="text-xs font-semibold text-text-muted mb-3">
 							לפי סוג אירוע
 						</h3>
@@ -149,9 +169,11 @@ export function HooksPage() {
 							const pct = data.total > 0 ? (count / data.total) * 100 : 0;
 							return (
 								<div key={event} className="space-y-1">
-									<div className="flex items-center justify-between text-xs">
-										<span style={{ color }}>{getEventLabel(event)}</span>
-										<span className="text-text-muted tabular-nums">
+									<div className="flex items-center justify-between gap-2">
+										<Badge variant={getEventBadgeVariant(event)}>
+											{getEventLabel(event)}
+										</Badge>
+										<span className="text-xs text-text-muted tabular-nums shrink-0">
 											{count}
 										</span>
 									</div>
@@ -168,7 +190,7 @@ export function HooksPage() {
 				</div>
 
 				{/* Bar chart */}
-				<div className="glass-card p-4 md:col-span-2">
+				<div className="glass-card card-spotlight p-4 md:col-span-2">
 					<h3 className="text-xs font-semibold text-text-muted mb-3">
 						התפלגות לפי אירוע
 					</h3>
@@ -181,7 +203,7 @@ export function HooksPage() {
 			</div>
 
 			{/* Recent hook invocations table */}
-			<div className="glass-card overflow-hidden">
+			<div className="glass-card card-spotlight overflow-hidden">
 				<div className="p-4 border-b border-border">
 					<h2 className="text-sm font-semibold text-text-primary">
 						הרצות אחרונות
@@ -191,13 +213,22 @@ export function HooksPage() {
 					<table className="w-full text-start">
 						<thead>
 							<tr className="border-b border-border bg-bg-elevated/50">
-								<th className="py-2.5 ps-4 pe-2 text-start text-xs font-semibold text-text-muted">
+								<th
+									scope="col"
+									className="py-2.5 ps-4 pe-2 text-start text-xs font-semibold text-text-muted"
+								>
 									שם
 								</th>
-								<th className="py-2.5 px-2 text-start text-xs font-semibold text-text-muted">
+								<th
+									scope="col"
+									className="py-2.5 px-2 text-start text-xs font-semibold text-text-muted"
+								>
 									משך (ms)
 								</th>
-								<th className="py-2.5 ps-2 pe-4 text-start text-xs font-semibold text-text-muted">
+								<th
+									scope="col"
+									className="py-2.5 ps-2 pe-4 text-start text-xs font-semibold text-text-muted"
+								>
 									שעה
 								</th>
 							</tr>

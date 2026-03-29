@@ -2,6 +2,8 @@ import ReactECharts from "echarts-for-react";
 import { FileText, Shield } from "lucide-react";
 import { useMemo } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Tabs } from "@/components/ui/Tabs";
 import { useRules } from "@/hooks/use-api";
 import type { RuleInfo } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -77,25 +79,25 @@ const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 	quality: {
 		label: "quality/",
 		hebrewLabel: "איכות קוד",
-		color: "oklch(0.72 0.19 155)",
+		color: "var(--color-accent-green)",
 		loadNote: "תמיד טעונים",
 	},
 	security: {
 		label: "security/",
 		hebrewLabel: "אבטחה",
-		color: "oklch(0.62 0.22 25)",
+		color: "var(--color-accent-red)",
 		loadNote: "תמיד טעונים",
 	},
 	verification: {
 		label: "verification/",
 		hebrewLabel: "אימות",
-		color: "oklch(0.65 0.18 250)",
+		color: "var(--color-accent-blue)",
 		loadNote: "תמיד טעונים",
 	},
 	infra: {
 		label: "infra/",
 		hebrewLabel: "תשתית",
-		color: "oklch(0.78 0.16 75)",
+		color: "var(--color-accent-amber)",
 		loadNote: "לפי דרישה",
 	},
 };
@@ -161,7 +163,7 @@ function SummaryStatCard({
 }) {
 	return (
 		<div
-			className="glass-card p-4 flex items-center gap-4"
+			className="glass-card card-spotlight p-4 flex items-center gap-4"
 			style={{ borderColor: `${color}4d` }}
 		>
 			<div
@@ -310,9 +312,9 @@ function CategoryPieChart({
 			backgroundColor: "transparent",
 			tooltip: {
 				trigger: "item",
-				backgroundColor: "oklch(0.22 0.02 260)",
-				borderColor: "oklch(0.28 0.02 260)",
-				textStyle: { color: "oklch(0.95 0.01 260)", fontSize: 12 },
+				backgroundColor: "var(--color-bg-elevated)",
+				borderColor: "var(--color-border)",
+				textStyle: { color: "var(--color-text-primary)", fontSize: 12 },
 				formatter: "{b}: {c} קבצים ({d}%)",
 			},
 			series: [
@@ -360,15 +362,19 @@ function LoadingSkeleton() {
 				<div className="h-6 w-48 bg-bg-elevated rounded animate-pulse" />
 				<div className="h-4 w-72 bg-bg-elevated rounded animate-pulse mt-2" />
 			</div>
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-				{Array.from({ length: 4 }).map((_, i) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: skeleton
-					<div key={i} className="glass-card p-4 h-20 animate-pulse" />
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-3 stagger-grid">
+				{[0, 1, 2, 3].map((n) => (
+					<div
+						key={`skel-grid-${n}`}
+						className="glass-card card-spotlight p-4 h-20 animate-pulse"
+					/>
 				))}
 			</div>
-			{Array.from({ length: 4 }).map((_, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: skeleton
-				<div key={i} className="glass-card p-6 h-48 animate-pulse" />
+			{[0, 1, 2, 3].map((n) => (
+				<div
+					key={`skel-card-${n}`}
+					className="glass-card card-spotlight p-6 h-48 animate-pulse"
+				/>
 			))}
 		</div>
 	);
@@ -427,126 +433,163 @@ export function RulesExplorerPage() {
 	];
 
 	return (
-		<div className="space-y-6 bg-zinc-950" dir="rtl">
+		<div className="space-y-6" dir="rtl">
 			{/* Header */}
 			<div className="flex items-start gap-3">
 				<div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-blue/15 mt-0.5">
 					<Shield size={20} className="text-accent-blue" aria-hidden="true" />
 				</div>
-				<div>
-					<h1 className="text-xl font-bold text-text-primary">חוקים וכללים</h1>
-					<p className="text-sm text-text-muted mt-0.5">
-						{rules.length} קבצי כללים · {Object.keys(grouped).length} קטגוריות
-					</p>
-				</div>
 			</div>
 
-			{/* Summary stats */}
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-				<SummaryStatCard
-					label="סה״כ קבצים"
-					value={rules.length}
-					color="oklch(0.65 0.18 250)"
-				/>
-				<SummaryStatCard
-					label="תמיד טעונים"
-					value={alwaysCount}
-					color="oklch(0.72 0.19 155)"
-					sub="נטענים בכל סשן"
-				/>
-				<SummaryStatCard
-					label="לפי דרישה"
-					value={onDemandCount}
-					color="oklch(0.78 0.16 75)"
-					sub="נטענים לפי הקשר"
-				/>
-				<SummaryStatCard
-					label="סה״כ גודל"
-					value={`${totalKb.toFixed(0)} KB`}
-					color="oklch(0.62 0.2 290)"
-				/>
-			</div>
+			<Tabs
+				tabs={[
+					{ id: "overview", label: "סקירה" },
+					{ id: "list", label: "רשימה" },
+				]}
+			>
+				{(activeTab) => {
+					if (activeTab === "overview") {
+						return (
+							<div className="space-y-6">
+								{/* Summary stats */}
+								<div className="grid grid-cols-2 md:grid-cols-4 gap-3 stagger-grid">
+									<SummaryStatCard
+										label="סה״כ קבצים"
+										value={rules.length}
+										color="var(--color-accent-blue)"
+									/>
+									<SummaryStatCard
+										label="תמיד טעונים"
+										value={alwaysCount}
+										color="var(--color-accent-green)"
+										sub="נטענים בכל סשן"
+									/>
+									<SummaryStatCard
+										label="לפי דרישה"
+										value={onDemandCount}
+										color="var(--color-accent-amber)"
+										sub="נטענים לפי הקשר"
+									/>
+									<SummaryStatCard
+										label="סה״כ גודל"
+										value={`${totalKb.toFixed(0)} KB`}
+										color="var(--color-accent-purple)"
+									/>
+								</div>
 
-			{/* Chart + category breakdown */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				{/* Pie chart */}
-				<div className="glass-card p-4">
-					<h3 className="text-xs font-semibold text-text-muted mb-3">
-						התפלגות לפי קטגוריה
-					</h3>
-					<CategoryPieChart byCategory={byCategory} />
-				</div>
-
-				{/* Category breakdown list */}
-				<div className="glass-card p-4 md:col-span-2">
-					<h3 className="text-xs font-semibold text-text-muted mb-3">
-						קטגוריות
-					</h3>
-					<div className="space-y-3">
-						{orderedCategories.map((cat) => {
-							const cfg = getCategoryConfig(cat);
-							const catRules = grouped[cat] ?? [];
-							const catKb = catRules.reduce((s, r) => s + r.size_kb, 0);
-							const pct =
-								rules.length > 0 ? (catRules.length / rules.length) * 100 : 0;
-							return (
-								<div key={cat} className="space-y-1.5">
-									<div className="flex items-center justify-between text-xs">
-										<div className="flex items-center gap-2">
-											<span
-												className="w-2.5 h-2.5 rounded-sm shrink-0"
-												style={{ background: cfg.color }}
-												aria-hidden="true"
-											/>
-											<span
-												style={{ color: cfg.color }}
-												className="font-medium"
-											>
-												{cfg.hebrewLabel}
-											</span>
-											<span className="text-text-muted">{cfg.label}</span>
-										</div>
-										<div className="flex items-center gap-3 text-text-muted">
-											<span dir="ltr" className="tabular-nums">
-												{catKb.toFixed(1)} KB
-											</span>
-											<span className="tabular-nums font-medium">
-												{catRules.length} קבצים
-											</span>
-										</div>
+								{/* Chart + category breakdown */}
+								<div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-grid">
+									{/* Pie chart */}
+									<div className="glass-card card-spotlight p-4">
+										<h3 className="text-xs font-semibold text-text-muted mb-3">
+											התפלגות לפי קטגוריה
+										</h3>
+										<CategoryPieChart byCategory={byCategory} />
 									</div>
-									<div className="h-1.5 rounded-full bg-bg-elevated overflow-hidden">
-										<div
-											className="h-full rounded-full transition-all duration-700"
-											style={{ width: `${pct}%`, backgroundColor: cfg.color }}
-										/>
+
+									{/* Category breakdown list */}
+									<div className="glass-card card-spotlight p-4 md:col-span-2">
+										<h3 className="text-xs font-semibold text-text-muted mb-3">
+											קטגוריות
+										</h3>
+										<div className="space-y-3">
+											{orderedCategories.map((cat) => {
+												const cfg = getCategoryConfig(cat);
+												const catRules = grouped[cat] ?? [];
+												const catKb = catRules.reduce(
+													(s, r) => s + r.size_kb,
+													0,
+												);
+												const pct =
+													rules.length > 0
+														? (catRules.length / rules.length) * 100
+														: 0;
+												return (
+													<div key={cat} className="space-y-1.5">
+														<PageHeader
+															icon={Shield}
+															title="כללים"
+															description="כל קבצי הכללים — בדיקת איכות, אבטחה, תיעוד, ועוד"
+														/>
+
+														<div className="flex items-center justify-between text-xs">
+															<div className="flex items-center gap-2">
+																<span
+																	className="w-2.5 h-2.5 rounded-sm shrink-0"
+																	style={{ background: cfg.color }}
+																	aria-hidden="true"
+																/>
+																<span
+																	style={{ color: cfg.color }}
+																	className="font-medium"
+																>
+																	{cfg.hebrewLabel}
+																</span>
+																<span className="text-text-muted">
+																	{cfg.label}
+																</span>
+															</div>
+															<div className="flex items-center gap-3 text-text-muted">
+																<span dir="ltr" className="tabular-nums">
+																	{catKb.toFixed(1)} KB
+																</span>
+																<span className="tabular-nums font-medium">
+																	{catRules.length} קבצים
+																</span>
+															</div>
+														</div>
+														<div className="h-1.5 rounded-full bg-bg-elevated overflow-hidden">
+															<div
+																className="h-full rounded-full transition-all duration-700"
+																style={{
+																	width: `${pct}%`,
+																	backgroundColor: cfg.color,
+																}}
+															/>
+														</div>
+													</div>
+												);
+											})}
+										</div>
+
+										{/* Load type legend */}
+										<div className="mt-4 pt-3 border-t border-border/50 flex items-center gap-4 flex-wrap">
+											<span className="text-[11px] text-text-muted font-medium">
+												סוגי טעינה:
+											</span>
+											<div className="flex items-center gap-1.5">
+												<span className="w-2 h-2 rounded-full bg-accent-green shrink-0" />
+												<span className="text-[11px] text-text-secondary">
+													תמיד טעון
+												</span>
+											</div>
+											<div className="flex items-center gap-1.5">
+												<span className="w-2 h-2 rounded-full bg-accent-amber shrink-0" />
+												<span className="text-[11px] text-text-secondary">
+													לפי דרישה
+												</span>
+											</div>
+										</div>
 									</div>
 								</div>
-							);
-						})}
-					</div>
+							</div>
+						);
+					}
 
-					{/* Load type legend */}
-					<div className="mt-4 pt-3 border-t border-border/50 flex items-center gap-4 flex-wrap">
-						<span className="text-[11px] text-text-muted font-medium">
-							סוגי טעינה:
-						</span>
-						<div className="flex items-center gap-1.5">
-							<span className="w-2 h-2 rounded-full bg-accent-green shrink-0" />
-							<span className="text-[11px] text-text-secondary">תמיד טעון</span>
+					return (
+						<div className="space-y-6">
+							{/* Category sections */}
+							{orderedCategories.map((cat) => (
+								<CategorySection
+									key={cat}
+									category={cat}
+									rules={grouped[cat] ?? []}
+								/>
+							))}
 						</div>
-						<div className="flex items-center gap-1.5">
-							<span className="w-2 h-2 rounded-full bg-accent-amber shrink-0" />
-							<span className="text-[11px] text-text-secondary">לפי דרישה</span>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			{/* Category sections */}
-			{orderedCategories.map((cat) => (
-				<CategorySection key={cat} category={cat} rules={grouped[cat] ?? []} />
-			))}
+					);
+				}}
+			</Tabs>
 		</div>
 	);
 }

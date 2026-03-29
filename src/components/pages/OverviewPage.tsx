@@ -4,13 +4,12 @@ import {
 	CheckCircle2,
 	Clock,
 	Cpu,
-	HardDrive,
 	LayoutDashboard,
-	MemoryStick,
 	XCircle,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { MetricGauge } from "@/components/ui/MetricGauge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
 import {
 	useAgents,
@@ -52,12 +51,12 @@ function eventLabel(event: string): string {
 
 function eventColorClass(event: string): string {
 	if (event.includes("fail") || event.includes("error")) {
-		return "text-[var(--color-status-critical)]";
+		return "text-status-critical";
 	}
 	if (event.includes("complete") || event.includes("start")) {
-		return "text-[var(--color-status-healthy)]";
+		return "text-status-healthy";
 	}
-	return "text-[var(--color-text-secondary)]";
+	return "text-text-secondary";
 }
 
 // ── Sub-components ───────────────────────────────────────────────────────────
@@ -69,56 +68,35 @@ function SystemGauges() {
 		return (
 			<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 				{["מעבד", "זיכרון", "דיסק"].map((label) => (
-					<div key={label} className="glass-card p-4 animate-pulse">
-						<div className="h-4 bg-[var(--color-bg-elevated)] rounded w-1/3 mb-3" />
-						<div className="h-2 bg-[var(--color-bg-elevated)] rounded" />
+					<div
+						key={label}
+						className="glass-card card-spotlight p-4 animate-pulse"
+					>
+						<div className="h-4 bg-bg-elevated rounded w-1/3 mb-3" />
+						<div className="h-2 bg-bg-elevated rounded" />
 					</div>
 				))}
 			</div>
 		);
 	}
 
-	const gauges = [
-		{
-			label: "זיכרון RAM",
-			icon: MemoryStick,
-			value: data.ram.pct,
-			detail: `${data.ram.used_gb.toFixed(1)} / ${data.ram.total_gb.toFixed(1)} GB`,
-		},
-		{
-			label: "דיסק",
-			icon: HardDrive,
-			value: data.disk.pct,
-			detail: `${data.disk.used_gb.toFixed(0)} / ${data.disk.total_gb.toFixed(0)} GB`,
-		},
-		{
-			label: "Swap",
-			icon: Cpu,
-			value: data.swap.pct,
-			detail: `${data.swap.used_gb.toFixed(1)} / ${data.swap.total_gb.toFixed(1)} GB`,
-		},
-	];
-
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-			{gauges.map(({ label, icon: Icon, value, detail }) => (
-				<div key={label} className="glass-card p-4">
-					<div className="flex items-center gap-2 mb-3">
-						<Icon
-							size={15}
-							className="text-[var(--color-text-muted)] shrink-0"
-							aria-hidden="true"
-						/>
-						<span className="text-sm font-medium text-[var(--color-text-secondary)]">
-							{label}
-						</span>
-					</div>
-					<ProgressBar value={value} size="md" showValue />
-					<p className="mt-2 text-xs text-[var(--color-text-muted)]" dir="ltr">
-						{detail}
-					</p>
-				</div>
-			))}
+		<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 stagger-grid">
+			<MetricGauge
+				value={data.ram.pct}
+				label="זיכרון RAM"
+				detail={`${data.ram.used_gb.toFixed(1)} / ${data.ram.total_gb.toFixed(1)} GB`}
+			/>
+			<MetricGauge
+				value={data.disk.pct}
+				label="דיסק"
+				detail={`${data.disk.used_gb.toFixed(0)} / ${data.disk.total_gb.toFixed(0)} GB`}
+			/>
+			<MetricGauge
+				value={data.swap.pct}
+				label="Swap"
+				detail={`${data.swap.used_gb.toFixed(1)} / ${data.swap.total_gb.toFixed(1)} GB`}
+			/>
 		</div>
 	);
 }
@@ -126,9 +104,9 @@ function SystemGauges() {
 function WatcherEventRow({ event }: { event: WatcherEvent }) {
 	const isOk = event.rc === undefined || event.rc === 0;
 	return (
-		<tr className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-elevated)] transition-colors duration-100">
+		<tr className="border-b border-border last:border-0 hover:bg-bg-elevated transition-colors duration-100">
 			<td
-				className="py-2 ps-4 pe-2 text-xs text-[var(--color-text-muted)] tabular-nums whitespace-nowrap"
+				className="py-2 ps-4 pe-2 text-xs text-text-muted tabular-nums whitespace-nowrap"
 				dir="ltr"
 			>
 				{formatTs(event.ts)}
@@ -141,10 +119,10 @@ function WatcherEventRow({ event }: { event: WatcherEvent }) {
 			>
 				{eventLabel(event.event)}
 			</td>
-			<td className="py-2 px-2 text-xs text-[var(--color-text-secondary)] max-w-32 truncate">
+			<td className="py-2 px-2 text-xs text-text-secondary max-w-32 truncate">
 				{event.task_id ?? "—"}
 			</td>
-			<td className="py-2 px-2 text-xs text-[var(--color-accent-purple)]">
+			<td className="py-2 px-2 text-xs text-accent-purple">
 				{event.provider ?? "—"}
 			</td>
 			<td className="py-2 ps-2 pe-4 text-xs">
@@ -153,9 +131,7 @@ function WatcherEventRow({ event }: { event: WatcherEvent }) {
 						dir="ltr"
 						className={cn(
 							"font-mono inline-flex items-center gap-1",
-							isOk
-								? "text-[var(--color-status-healthy)]"
-								: "text-[var(--color-status-critical)]",
+							isOk ? "text-status-healthy" : "text-status-critical",
 						)}
 					>
 						{isOk ? (
@@ -166,7 +142,7 @@ function WatcherEventRow({ event }: { event: WatcherEvent }) {
 						{event.rc}
 					</span>
 				) : (
-					<span className="text-[var(--color-text-muted)]">—</span>
+					<span className="text-text-muted">—</span>
 				)}
 			</td>
 		</tr>
@@ -199,26 +175,15 @@ export function OverviewPage() {
 	const recentEvents = (watcher.data?.events ?? []).slice(-10).reverse();
 
 	return (
-		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
-			{/* Header */}
-			<div className="flex items-center gap-3">
-				<LayoutDashboard
-					size={20}
-					className="text-[var(--color-accent-blue)]"
-					aria-hidden="true"
-				/>
-				<div>
-					<h1 className="text-lg font-bold text-[var(--color-text-primary)]">
-						סקירה כללית
-					</h1>
-					<p className="text-sm text-[var(--color-text-muted)]">
-						מצב מערכת APEX Command Center
-					</p>
-				</div>
-			</div>
+		<div className="flex flex-col gap-6 min-h-screen p-6">
+			<PageHeader
+				icon={LayoutDashboard}
+				title="סקירה כללית"
+				description="מבט על כל המערכת — סוכנים, משימות, בריאות, משאבים"
+			/>
 
 			{/* Stat Cards */}
-			<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+			<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 grid-cards stagger-grid">
 				<StatCard label="סך הסוכנים" value={totalAgents} icon={Bot} />
 				<StatCard label="משימות פעילות" value={activeTasks} icon={Activity} />
 				<StatCard
@@ -241,7 +206,7 @@ export function OverviewPage() {
 				icon={<Activity size={16} />}
 			>
 				{recentEvents.length === 0 ? (
-					<p className="text-sm text-[var(--color-text-muted)] text-center py-6">
+					<p className="text-sm text-text-muted text-center py-6">
 						אין אירועים עדיין
 					</p>
 				) : (
@@ -249,11 +214,12 @@ export function OverviewPage() {
 						{/* responsive-ok — table needs min width, overflow-x-auto handles it */}
 						<table className="w-full min-w-max text-start">
 							<thead>
-								<tr className="border-b border-[var(--color-border)]">
+								<tr className="border-b border-border">
 									{["שעה", "אירוע", "מזהה משימה", "ספק", "קוד"].map((h) => (
 										<th
 											key={h}
-											className="py-2 px-2 first:ps-4 last:pe-4 text-xs font-medium text-[var(--color-text-muted)] text-start"
+											scope="col"
+											className="py-2 px-2 first:ps-4 last:pe-4 text-xs font-medium text-text-muted text-start"
 										>
 											{h}
 										</th>

@@ -7,6 +7,8 @@ import {
 	XCircle,
 } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 import {
 	useConfigureNotifications,
 	useNotificationsConfig,
@@ -70,13 +72,13 @@ function ConnectionStatus({
 			{connected ? (
 				<CheckCircle2
 					size={18}
-					className="text-[var(--color-status-healthy)] shrink-0"
+					className="text-status-healthy shrink-0"
 					aria-hidden="true"
 				/>
 			) : (
 				<XCircle
 					size={18}
-					className="text-[var(--color-status-critical)] shrink-0"
+					className="text-status-critical shrink-0"
 					aria-hidden="true"
 				/>
 			)}
@@ -84,14 +86,12 @@ function ConnectionStatus({
 				<p
 					className={cn(
 						"text-sm font-semibold",
-						connected
-							? "text-[var(--color-status-healthy)]"
-							: "text-[var(--color-status-critical)]",
+						connected ? "text-status-healthy" : "text-status-critical",
 					)}
 				>
 					{connected ? "Telegram מחובר" : "Telegram לא מוגדר"}
 				</p>
-				<p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+				<p className="text-xs text-text-muted mt-0.5">
 					{connected
 						? "הבוט מוכן לשלוח התראות"
 						: `חסר: ${!tokenSet ? "TELEGRAM_BOT_TOKEN" : ""}${!tokenSet && !chatIdSet ? " ו-" : ""}${!chatIdSet ? "TELEGRAM_CHAT_ID" : ""}`}
@@ -105,35 +105,28 @@ function ConnectionStatus({
 
 function SetupInstructions() {
 	return (
-		<div className="glass-card p-5 flex flex-col gap-4">
-			<h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
-				<Bell
-					size={16}
-					className="text-[var(--color-accent-blue)]"
-					aria-hidden="true"
-				/>
+		<div className="glass-card card-spotlight p-5 flex flex-col gap-4">
+			<h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+				<Bell size={16} className="text-accent-blue" aria-hidden="true" />
 				הגדרת Telegram Bot
 			</h3>
 
-			<ol className="flex flex-col gap-3 text-sm text-[var(--color-text-secondary)]">
+			<ol className="flex flex-col gap-3 text-sm text-text-secondary">
 				<li className="flex gap-2">
-					<span
-						className="text-[var(--color-accent-blue)] font-bold shrink-0"
-						dir="ltr"
-					>
+					<span className="text-accent-blue font-bold shrink-0" dir="ltr">
 						1.
 					</span>
 					<span>
 						פתח Telegram וחפש{" "}
 						<code
-							className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs"
+							className="bg-bg-elevated px-1.5 py-0.5 rounded text-xs"
 							dir="ltr"
 						>
 							@BotFather
 						</code>{" "}
 						— שלח{" "}
 						<code
-							className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs"
+							className="bg-bg-elevated px-1.5 py-0.5 rounded text-xs"
 							dir="ltr"
 						>
 							/newbot
@@ -142,16 +135,13 @@ function SetupInstructions() {
 					</span>
 				</li>
 				<li className="flex gap-2">
-					<span
-						className="text-[var(--color-accent-blue)] font-bold shrink-0"
-						dir="ltr"
-					>
+					<span className="text-accent-blue font-bold shrink-0" dir="ltr">
 						2.
 					</span>
 					<span>
 						שלח הודעה לבוט, ואז בדוק את ה-chat_id שלך ב:{" "}
 						<code
-							className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs break-all"
+							className="bg-bg-elevated px-1.5 py-0.5 rounded text-xs break-all"
 							dir="ltr"
 						>
 							https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates
@@ -159,16 +149,13 @@ function SetupInstructions() {
 					</span>
 				</li>
 				<li className="flex gap-2">
-					<span
-						className="text-[var(--color-accent-blue)] font-bold shrink-0"
-						dir="ltr"
-					>
+					<span className="text-accent-blue font-bold shrink-0" dir="ltr">
 						3.
 					</span>
 					<span>
 						הוסף למשתני הסביבה לפני הפעלת{" "}
 						<code
-							className="bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded text-xs"
+							className="bg-bg-elevated px-1.5 py-0.5 rounded text-xs"
 							dir="ltr"
 						>
 							dashboard.py
@@ -179,10 +166,10 @@ function SetupInstructions() {
 			</ol>
 
 			<pre
-				className="text-xs bg-[var(--color-bg-elevated)] rounded-lg px-4 py-3 overflow-x-auto"
+				className="text-xs bg-bg-elevated rounded-lg px-4 py-3 overflow-x-auto"
 				dir="ltr"
 			>
-				<code className="text-[var(--color-text-secondary)]">
+				<code className="text-text-secondary">
 					{`export TELEGRAM_BOT_TOKEN="1234567890:ABC-DEF..."
 export TELEGRAM_CHAT_ID="123456789"
 python3 dashboard.py`}
@@ -208,12 +195,8 @@ function RuleToggle({
 	return (
 		<div className="flex items-center justify-between gap-4 py-3">
 			<div className="min-w-0">
-				<p className="text-sm font-medium text-[var(--color-text-primary)]">
-					{rule.label}
-				</p>
-				<p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-					{rule.description}
-				</p>
+				<p className="text-sm font-medium text-text-primary">{rule.label}</p>
+				<p className="text-xs text-text-muted mt-0.5">{rule.description}</p>
 			</div>
 
 			<button
@@ -229,9 +212,7 @@ function RuleToggle({
 					"focus-visible:ring-2 focus-visible:ring-[var(--color-accent-blue)]",
 					"focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-primary)]",
 					"disabled:cursor-not-allowed disabled:opacity-50",
-					enabled
-						? "bg-[var(--color-accent-blue)]"
-						: "bg-[var(--color-bg-elevated)]",
+					enabled ? "bg-accent-blue" : "bg-bg-elevated",
 				)}
 			>
 				<span
@@ -262,32 +243,32 @@ function NotificationRow({ event }: { event: NotificationEvent }) {
 		: "—";
 
 	return (
-		<div className="flex items-start gap-3 py-2.5 border-b border-[var(--color-border)] last:border-0">
+		<div className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
 			<div className="mt-0.5 shrink-0">
 				{event.sent ? (
 					<CheckCircle2
 						size={14}
-						className="text-[var(--color-status-healthy)]"
+						className="text-status-healthy"
 						aria-hidden="true"
 					/>
 				) : (
 					<XCircle
 						size={14}
-						className="text-[var(--color-status-critical)]"
+						className="text-status-critical"
 						aria-hidden="true"
 					/>
 				)}
 			</div>
 			<div className="min-w-0 flex-1">
-				<p className="text-xs font-medium text-[var(--color-text-primary)] break-words">
+				<p className="text-xs font-medium text-text-primary break-words">
 					{event.message}
 				</p>
 				<div className="flex items-center gap-2 mt-1">
-					<span className="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-elevated)] px-1.5 py-0.5 rounded">
+					<span className="text-xs text-text-muted bg-bg-elevated px-1.5 py-0.5 rounded">
 						{event.event}
 					</span>
 					<span
-						className="text-xs text-[var(--color-text-muted)] flex items-center gap-1"
+						className="text-xs text-text-muted flex items-center gap-1"
 						dir="ltr"
 					>
 						<Clock size={10} aria-hidden="true" />
@@ -315,23 +296,17 @@ export function NotificationsPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6 bg-zinc-950 min-h-screen p-6">
+		<div className="flex flex-col gap-6 min-h-screen p-6">
+			<PageHeader
+				icon={Bell}
+				title="התראות"
+				description="הגדרות התראות Telegram ולוג אירועים"
+			/>
+
 			{/* Header */}
 			<div className="flex items-center justify-between gap-4 flex-wrap">
 				<div className="flex items-center gap-3">
-					<Bell
-						size={20}
-						className="text-[var(--color-accent-blue)]"
-						aria-hidden="true"
-					/>
-					<div>
-						<h1 className="text-lg font-bold text-[var(--color-text-primary)]">
-							התראות
-						</h1>
-						<p className="text-sm text-[var(--color-text-muted)]">
-							שלח התראות Telegram לנייד
-						</p>
-					</div>
+					<Bell size={20} className="text-accent-blue" aria-hidden="true" />
 				</div>
 
 				<ActionButton
@@ -350,8 +325,8 @@ export function NotificationsPage() {
 					className={cn(
 						"rounded-lg px-4 py-3 text-sm font-medium",
 						(sendTest.data ?? configure.data)?.status === "ok"
-							? "bg-[oklch(0.72_0.19_155_/_0.12)] text-[var(--color-status-healthy)] border border-[oklch(0.72_0.19_155_/_0.25)]"
-							: "bg-[oklch(0.62_0.22_25_/_0.12)] text-[var(--color-status-critical)] border border-[oklch(0.62_0.22_25_/_0.25)]",
+							? "bg-[oklch(0.72_0.19_155_/_0.12)] text-status-healthy border border-[oklch(0.72_0.19_155_/_0.25)]"
+							: "bg-[oklch(0.62_0.22_25_/_0.12)] text-status-critical border border-[oklch(0.62_0.22_25_/_0.25)]",
 					)}
 					role="status"
 					aria-live="polite"
@@ -372,8 +347,8 @@ export function NotificationsPage() {
 			{!configLoading && !isConnected && <SetupInstructions />}
 
 			{/* Notification rules */}
-			<div className="glass-card p-5 flex flex-col gap-1">
-				<h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+			<div className="glass-card card-spotlight p-5 flex flex-col gap-1">
+				<h2 className="text-sm font-semibold text-text-primary mb-2">
 					כללי התראות
 				</h2>
 
@@ -385,17 +360,17 @@ export function NotificationsPage() {
 								className="flex items-center justify-between py-3"
 							>
 								<div className="flex flex-col gap-1.5">
-									<div className="h-3.5 bg-[var(--color-bg-elevated)] rounded w-32" />
-									<div className="h-2.5 bg-[var(--color-bg-elevated)] rounded w-48" />
+									<div className="h-3.5 bg-bg-elevated rounded w-32" />
+									<div className="h-2.5 bg-bg-elevated rounded w-48" />
 								</div>
-								<div className="w-11 h-6 bg-[var(--color-bg-elevated)] rounded-full" />
+								<div className="w-11 h-6 bg-bg-elevated rounded-full" />
 							</div>
 						))}
 					</div>
 				)}
 
 				{!configLoading && rules && (
-					<div className="divide-y divide-[var(--color-border)]">
+					<div className="divide-y divide-border">
 						{RULE_META.map((rule) => (
 							<RuleToggle
 								key={rule.key}
@@ -410,12 +385,8 @@ export function NotificationsPage() {
 
 				{!configLoading && !rules && (
 					<div className="flex items-center gap-2 py-6 justify-center">
-						<BellOff
-							size={20}
-							className="text-[var(--color-text-muted)]"
-							aria-hidden="true"
-						/>
-						<p className="text-sm text-[var(--color-text-muted)]">
+						<BellOff size={20} className="text-text-muted" aria-hidden="true" />
+						<p className="text-sm text-text-muted">
 							לא ניתן לטעון את הגדרות ההתראות
 						</p>
 					</div>
@@ -423,22 +394,17 @@ export function NotificationsPage() {
 			</div>
 
 			{/* Recent notifications log */}
-			<div className="glass-card p-5 flex flex-col gap-3">
-				<h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
+			<div className="glass-card card-spotlight p-5 flex flex-col gap-3">
+				<h2 className="text-sm font-semibold text-text-primary">
 					התראות אחרונות
 				</h2>
 
 				{!log || log.length === 0 ? (
-					<div className="flex items-center gap-2 py-8 justify-center">
-						<Bell
-							size={20}
-							className="text-[var(--color-text-muted)]"
-							aria-hidden="true"
-						/>
-						<p className="text-sm text-[var(--color-text-muted)]">
-							אין התראות עדיין
-						</p>
-					</div>
+					<EmptyState
+						icon={BellOff}
+						title="אין התראות עדיין"
+						description="התראות שיישלחו דרך Telegram יופיעו כאן"
+					/>
 				) : (
 					<div>
 						{log.map((event, idx) => (

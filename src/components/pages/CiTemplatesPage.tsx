@@ -5,8 +5,6 @@ import {
 	ChevronDown,
 	ChevronsUpDown,
 	ChevronUp,
-	Code2,
-	ExternalLink,
 	FileCode2,
 	FileText,
 	Flame,
@@ -22,6 +20,8 @@ import {
 	Zap,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Tabs } from "@/components/ui/Tabs";
 import { useCiDeep, useCiTemplates } from "@/hooks/use-api";
 import type { CiDeepResponse, CiTemplate } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -103,42 +103,42 @@ const CATEGORY_META: Record<
 > = {
 	ci: {
 		label: "CI ראשי",
-		color: "text-[var(--color-accent-blue)] bg-[oklch(0.65_0.18_250_/_0.12)]",
+		color: "text-accent-blue bg-[oklch(0.65_0.18_250_/_0.12)]",
 		icon: GitBranch,
 	},
 	security: {
 		label: "אבטחה",
-		color: "text-[var(--color-accent-red)] bg-[oklch(0.62_0.22_25_/_0.12)]",
+		color: "text-accent-red bg-[oklch(0.62_0.22_25_/_0.12)]",
 		icon: Shield,
 	},
 	deploy: {
 		label: "פריסה",
-		color: "text-[var(--color-accent-green)] bg-[oklch(0.72_0.19_155_/_0.12)]",
+		color: "text-accent-green bg-[oklch(0.72_0.19_155_/_0.12)]",
 		icon: Globe,
 	},
 	bundle: {
 		label: "חבילה",
-		color: "text-[var(--color-accent-amber)] bg-[oklch(0.78_0.16_75_/_0.12)]",
+		color: "text-accent-amber bg-[oklch(0.78_0.16_75_/_0.12)]",
 		icon: Package,
 	},
 	lighthouse: {
 		label: "Lighthouse",
-		color: "text-[var(--color-accent-cyan)] bg-[oklch(0.75_0.14_200_/_0.12)]",
+		color: "text-accent-cyan bg-[oklch(0.75_0.14_200_/_0.12)]",
 		icon: Flame,
 	},
 	flutter: {
 		label: "Flutter",
-		color: "text-[var(--color-accent-purple)] bg-[oklch(0.62_0.2_290_/_0.12)]",
+		color: "text-accent-purple bg-[oklch(0.62_0.2_290_/_0.12)]",
 		icon: Zap,
 	},
 	quality: {
 		label: "איכות",
-		color: "text-[var(--color-accent-purple)] bg-[oklch(0.62_0.2_290_/_0.12)]",
+		color: "text-accent-purple bg-[oklch(0.62_0.2_290_/_0.12)]",
 		icon: CheckCircle2,
 	},
 	other: {
 		label: "אחר",
-		color: "text-[var(--color-text-muted)] bg-[oklch(0.55_0.02_260_/_0.12)]",
+		color: "text-text-muted bg-[oklch(0.55_0.02_260_/_0.12)]",
 		icon: FileCode2,
 	},
 };
@@ -162,24 +162,24 @@ function SectionCard({
 }) {
 	const [open, setOpen] = useState(defaultOpen);
 	return (
-		<div className="glass-card overflow-hidden" id={id}>
+		<div className="glass-card card-spotlight overflow-hidden" id={id}>
 			<button
 				type="button"
 				onClick={() => setOpen((p) => !p)}
 				className={cn(
 					"w-full flex items-center gap-3 px-5 py-4 min-h-11",
 					"text-start transition-colors duration-150",
-					"hover:bg-[var(--color-bg-tertiary)]",
+					"hover:bg-bg-tertiary",
 				)}
 				aria-expanded={open}
 			>
-				<span className="text-[var(--color-accent-blue)] shrink-0">{icon}</span>
-				<span className="text-sm font-semibold text-[var(--color-text-primary)] flex-1">
+				<span className="text-accent-blue shrink-0">{icon}</span>
+				<span className="text-sm font-semibold text-text-primary flex-1">
 					{title}
 				</span>
 				{badge && (
 					<span
-						className="text-xs font-mono text-[var(--color-text-muted)] bg-[var(--color-bg-primary)] px-2 py-0.5 rounded-full border border-[var(--color-border)] shrink-0"
+						className="text-xs font-mono text-text-muted bg-bg-primary px-2 py-0.5 rounded-full border border-border shrink-0"
 						dir="ltr"
 					>
 						{badge}
@@ -188,16 +188,14 @@ function SectionCard({
 				<ChevronDown
 					size={16}
 					className={cn(
-						"text-[var(--color-text-muted)] transition-transform duration-200 shrink-0",
+						"text-text-muted transition-transform duration-200 shrink-0",
 						open && "rotate-180",
 					)}
 					aria-hidden="true"
 				/>
 			</button>
 			{open && (
-				<div className="px-5 pb-5 border-t border-[var(--color-border)]">
-					{children}
-				</div>
+				<div className="px-5 pb-5 border-t border-border">{children}</div>
 			)}
 		</div>
 	);
@@ -206,7 +204,7 @@ function SectionCard({
 function StatusBadge({ ok, label }: { ok: boolean; label?: string }) {
 	return ok ? (
 		<span
-			className="inline-flex items-center gap-1 text-[var(--color-accent-green)]"
+			className="inline-flex items-center gap-1 text-accent-green"
 			title="כן"
 		>
 			<CheckCircle2 size={13} aria-hidden="true" />
@@ -214,7 +212,7 @@ function StatusBadge({ ok, label }: { ok: boolean; label?: string }) {
 		</span>
 	) : (
 		<span
-			className="inline-flex items-center gap-1 text-[var(--color-text-muted)] opacity-40"
+			className="inline-flex items-center gap-1 text-text-muted opacity-40"
 			title="לא"
 		>
 			<XCircle size={13} aria-hidden="true" />
@@ -225,9 +223,9 @@ function StatusBadge({ ok, label }: { ok: boolean; label?: string }) {
 
 function SeverityBadge({ severity }: { severity: string }) {
 	const map: Record<string, string> = {
-		critical: "bg-[oklch(0.62_0.22_25_/_0.15)] text-[var(--color-accent-red)]",
-		warn: "bg-[oklch(0.78_0.16_75_/_0.15)] text-[var(--color-accent-amber)]",
-		info: "bg-[oklch(0.65_0.18_250_/_0.12)] text-[var(--color-accent-blue)]",
+		critical: "bg-[oklch(0.62_0.22_25_/_0.15)] text-accent-red",
+		warn: "bg-[oklch(0.78_0.16_75_/_0.15)] text-accent-amber",
+		info: "bg-[oklch(0.65_0.18_250_/_0.12)] text-accent-blue",
 	};
 	const labels: Record<string, string> = {
 		critical: "קריטי",
@@ -259,42 +257,42 @@ function SummaryStrip({
 		{
 			label: "תבניות CI",
 			value: templatesCount,
-			color: "text-[var(--color-accent-blue)]",
+			color: "text-accent-blue",
 		},
 		{
 			label: "כלים מותקנים",
 			value: deep?.stats?.total_tools ?? 14,
-			color: "text-[var(--color-accent-cyan)]",
+			color: "text-accent-cyan",
 		},
 		{
 			label: "Workflows לשימוש חוזר",
 			value: deep?.stats?.total_reusable_workflows ?? 3,
-			color: "text-[var(--color-accent-green)]",
+			color: "text-accent-green",
 		},
 		{
 			label: "GitHub Apps",
 			value: deep?.stats?.github_apps ?? 3,
-			color: "text-[var(--color-accent-purple)]",
+			color: "text-accent-purple",
 		},
 		{
 			label: "Runners",
 			value: deep?.stats?.total_runners ?? 22,
-			color: "text-[var(--color-accent-amber)]",
+			color: "text-accent-amber",
 		},
 		{
 			label: "פרויקטים עם CI",
 			value: `${deep?.stats?.projects_with_ci ?? 13}/${deep?.stats?.projects_total ?? 18}`,
-			color: "text-[var(--color-accent-red)]",
+			color: "text-accent-red",
 		},
 	];
 	return (
-		<div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+		<div className="grid grid-cols-3 gap-2 sm:grid-cols-6 stagger-grid">
 			{stats.map(({ label, value, color }) => (
-				<div key={label} className="glass-card p-3 text-center">
+				<div key={label} className="glass-card card-spotlight p-3 text-center">
 					<p className={cn("text-xl font-bold tabular-nums", color)} dir="ltr">
 						{value}
 					</p>
-					<p className="text-xs text-[var(--color-text-muted)] mt-0.5 leading-tight">
+					<p className="text-xs text-text-muted mt-0.5 leading-tight">
 						{label}
 					</p>
 				</div>
@@ -321,9 +319,7 @@ function PipelineStep({
 			className={cn(
 				"flex flex-col items-center justify-center px-3 py-2 rounded-lg text-center",
 				"border text-xs font-medium min-w-[88px]",
-				isParallel
-					? "border-dashed bg-[var(--color-bg-primary)]"
-					: "bg-[var(--color-bg-secondary)]",
+				isParallel ? "border-dashed bg-bg-primary" : "bg-bg-secondary",
 				color,
 			)}
 		>
@@ -338,7 +334,7 @@ function PipelineStep({
 function Arrow() {
 	return (
 		<div
-			className="flex items-center text-[var(--color-text-muted)] shrink-0"
+			className="flex items-center text-text-muted shrink-0"
 			aria-hidden="true"
 		>
 			<div className="w-4 h-px bg-current opacity-40" />
@@ -357,11 +353,11 @@ function PipelineArchitectureSection() {
 			badge="6 שלבים"
 		>
 			<div className="mt-4 space-y-5">
-				<p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+				<p className="text-sm text-text-secondary leading-relaxed">
 					ה-pipeline מורכב מ-6 שלבים סדרתיים ומקבילים. שלב ה-quality רץ עם 6
 					כלים במקביל — typecheck, lint, semgrep, trivy, gitleaks ו-socket-ci.
 					שלב הבדיקות: 4 shards מקביליים.{" "}
-					<span className="text-[var(--color-accent-amber)]">
+					<span className="text-accent-amber">
 						ci-gate חייב לעבור לפני כל deploy.
 					</span>
 				</p>
@@ -372,7 +368,7 @@ function PipelineArchitectureSection() {
 						<PipelineStep
 							label="install"
 							sub="pnpm ci"
-							color="border-[var(--color-accent-cyan)]/40 text-[var(--color-accent-cyan)]"
+							color="border-[var(--color-accent-cyan)]/40 text-accent-cyan"
 						/>
 						<Arrow />
 						{/* Quality parallel block */}
@@ -383,43 +379,43 @@ function PipelineArchitectureSection() {
 								"bg-[oklch(0.65_0.18_250_/_0.04)]",
 							)}
 						>
-							<span className="text-[10px] text-[var(--color-accent-blue)] text-center font-semibold uppercase tracking-wide">
+							<span className="text-[10px] text-accent-blue text-center font-semibold uppercase tracking-wide">
 								במקביל — quality
 							</span>
 							<div className="flex flex-wrap gap-2 justify-center">
 								<PipelineStep
 									label="typecheck"
-									color="border-[var(--color-accent-blue)]/40 text-[var(--color-accent-blue)]"
+									color="border-[var(--color-accent-blue)]/40 text-accent-blue"
 									isParallel
 								/>
 								<PipelineStep
 									label="lint"
 									sub="Biome 2.4.4"
-									color="border-[var(--color-accent-blue)]/40 text-[var(--color-accent-blue)]"
+									color="border-[var(--color-accent-blue)]/40 text-accent-blue"
 									isParallel
 								/>
 								<PipelineStep
 									label="semgrep"
 									sub="OWASP"
-									color="border-[var(--color-accent-red)]/40 text-[var(--color-accent-red)]"
+									color="border-[var(--color-accent-red)]/40 text-accent-red"
 									isParallel
 								/>
 								<PipelineStep
 									label="trivy"
 									sub="CVE scan"
-									color="border-[var(--color-accent-red)]/40 text-[var(--color-accent-red)]"
+									color="border-[var(--color-accent-red)]/40 text-accent-red"
 									isParallel
 								/>
 								<PipelineStep
 									label="gitleaks"
 									sub="secrets"
-									color="border-[var(--color-accent-red)]/40 text-[var(--color-accent-red)]"
+									color="border-[var(--color-accent-red)]/40 text-accent-red"
 									isParallel
 								/>
 								<PipelineStep
 									label="socket-ci"
 									sub="supply chain"
-									color="border-[var(--color-accent-amber)]/40 text-[var(--color-accent-amber)]"
+									color="border-[var(--color-accent-amber)]/40 text-accent-amber"
 									isParallel
 								/>
 							</div>
@@ -433,7 +429,7 @@ function PipelineArchitectureSection() {
 								"bg-[oklch(0.72_0.19_155_/_0.04)]",
 							)}
 						>
-							<span className="text-[10px] text-[var(--color-accent-green)] text-center font-semibold uppercase tracking-wide">
+							<span className="text-[10px] text-accent-green text-center font-semibold uppercase tracking-wide">
 								במקביל — tests
 							</span>
 							<div className="flex flex-wrap gap-2 justify-center">
@@ -441,7 +437,7 @@ function PipelineArchitectureSection() {
 									<PipelineStep
 										key={n}
 										label={`shard ${n}/4`}
-										color="border-[var(--color-accent-green)]/40 text-[var(--color-accent-green)]"
+										color="border-[var(--color-accent-green)]/40 text-accent-green"
 										isParallel
 									/>
 								))}
@@ -451,30 +447,30 @@ function PipelineArchitectureSection() {
 						<PipelineStep
 							label="lhci"
 							sub="Lighthouse"
-							color="border-[var(--color-accent-cyan)]/40 text-[var(--color-accent-cyan)]"
+							color="border-[var(--color-accent-cyan)]/40 text-accent-cyan"
 						/>
 						<Arrow />
 						<PipelineStep
 							label="build"
-							color="border-[var(--color-accent-amber)]/40 text-[var(--color-accent-amber)]"
+							color="border-[var(--color-accent-amber)]/40 text-accent-amber"
 						/>
 						<Arrow />
 						<PipelineStep
 							label="ci-gate"
 							sub="all must pass"
-							color="border-[var(--color-accent-blue)]/60 text-[var(--color-accent-blue)] bg-[oklch(0.65_0.18_250_/_0.08)]"
+							color="border-[var(--color-accent-blue)]/60 text-accent-blue bg-[oklch(0.65_0.18_250_/_0.08)]"
 						/>
 						<Arrow />
 						<PipelineStep
 							label="deploy"
 							sub="main only"
-							color="border-[var(--color-accent-green)]/60 text-[var(--color-accent-green)] bg-[oklch(0.72_0.19_155_/_0.08)]"
+							color="border-[var(--color-accent-green)]/60 text-accent-green bg-[oklch(0.72_0.19_155_/_0.08)]"
 						/>
 					</div>
 				</div>
 
 				{/* Stage descriptions */}
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
 					{[
 						{
 							name: "install",
@@ -515,51 +511,47 @@ function PipelineArchitectureSection() {
 					].map(({ name, desc, color, icon }) => (
 						<div key={name} className={cn("glass-card p-3 border", color)}>
 							<div className="flex items-center gap-2 mb-1">
-								<span className="text-[var(--color-accent-blue)]">{icon}</span>
+								<span className="text-accent-blue">{icon}</span>
 								<span
-									className="text-xs font-mono font-semibold text-[var(--color-text-primary)]"
+									className="text-xs font-mono font-semibold text-text-primary"
 									dir="ltr"
 								>
 									{name}
 								</span>
 							</div>
-							<p className="text-xs text-[var(--color-text-secondary)]">
-								{desc}
-							</p>
+							<p className="text-xs text-text-secondary">{desc}</p>
 						</div>
 					))}
 				</div>
 
 				{/* Key rules */}
-				<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+				<div className="grid grid-cols-1 gap-2 sm:grid-cols-2 stagger-grid">
 					{[
 						{
 							icon: <Shield size={13} />,
-							color: "text-[var(--color-accent-red)]",
+							color: "text-accent-red",
 							text: "semgrep, trivy, gitleaks — security gates, לא אופציונלי. || true = חסר ערך",
 						},
 						{
 							icon: <CheckCircle2 size={13} />,
-							color: "text-[var(--color-accent-green)]",
+							color: "text-accent-green",
 							text: "ci-gate חייב לעבור לפני כל deploy — needs: [ci-gate] ב-deploy.yml",
 						},
 						{
 							icon: <Zap size={13} />,
-							color: "text-[var(--color-accent-blue)]",
+							color: "text-accent-blue",
 							text: "tests: 4 shards במקביל — maxWorkers: top-level (לא poolOptions) — Vitest 4",
 						},
 						{
 							icon: <AlertTriangle size={13} />,
-							color: "text-[var(--color-accent-amber)]",
+							color: "text-accent-amber",
 							text: "deploy: cancel-in-progress: false — פריסה חלקית מותירה תשתית במצב לא ידוע",
 						},
 					].map(({ icon, color, text }) => (
 						// biome-ignore lint/suspicious/noArrayIndexKey: static list
 						<div key={text} className="flex items-start gap-2">
 							<span className={cn("shrink-0 mt-0.5", color)}>{icon}</span>
-							<span className="text-xs text-[var(--color-text-secondary)]">
-								{text}
-							</span>
+							<span className="text-xs text-text-secondary">{text}</span>
 						</div>
 					))}
 				</div>
@@ -583,11 +575,11 @@ interface DeepTool {
 }
 
 const TOOL_CAT_COLORS: Record<string, string> = {
-	security: "text-[var(--color-accent-red)] bg-[oklch(0.62_0.22_25_/_0.12)]",
-	quality: "text-[var(--color-accent-blue)] bg-[oklch(0.65_0.18_250_/_0.12)]",
-	testing: "text-[var(--color-accent-purple)] bg-[oklch(0.62_0.2_290_/_0.12)]",
-	perf: "text-[var(--color-accent-cyan)] bg-[oklch(0.75_0.14_200_/_0.12)]",
-	dev: "text-[var(--color-accent-green)] bg-[oklch(0.72_0.19_155_/_0.12)]",
+	security: "text-accent-red bg-[oklch(0.62_0.22_25_/_0.12)]",
+	quality: "text-accent-blue bg-[oklch(0.65_0.18_250_/_0.12)]",
+	testing: "text-accent-purple bg-[oklch(0.62_0.2_290_/_0.12)]",
+	perf: "text-accent-cyan bg-[oklch(0.75_0.14_200_/_0.12)]",
+	dev: "text-accent-green bg-[oklch(0.72_0.19_155_/_0.12)]",
 };
 const TOOL_CAT_LABELS: Record<string, string> = {
 	security: "אבטחה",
@@ -601,7 +593,7 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 	const [expanded, setExpanded] = useState(false);
 	const catColor =
 		TOOL_CAT_COLORS[tool.category] ??
-		"text-[var(--color-text-muted)] bg-[oklch(0.55_0.02_260_/_0.12)]";
+		"text-text-muted bg-[oklch(0.55_0.02_260_/_0.12)]";
 	return (
 		<div
 			className={cn(
@@ -614,15 +606,15 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 					{tool.critical && (
 						<AlertTriangle
 							size={13}
-							className="text-[var(--color-accent-red)] shrink-0"
+							className="text-accent-red shrink-0"
 							aria-label="חשוב"
 						/>
 					)}
-					<span className="text-sm font-semibold text-[var(--color-text-primary)] font-mono">
+					<span className="text-sm font-semibold text-text-primary font-mono">
 						{tool.name}
 					</span>
 					<span
-						className="text-xs text-[var(--color-text-muted)] font-mono shrink-0"
+						className="text-xs text-text-muted font-mono shrink-0"
 						dir="ltr"
 					>
 						v{tool.version}
@@ -638,12 +630,10 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 				</span>
 			</div>
 
-			<p className="text-xs text-[var(--color-text-secondary)]">
-				{tool.purpose_he}
-			</p>
+			<p className="text-xs text-text-secondary">{tool.purpose_he}</p>
 
 			<code
-				className="block text-xs font-mono text-[var(--color-accent-cyan)] bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-3 py-2 overflow-x-auto"
+				className="block text-xs font-mono text-accent-cyan bg-bg-primary border border-border rounded-lg px-3 py-2 overflow-x-auto"
 				dir="ltr"
 			>
 				{tool.command}
@@ -653,7 +643,7 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 				<button
 					type="button"
 					onClick={() => setExpanded((p) => !p)}
-					className="flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors duration-150 self-start"
+					className="flex items-center gap-1 text-xs text-text-muted hover:text-text-secondary transition-colors duration-150 self-start"
 				>
 					{expanded ? (
 						<ChevronUp size={12} aria-hidden="true" />
@@ -665,10 +655,10 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 			)}
 
 			{expanded && (
-				<div className="space-y-2 pt-1 border-t border-[var(--color-border)]">
+				<div className="space-y-2 pt-1 border-t border-border">
 					{tool.config && (
-						<p className="text-xs text-[var(--color-text-muted)]">
-							<span className="text-[var(--color-text-secondary)] font-medium">
+						<p className="text-xs text-text-muted">
+							<span className="text-text-secondary font-medium">
 								קובץ הגדרה:{" "}
 							</span>
 							<code className="font-mono" dir="ltr">
@@ -677,10 +667,8 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 						</p>
 					)}
 					{tool.replaces && (
-						<p className="text-xs text-[var(--color-text-muted)]">
-							<span className="text-[var(--color-text-secondary)] font-medium">
-								מחליף:{" "}
-							</span>
+						<p className="text-xs text-text-muted">
+							<span className="text-text-secondary font-medium">מחליף: </span>
 							{tool.replaces}
 						</p>
 					)}
@@ -688,9 +676,7 @@ function ToolCard({ tool }: { tool: DeepTool }) {
 						<p
 							className={cn(
 								"text-xs leading-relaxed",
-								tool.critical
-									? "text-[var(--color-accent-amber)]"
-									: "text-[var(--color-text-muted)]",
+								tool.critical ? "text-accent-amber" : "text-text-muted",
 							)}
 						>
 							{tool.note_he}
@@ -861,9 +847,9 @@ function ToolsSection({ tools }: { tools: DeepTool[] }) {
 									"inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition-all duration-150 min-h-7",
 									filter === cat
 										? cat === "all"
-											? "bg-[var(--color-accent-blue)]/20 text-[var(--color-accent-blue)] ring-1 ring-[var(--color-accent-blue)]/40"
+											? "bg-accent-blue/20 text-accent-blue ring-1 ring-[var(--color-accent-blue)]/40"
 											: cn(TOOL_CAT_COLORS[cat], "ring-1 ring-current/40")
-										: "bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]",
+										: "bg-bg-tertiary text-text-muted hover:text-text-secondary",
 								)}
 							>
 								{cat === "all" ? "הכל" : (TOOL_CAT_LABELS[cat] ?? cat)}
@@ -876,7 +862,7 @@ function ToolsSection({ tools }: { tools: DeepTool[] }) {
 				</div>
 
 				{/* Tools grid */}
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
 					{visible.map((tool) => (
 						<ToolCard key={tool.name} tool={tool} />
 					))}
@@ -884,23 +870,17 @@ function ToolsSection({ tools }: { tools: DeepTool[] }) {
 
 				{/* Install paths note */}
 				<div className="p-3 rounded-lg bg-[oklch(0.65_0.18_250_/_0.06)] border border-[var(--color-accent-blue)]/20">
-					<p className="text-xs text-[var(--color-text-secondary)]">
-						<span className="font-semibold text-[var(--color-accent-blue)]">
+					<p className="text-xs text-text-secondary">
+						<span className="font-semibold text-accent-blue">
 							מיקומי התקנה:{" "}
 						</span>
 						trivy/semgrep/act/git-cliff/hurl/k6 →{" "}
-						<code
-							className="font-mono text-[var(--color-accent-cyan)]"
-							dir="ltr"
-						>
+						<code className="font-mono text-accent-cyan" dir="ltr">
 							~/.local/bin/
 						</code>
 						{" | "}
 						knip/type-coverage/lhci/socket →{" "}
-						<code
-							className="font-mono text-[var(--color-accent-cyan)]"
-							dir="ltr"
-						>
+						<code className="font-mono text-accent-cyan" dir="ltr">
 							~/.local/share/pnpm/
 						</code>
 					</p>
@@ -924,36 +904,32 @@ interface ReusableWorkflow {
 
 function WorkflowCard({ wf }: { wf: ReusableWorkflow }) {
 	return (
-		<div className="glass-card p-4 space-y-3">
+		<div className="glass-card card-spotlight p-4 space-y-3">
 			<div className="flex items-start justify-between gap-2">
 				<span
-					className="text-sm font-semibold text-[var(--color-text-primary)] font-mono"
+					className="text-sm font-semibold text-text-primary font-mono"
 					dir="ltr"
 				>
 					{wf.name}
 				</span>
 				<span
-					className="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-tertiary)] px-2 py-0.5 rounded-full shrink-0"
+					className="text-xs text-text-muted bg-bg-tertiary px-2 py-0.5 rounded-full shrink-0"
 					dir="ltr"
 				>
 					{wf.stack}
 				</span>
 			</div>
-			<p className="text-xs text-[var(--color-text-secondary)]">
-				{wf.description_he}
-			</p>
+			<p className="text-xs text-text-secondary">{wf.description_he}</p>
 
 			{/* Stages */}
 			<div>
-				<p className="text-xs font-medium text-[var(--color-text-muted)] mb-2">
-					שלבים:
-				</p>
+				<p className="text-xs font-medium text-text-muted mb-2">שלבים:</p>
 				<div className="flex flex-wrap gap-1.5">
 					{(wf.stages ?? wf.jobs ?? []).map((stage: string) => (
 						// biome-ignore lint/suspicious/noArrayIndexKey: ordered list
 						<span
 							key={stage}
-							className="text-xs font-mono text-[var(--color-accent-blue)] bg-[oklch(0.65_0.18_250_/_0.1)] px-2 py-0.5 rounded-full border border-[var(--color-accent-blue)]/20"
+							className="text-xs font-mono text-accent-blue bg-[oklch(0.65_0.18_250_/_0.1)] px-2 py-0.5 rounded-full border border-[var(--color-accent-blue)]/20"
 						>
 							{stage}
 						</span>
@@ -963,14 +939,14 @@ function WorkflowCard({ wf }: { wf: ReusableWorkflow }) {
 
 			{/* Used by */}
 			<div>
-				<p className="text-xs font-medium text-[var(--color-text-muted)] mb-2">
+				<p className="text-xs font-medium text-text-muted mb-2">
 					משמש ב-{(wf.used_by ?? []).length} פרויקטים:
 				</p>
 				<div className="flex flex-wrap gap-1.5">
 					{(wf.used_by ?? []).map((proj) => (
 						<span
 							key={proj}
-							className="text-xs text-[var(--color-accent-green)] bg-[oklch(0.72_0.19_155_/_0.1)] px-2 py-0.5 rounded-full border border-[var(--color-accent-green)]/20"
+							className="text-xs text-accent-green bg-[oklch(0.72_0.19_155_/_0.1)] px-2 py-0.5 rounded-full border border-[var(--color-accent-green)]/20"
 						>
 							{proj}
 						</span>
@@ -1053,27 +1029,22 @@ function ReusableWorkflowsSection({
 		>
 			<div className="mt-4 space-y-4">
 				{/* Repo header */}
-				<div className="flex items-center gap-2 p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
+				<div className="flex items-center gap-2 p-3 rounded-lg bg-bg-tertiary border border-border">
 					<GitBranch
 						size={14}
-						className="text-[var(--color-accent-blue)] shrink-0"
+						className="text-accent-blue shrink-0"
 						aria-hidden="true"
 					/>
-					<span className="text-xs text-[var(--color-text-secondary)]">
-						ריפו:{" "}
-					</span>
-					<code
-						className="text-xs font-mono text-[var(--color-accent-cyan)]"
-						dir="ltr"
-					>
+					<span className="text-xs text-text-secondary">ריפו: </span>
+					<code className="text-xs font-mono text-accent-cyan" dir="ltr">
 						{repo}
 					</code>
-					<span className="text-xs text-[var(--color-text-muted)]">
+					<span className="text-xs text-text-muted">
 						— שינוי בתבנית אחת מתפשט לכל הפרויקטים
 					</span>
 				</div>
 
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-grid">
 					{workflows.map((wf) => (
 						<WorkflowCard key={wf.name} wf={wf} />
 					))}
@@ -1135,15 +1106,15 @@ const APP_ICONS: Record<string, React.ReactNode> = {
 };
 const APP_COLORS: Record<string, { icon: string; bg: string }> = {
 	Renovate: {
-		icon: "text-[var(--color-accent-blue)]",
+		icon: "text-accent-blue",
 		bg: "bg-[oklch(0.65_0.18_250_/_0.12)]",
 	},
 	"Socket.dev": {
-		icon: "text-[var(--color-accent-red)]",
+		icon: "text-accent-red",
 		bg: "bg-[oklch(0.62_0.22_25_/_0.12)]",
 	},
 	CodeRabbit: {
-		icon: "text-[var(--color-accent-purple)]",
+		icon: "text-accent-purple",
 		bg: "bg-[oklch(0.62_0.2_290_/_0.12)]",
 	},
 };
@@ -1158,14 +1129,17 @@ function GithubAppsSection({ data }: { data: CiDeepResponse | undefined }) {
 			icon={<Bot size={18} />}
 			badge={`${apps.length} apps`}
 		>
-			<div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+			<div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-grid">
 				{apps.map((app) => {
 					const colors = APP_COLORS[app.name] ?? {
-						icon: "text-[var(--color-accent-blue)]",
+						icon: "text-accent-blue",
 						bg: "bg-[oklch(0.65_0.18_250_/_0.12)]",
 					};
 					return (
-						<div key={app.name} className="glass-card p-4 space-y-3">
+						<div
+							key={app.name}
+							className="glass-card card-spotlight p-4 space-y-3"
+						>
 							<div className="flex items-center gap-2">
 								<span
 									className={cn(
@@ -1178,32 +1152,25 @@ function GithubAppsSection({ data }: { data: CiDeepResponse | undefined }) {
 									{APP_ICONS[app.name] ?? <Bot size={16} />}
 								</span>
 								<div>
-									<p className="text-sm font-semibold text-[var(--color-text-primary)]">
+									<p className="text-sm font-semibold text-text-primary">
 										{app.name}
 									</p>
-									<p className="text-xs text-[var(--color-text-muted)]">
-										{app.repos} ריפוs
-									</p>
+									<p className="text-xs text-text-muted">{app.repos} ריפוs</p>
 								</div>
 							</div>
-							<p className="text-xs text-[var(--color-text-secondary)]">
-								{app.purpose_he}
-							</p>
+							<p className="text-xs text-text-secondary">{app.purpose_he}</p>
 							<div className="flex items-center gap-2">
-								<span className="text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-tertiary)] px-2 py-0.5 rounded-full">
+								<span className="text-xs text-text-muted bg-bg-tertiary px-2 py-0.5 rounded-full">
 									{app.schedule}
 								</span>
 								{app.config && (
-									<code
-										className="text-xs font-mono text-[var(--color-text-muted)]"
-										dir="ltr"
-									>
+									<code className="text-xs font-mono text-text-muted" dir="ltr">
 										{app.config}
 									</code>
 								)}
 							</div>
 							{app.note_he && (
-								<p className="text-xs text-[var(--color-text-muted)] leading-relaxed border-t border-[var(--color-border)] pt-2">
+								<p className="text-xs text-text-muted leading-relaxed border-t border-border pt-2">
 									{app.note_he}
 								</p>
 							)}
@@ -1318,46 +1285,43 @@ function SecurityGatesSection({ data }: { data: CiDeepResponse | undefined }) {
 							<SeverityBadge severity={gate.severity} />
 							<div className="flex-1">
 								<div className="flex items-center gap-2 flex-wrap">
-									<span className="text-sm font-semibold text-[var(--color-text-primary)] font-mono">
+									<span className="text-sm font-semibold text-text-primary font-mono">
 										{gate.name}
 									</span>
 									{gate.version !== "N/A" && (
-										<span
-											className="text-xs text-[var(--color-text-muted)]"
-											dir="ltr"
-										>
+										<span className="text-xs text-text-muted" dir="ltr">
 											{gate.version}
 										</span>
 									)}
 									{gate.pin_required && (
-										<span className="text-xs text-[var(--color-accent-amber)] bg-[oklch(0.78_0.16_75_/_0.1)] px-1.5 py-0.5 rounded-full border border-[var(--color-accent-amber)]/20">
+										<span className="text-xs text-accent-amber bg-[oklch(0.78_0.16_75_/_0.1)] px-1.5 py-0.5 rounded-full border border-[var(--color-accent-amber)]/20">
 											PIN נדרש
 										</span>
 									)}
 								</div>
-								<p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
+								<p className="text-xs text-text-secondary mt-1 leading-relaxed">
 									{gate.note_he}
 								</p>
 							</div>
 						</div>
-						<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+						<div className="grid grid-cols-1 gap-2 sm:grid-cols-2 stagger-grid">
 							<div>
-								<p className="text-xs text-[var(--color-accent-green)] mb-1 font-medium">
+								<p className="text-xs text-accent-green mb-1 font-medium">
 									נכון:
 								</p>
 								<pre
-									className="text-xs font-mono text-[var(--color-accent-cyan)] bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-3 py-2 overflow-x-auto whitespace-pre-wrap"
+									className="text-xs font-mono text-accent-cyan bg-bg-primary border border-border rounded-lg px-3 py-2 overflow-x-auto whitespace-pre-wrap"
 									dir="ltr"
 								>
 									{gate.correct}
 								</pre>
 							</div>
 							<div>
-								<p className="text-xs text-[var(--color-accent-red)] mb-1 font-medium">
+								<p className="text-xs text-accent-red mb-1 font-medium">
 									שגוי:
 								</p>
 								<pre
-									className="text-xs font-mono text-[var(--color-accent-red)]/80 bg-[oklch(0.62_0.22_25_/_0.04)] border border-[var(--color-accent-red)]/20 rounded-lg px-3 py-2 overflow-x-auto whitespace-pre-wrap"
+									className="text-xs font-mono text-accent-red/80 bg-[oklch(0.62_0.22_25_/_0.04)] border border-[var(--color-accent-red)]/20 rounded-lg px-3 py-2 overflow-x-auto whitespace-pre-wrap"
 									dir="ltr"
 								>
 									{gate.wrong}
@@ -1414,14 +1378,14 @@ function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
 				<div className="flex items-start gap-3 p-3 rounded-lg bg-[oklch(0.62_0.22_25_/_0.08)] border border-[var(--color-accent-red)]/30">
 					<AlertTriangle
 						size={16}
-						className="text-[var(--color-accent-red)] shrink-0 mt-0.5"
+						className="text-accent-red shrink-0 mt-0.5"
 						aria-hidden="true"
 					/>
 					<div>
-						<p className="text-sm font-semibold text-[var(--color-accent-red)] mb-1">
+						<p className="text-sm font-semibold text-accent-red mb-1">
 							🚫 לעולם לא ubuntu-latest
 						</p>
-						<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+						<p className="text-xs text-text-secondary leading-relaxed">
 							{runners.note_he}
 						</p>
 					</div>
@@ -1429,60 +1393,43 @@ function RunnersSection({ data }: { data: CiDeepResponse | undefined }) {
 
 				{/* Correct label */}
 				<div className="p-3 rounded-lg bg-[oklch(0.72_0.19_155_/_0.06)] border border-[var(--color-accent-green)]/20">
-					<p className="text-xs text-[var(--color-text-muted)] mb-1">תמיד:</p>
-					<code
-						className="text-sm font-mono text-[var(--color-accent-green)]"
-						dir="ltr"
-					>
+					<p className="text-xs text-text-muted mb-1">תמיד:</p>
+					<code className="text-sm font-mono text-accent-green" dir="ltr">
 						{runners.label}
 					</code>
 				</div>
 
 				{/* Machine breakdown */}
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-					<div className="glass-card p-4 space-y-2">
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 stagger-grid">
+					<div className="glass-card card-spotlight p-4 space-y-2">
 						<div className="flex items-center justify-between">
-							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
+							<span className="text-sm font-semibold text-text-primary">
 								Lenovo (Pop!_OS)
 							</span>
-							<span
-								className="text-lg font-bold text-[var(--color-accent-blue)]"
-								dir="ltr"
-							>
+							<span className="text-lg font-bold text-accent-blue" dir="ltr">
 								{runners.lenovo_count}
 							</span>
 						</div>
-						<code
-							className="text-xs font-mono text-[var(--color-text-muted)]"
-							dir="ltr"
-						>
+						<code className="text-xs font-mono text-text-muted" dir="ltr">
 							{runners.lenovo_ip}
 						</code>
-						<p className="text-xs text-[var(--color-text-muted)]">
+						<p className="text-xs text-text-muted">
 							מכונה ראשית — 24-core / 64GB RAM
 						</p>
 					</div>
-					<div className="glass-card p-4 space-y-2">
+					<div className="glass-card card-spotlight p-4 space-y-2">
 						<div className="flex items-center justify-between">
-							<span className="text-sm font-semibold text-[var(--color-text-primary)]">
+							<span className="text-sm font-semibold text-text-primary">
 								MSI (Secondary)
 							</span>
-							<span
-								className="text-lg font-bold text-[var(--color-accent-purple)]"
-								dir="ltr"
-							>
+							<span className="text-lg font-bold text-accent-purple" dir="ltr">
 								{runners.msi_count}
 							</span>
 						</div>
-						<code
-							className="text-xs font-mono text-[var(--color-text-muted)]"
-							dir="ltr"
-						>
+						<code className="text-xs font-mono text-text-muted" dir="ltr">
 							{runners.msi_ip}
 						</code>
-						<p className="text-xs text-[var(--color-accent-amber)]">
-							{runners.note_msi}
-						</p>
+						<p className="text-xs text-accent-amber">{runners.note_msi}</p>
 					</div>
 				</div>
 			</div>
@@ -1669,17 +1616,9 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
 			<ChevronsUpDown size={12} className="opacity-40" aria-hidden="true" />
 		);
 	return dir === "asc" ? (
-		<ChevronUp
-			size={12}
-			className="text-[var(--color-accent-blue)]"
-			aria-hidden="true"
-		/>
+		<ChevronUp size={12} className="text-accent-blue" aria-hidden="true" />
 	) : (
-		<ChevronDown
-			size={12}
-			className="text-[var(--color-accent-blue)]"
-			aria-hidden="true"
-		/>
+		<ChevronDown size={12} className="text-accent-blue" aria-hidden="true" />
 	);
 }
 
@@ -1716,26 +1655,26 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 	).length;
 
 	const cols: { key: SortKey; label: string; color: string }[] = [
-		{ key: "ci", label: "CI", color: "text-[var(--color-accent-blue)]" },
+		{ key: "ci", label: "CI", color: "text-accent-blue" },
 		{
 			key: "bundle_check",
 			label: "bundle-check",
-			color: "text-[var(--color-accent-amber)]",
+			color: "text-accent-amber",
 		},
 		{
 			key: "lighthouse",
 			label: "lighthouse CI",
-			color: "text-[var(--color-accent-cyan)]",
+			color: "text-accent-cyan",
 		},
 		{
 			key: "trivy_auto",
 			label: "trivy weekly",
-			color: "text-[var(--color-accent-red)]",
+			color: "text-accent-red",
 		},
 		{
 			key: "renovate",
 			label: "Renovate",
-			color: "text-[var(--color-accent-green)]",
+			color: "text-accent-green",
 		},
 	];
 
@@ -1747,18 +1686,21 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 			badge={`${ciWithAll} פרויקטים מלאים`}
 		>
 			<div className="mt-4 space-y-3">
-				<p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+				<p className="text-sm text-text-secondary leading-relaxed">
 					{ciWithAll} פרויקטים מופעלים עם כל 5 הכלים. לחץ על כותרת עמודה למיון.
 				</p>
 				<div className="overflow-x-auto">
 					<table className="w-full text-xs" aria-label="מטריצת CI לפי פרויקט">
 						<thead>
-							<tr className="border-b border-[var(--color-border)]">
-								<th className="text-start pb-2 pe-4 text-[var(--color-text-muted)] font-medium whitespace-nowrap">
+							<tr className="border-b border-border">
+								<th
+									scope="col"
+									className="text-start pb-2 pe-4 text-text-muted font-medium whitespace-nowrap"
+								>
 									<button
 										type="button"
 										onClick={() => toggleSort("name")}
-										className="flex items-center gap-1 hover:text-[var(--color-text-secondary)] transition-colors"
+										className="flex items-center gap-1 hover:text-text-secondary transition-colors"
 									>
 										פרויקט{" "}
 										<SortIcon
@@ -1767,12 +1709,16 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 										/>
 									</button>
 								</th>
-								<th className="text-start pb-2 pe-4 text-[var(--color-text-muted)] font-medium whitespace-nowrap">
+								<th
+									scope="col"
+									className="text-start pb-2 pe-4 text-text-muted font-medium whitespace-nowrap"
+								>
 									Stack
 								</th>
 								{cols.map(({ key, label, color }) => (
 									<th
 										key={key}
+										scope="col"
 										className="text-center pb-2 pe-3 whitespace-nowrap"
 									>
 										<button
@@ -1791,11 +1737,14 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 										</button>
 									</th>
 								))}
-								<th className="text-start pb-2 pe-3 text-[var(--color-text-muted)] font-medium whitespace-nowrap">
+								<th
+									scope="col"
+									className="text-start pb-2 pe-3 text-text-muted font-medium whitespace-nowrap"
+								>
 									<button
 										type="button"
 										onClick={() => toggleSort("deploy")}
-										className="flex items-center gap-1 hover:text-[var(--color-text-secondary)] transition-colors"
+										className="flex items-center gap-1 hover:text-text-secondary transition-colors"
 									>
 										Deploy{" "}
 										<SortIcon
@@ -1804,7 +1753,10 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 										/>
 									</button>
 								</th>
-								<th className="text-start pb-2 text-[var(--color-text-muted)] font-medium whitespace-nowrap">
+								<th
+									scope="col"
+									className="text-start pb-2 text-text-muted font-medium whitespace-nowrap"
+								>
 									Branch
 								</th>
 							</tr>
@@ -1813,13 +1765,13 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 							{sorted.map((proj) => (
 								<tr
 									key={proj.name}
-									className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-tertiary)] transition-colors duration-100"
+									className="border-b border-border last:border-0 hover:bg-bg-tertiary transition-colors duration-100"
 								>
-									<td className="py-2 pe-4 font-semibold text-[var(--color-text-primary)] whitespace-nowrap">
+									<td className="py-2 pe-4 font-semibold text-text-primary whitespace-nowrap">
 										{proj.name}
 									</td>
 									<td
-										className="py-2 pe-4 font-mono text-[var(--color-text-muted)] whitespace-nowrap"
+										className="py-2 pe-4 font-mono text-text-muted whitespace-nowrap"
 										dir="ltr"
 									>
 										{proj.stack}
@@ -1829,27 +1781,27 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 											<StatusBadge ok={proj[key] as boolean} />
 										</td>
 									))}
-									<td className="py-2 pe-3 text-[var(--color-text-secondary)] whitespace-nowrap">
+									<td className="py-2 pe-3 text-text-secondary whitespace-nowrap">
 										<span
 											className={cn(
 												"text-xs px-1.5 py-0.5 rounded-full",
 												(proj.deploy ?? "").includes("CF Pages") &&
 													"text-[var(--color-accent-orange)] bg-[oklch(0.75_0.18_50_/_0.1)]",
 												(proj.deploy ?? "").includes("Netlify") &&
-													"text-[var(--color-accent-cyan)] bg-[oklch(0.75_0.14_200_/_0.1)]",
+													"text-accent-cyan bg-[oklch(0.75_0.14_200_/_0.1)]",
 												(proj.deploy ?? "").includes("Firebase") &&
-													"text-[var(--color-accent-amber)] bg-[oklch(0.78_0.16_75_/_0.1)]",
+													"text-accent-amber bg-[oklch(0.78_0.16_75_/_0.1)]",
 												(proj.deploy ?? "") === "none" &&
-													"text-[var(--color-text-muted)] opacity-50",
+													"text-text-muted opacity-50",
 												(proj.deploy ?? "").includes("npm") &&
-													"text-[var(--color-accent-red)] bg-[oklch(0.62_0.22_25_/_0.1)]",
+													"text-accent-red bg-[oklch(0.62_0.22_25_/_0.1)]",
 											)}
 										>
 											{proj.deploy}
 										</span>
 									</td>
 									<td
-										className="py-2 font-mono text-[var(--color-text-muted)] text-xs"
+										className="py-2 font-mono text-text-muted text-xs"
 										dir="ltr"
 									>
 										{proj.branch}
@@ -1860,11 +1812,11 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 					</table>
 				</div>
 				{/* Legend */}
-				<div className="flex flex-wrap items-center gap-4 text-xs text-[var(--color-text-muted)] pt-1">
+				<div className="flex flex-wrap items-center gap-4 text-xs text-text-muted pt-1">
 					<span className="flex items-center gap-1">
 						<CheckCircle2
 							size={12}
-							className="text-[var(--color-accent-green)]"
+							className="text-accent-green"
 							aria-hidden="true"
 						/>{" "}
 						מופעל
@@ -1874,10 +1826,8 @@ function ProjectMatrixSection({ data }: { data: CiDeepResponse | undefined }) {
 						מופעל
 					</span>
 					<span className="flex items-center gap-1">
-						<span className="text-[var(--color-accent-amber)]">
-							Netlify (broken)
-						</span>{" "}
-						— build בנייה שבורה, pending fix
+						<span className="text-accent-amber">Netlify (broken)</span> — build
+						בנייה שבורה, pending fix
 					</span>
 				</div>
 			</div>
@@ -1898,7 +1848,7 @@ function TemplateCard({
 		<div
 			className={cn(
 				"glass-card p-3 flex flex-col gap-2 transition-all duration-150",
-				"hover:border-[var(--color-border-hover)]",
+				"hover:border-border-hover",
 			)}
 		>
 			<div className="flex items-start gap-2">
@@ -1912,13 +1862,10 @@ function TemplateCard({
 					<Icon size={14} />
 				</span>
 				<div className="min-w-0 flex-1">
-					<p className="text-xs font-semibold text-[var(--color-text-primary)] truncate">
+					<p className="text-xs font-semibold text-text-primary truncate">
 						{template.name}
 					</p>
-					<p
-						className="text-xs text-[var(--color-text-muted)] truncate font-mono"
-						dir="ltr"
-					>
+					<p className="text-xs text-text-muted truncate font-mono" dir="ltr">
 						{template.file}
 					</p>
 				</div>
@@ -1932,7 +1879,7 @@ function TemplateCard({
 				>
 					{meta.label}
 				</span>
-				<span className="text-xs text-[var(--color-text-muted)]" dir="ltr">
+				<span className="text-xs text-text-muted" dir="ltr">
 					{template.lines} שורות · {template.size_kb}KB
 				</span>
 			</div>
@@ -1989,7 +1936,7 @@ function TemplateGallery({ templates }: { templates: CiTemplate[] }) {
 				<div className="relative">
 					<Search
 						size={14}
-						className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] pointer-events-none"
+						className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
 						aria-hidden="true"
 					/>
 					<input
@@ -1999,9 +1946,9 @@ function TemplateGallery({ templates }: { templates: CiTemplate[] }) {
 						placeholder="חיפוש תבנית..."
 						className={cn(
 							"w-full rounded-lg ps-8 pe-4 py-2 text-sm",
-							"bg-[var(--color-bg-primary)] border border-[var(--color-border)]",
-							"text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]",
-							"focus:outline-none focus:border-[var(--color-accent-blue)]/60",
+							"bg-bg-primary border border-border",
+							"text-text-primary placeholder:text-text-muted",
+							"focus:outline-none focus:border-accent-blue/60",
 							"transition-colors duration-150",
 						)}
 						aria-label="חיפוש תבניות CI/CD"
@@ -2036,9 +1983,9 @@ function TemplateGallery({ templates }: { templates: CiTemplate[] }) {
 									"transition-all duration-150 min-h-7",
 									activeCategory === cat
 										? cat === "all"
-											? "bg-[var(--color-accent-blue)]/20 text-[var(--color-accent-blue)] ring-1 ring-[var(--color-accent-blue)]/40"
+											? "bg-accent-blue/20 text-accent-blue ring-1 ring-[var(--color-accent-blue)]/40"
 											: cn(meta?.color, "ring-1 ring-current/40")
-										: "bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]",
+										: "bg-bg-tertiary text-text-muted hover:text-text-secondary",
 								)}
 							>
 								{cat === "all" ? "הכל" : meta?.label}
@@ -2058,11 +2005,11 @@ function TemplateGallery({ templates }: { templates: CiTemplate[] }) {
 
 				{/* Grid */}
 				{filtered.length === 0 ? (
-					<p className="text-sm text-[var(--color-text-muted)] text-center py-6">
+					<p className="text-sm text-text-muted text-center py-6">
 						לא נמצאו תבניות
 					</p>
 				) : (
-					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
 						{filtered.map((t) => (
 							<TemplateCard key={t.file} template={t} />
 						))}
@@ -2073,16 +2020,13 @@ function TemplateGallery({ templates }: { templates: CiTemplate[] }) {
 					<div className="text-center py-8">
 						<FileCode2
 							size={32}
-							className="mx-auto mb-2 text-[var(--color-text-muted)] opacity-40"
+							className="mx-auto mb-2 text-text-muted opacity-40"
 							aria-hidden="true"
 						/>
-						<p className="text-sm text-[var(--color-text-muted)]">
+						<p className="text-sm text-text-muted">
 							לא נמצאו תבניות ב-~/ci-standards/
 						</p>
-						<p
-							className="text-xs text-[var(--color-text-muted)] mt-1"
-							dir="ltr"
-						>
+						<p className="text-xs text-text-muted mt-1" dir="ltr">
 							git clone https://github.com/Nadav011/ci-standards ~/ci-standards
 						</p>
 					</div>
@@ -2106,102 +2050,62 @@ export function CiTemplatesPage() {
 			<div className="p-6 text-center">
 				<RefreshCw
 					size={20}
-					className="mx-auto mb-2 text-[var(--color-text-muted)] animate-spin"
+					className="mx-auto mb-2 text-text-muted animate-spin"
 					aria-hidden="true"
 				/>
-				<p className="text-sm text-[var(--color-text-muted)]">
-					טוען נתוני CI/CD…
-				</p>
+				<p className="text-sm text-text-muted">טוען נתוני CI/CD…</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="p-4 space-y-4 max-w-7xl mx-auto" dir="rtl">
-			{/* Header */}
-			<div className="flex items-start justify-between gap-4 flex-wrap">
-				<div>
-					<h1 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
-						<Code2
-							size={22}
-							className="text-[var(--color-accent-blue)]"
-							aria-hidden="true"
-						/>
-						CI/CD — תשתית מלאה
-					</h1>
-					<p className="text-sm text-[var(--color-text-muted)] mt-0.5">
-						כל פרויקטי APEX — pipeline, כלים, אבטחה, runners, מטריצת פרויקטים
-					</p>
-				</div>
-				<div className="flex items-center gap-2">
-					<a
-						href="https://github.com/Nadav011/ci-standards"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] transition-colors duration-150 min-h-8"
-					>
-						<GitBranch size={13} aria-hidden="true" />
-						ci-standards
-						<ExternalLink size={12} className="opacity-60" aria-hidden="true" />
-					</a>
-				</div>
+		<div className="p-4 max-w-7xl mx-auto" dir="rtl">
+			<PageHeader
+				icon={FileCode2}
+				title="תבניות CI"
+				description="כל תבניות ה-Workflow, כלי אבטחה, ו-Runners"
+			/>
+
+			{/* Summary strip — always visible */}
+			<div className="mt-4">
+				<SummaryStrip deep={deepData} templatesCount={templates.length} />
 			</div>
 
-			{/* Summary strip */}
-			<SummaryStrip deep={deepData} templatesCount={templates.length} />
-
-			{/* Navigation quick-links */}
-			<div className="flex flex-wrap gap-2">
-				{[
-					{
-						href: "#pipeline",
-						label: "Pipeline",
-						icon: <GitBranch size={12} />,
-					},
-					{ href: "#tools", label: "כלים", icon: <Terminal size={12} /> },
-					{
-						href: "#workflows",
-						label: "Workflows",
-						icon: <FileText size={12} />,
-					},
-					{
-						href: "#github-apps",
-						label: "GitHub Apps",
-						icon: <Bot size={12} />,
-					},
-					{
-						href: "#security-gates",
-						label: "שערי אבטחה",
-						icon: <Shield size={12} />,
-					},
-					{ href: "#runners", label: "Runners", icon: <Server size={12} /> },
-					{
-						href: "#matrix",
-						label: "מטריצה",
-						icon: <CheckCircle2 size={12} />,
-					},
-					{ href: "#gallery", label: "גלריה", icon: <FileCode2 size={12} /> },
-				].map(({ href, label, icon }) => (
-					<a
-						key={href}
-						href={href}
-						className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:border-[var(--color-border-hover)] transition-colors duration-150 min-h-7"
-					>
-						<span aria-hidden="true">{icon}</span>
-						{label}
-					</a>
-				))}
+			{/* Pipeline architecture overview — always visible */}
+			<div className="mt-4">
+				<PipelineArchitectureSection />
 			</div>
 
-			{/* All sections */}
-			<PipelineArchitectureSection />
-			<ToolsSection tools={tools} />
-			<ReusableWorkflowsSection data={deepData} />
-			<GithubAppsSection data={deepData} />
-			<SecurityGatesSection data={deepData} />
-			<RunnersSection data={deepData} />
-			<ProjectMatrixSection data={deepData} />
-			<TemplateGallery templates={templates} />
+			<Tabs
+				className="mt-4"
+				tabs={[
+					{ id: "templates", label: "תבניות" },
+					{ id: "tools", label: "כלים" },
+					{ id: "runners", label: "Runners" },
+					{ id: "projects", label: "פרויקטים" },
+				]}
+				defaultTab="templates"
+			>
+				{(activeTab) => (
+					<div className="space-y-4">
+						{activeTab === "templates" && (
+							<TemplateGallery templates={templates} />
+						)}
+						{activeTab === "tools" && (
+							<>
+								<ToolsSection tools={tools} />
+								<ReusableWorkflowsSection data={deepData} />
+								<GithubAppsSection data={deepData} />
+								<SecurityGatesSection data={deepData} />
+							</>
+						)}
+						{activeTab === "runners" && <RunnersSection data={deepData} />}
+						{activeTab === "projects" && (
+							<ProjectMatrixSection data={deepData} />
+						)}
+					</div>
+				)}
+			</Tabs>
 		</div>
 	);
 }

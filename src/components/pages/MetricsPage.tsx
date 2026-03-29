@@ -1,12 +1,15 @@
 import ReactECharts from "echarts-for-react";
 import {
 	Activity,
+	BarChart3,
 	Bot,
 	FolderOpen,
 	RefreshCw,
 	TrendingUp,
 	Zap,
 } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useMetrics } from "@/hooks/use-api";
 import { cn } from "@/lib/cn";
 
@@ -21,7 +24,7 @@ interface KpiCardProps {
 
 function KpiCard({ label, value, sub, color, icon }: KpiCardProps) {
 	return (
-		<div className="glass-card p-5 flex items-start gap-4">
+		<div className="glass-card card-spotlight p-5 flex items-start gap-4">
 			<div
 				className="flex items-center justify-center w-11 h-11 rounded-xl shrink-0"
 				style={{
@@ -44,15 +47,29 @@ function KpiCard({ label, value, sub, color, icon }: KpiCardProps) {
 }
 
 const PROVIDER_COLORS: Record<string, string> = {
-	codex: "oklch(0.65 0.18 250)",
-	kimi: "oklch(0.72 0.19 155)",
-	gemini: "oklch(0.78 0.16 75)",
-	minimax: "oklch(0.62 0.2 290)",
-	claude: "oklch(0.75 0.14 200)",
+	codex: "var(--color-accent-blue)",
+	kimi: "var(--color-accent-green)",
+	gemini: "var(--color-accent-amber)",
+	minimax: "var(--color-accent-purple)",
+	claude: "var(--color-accent-cyan)",
+};
+
+type BadgeVariant = "info" | "success" | "warning" | "purple" | "default";
+
+const PROVIDER_BADGE_VARIANTS: Record<string, BadgeVariant> = {
+	codex: "info",
+	kimi: "success",
+	gemini: "warning",
+	minimax: "purple",
+	claude: "default",
 };
 
 function getProviderColor(name: string): string {
 	return PROVIDER_COLORS[name.toLowerCase()] ?? "oklch(0.62 0.05 260)";
+}
+
+function getProviderBadgeVariant(name: string): BadgeVariant {
+	return PROVIDER_BADGE_VARIANTS[name.toLowerCase()] ?? "default";
 }
 
 // ── Top-N bar chart (agents or projects) ─────────────────────────────────
@@ -75,9 +92,9 @@ function TopBarChart({
 		backgroundColor: "transparent",
 		tooltip: {
 			trigger: "axis",
-			backgroundColor: "oklch(0.22 0.02 260)",
-			borderColor: "oklch(0.28 0.02 260)",
-			textStyle: { color: "oklch(0.95 0.01 260)", fontSize: 12 },
+			backgroundColor: "var(--color-bg-elevated)",
+			borderColor: "var(--color-border)",
+			textStyle: { color: "var(--color-text-primary)", fontSize: 12 },
 			axisPointer: { type: "shadow" },
 		},
 		grid: { top: 8, bottom: 8, containLabel: true },
@@ -85,13 +102,13 @@ function TopBarChart({
 			type: "value",
 			minInterval: 1,
 			axisLine: { show: false },
-			splitLine: { lineStyle: { color: "oklch(0.22 0.02 260)" } },
-			axisLabel: { color: "oklch(0.55 0.02 260)", fontSize: 11 },
+			splitLine: { lineStyle: { color: "var(--color-bg-elevated)" } },
+			axisLabel: { color: "var(--color-text-muted)", fontSize: 11 },
 		},
 		yAxis: {
 			type: "category",
 			data: items.map((i) => i.name),
-			axisLine: { lineStyle: { color: "oklch(0.28 0.02 260)" } },
+			axisLine: { lineStyle: { color: "var(--color-border)" } },
 			axisLabel: {
 				color: "oklch(0.72 0.02 260)",
 				fontSize: 11,
@@ -116,7 +133,7 @@ function TopBarChart({
 	};
 
 	return (
-		<div className="glass-card p-5">
+		<div className="glass-card card-spotlight p-5">
 			<div className="flex items-center gap-2 mb-4">
 				<span className="text-accent-blue" aria-hidden="true">
 					{icon}
@@ -154,14 +171,12 @@ export function MetricsPage() {
 
 	if (error)
 		return (
-			<div className="p-8 text-center text-[var(--color-accent-red)]">
-				שגיאה בטעינת נתונים
-			</div>
+			<div className="p-8 text-center text-accent-red">שגיאה בטעינת נתונים</div>
 		);
 
 	// Build per-provider total from provider_events
 	const providerTotals: Record<string, number> = {};
-	for (const ev of data.provider_events) {
+	for (const ev of data.provider_events ?? []) {
 		providerTotals[ev.provider] =
 			(providerTotals[ev.provider] ?? 0) + (ev.count ?? 1);
 	}
@@ -173,16 +188,16 @@ export function MetricsPage() {
 		backgroundColor: "transparent",
 		tooltip: {
 			trigger: "axis",
-			backgroundColor: "oklch(0.22 0.02 260)",
-			borderColor: "oklch(0.28 0.02 260)",
-			textStyle: { color: "oklch(0.95 0.01 260)", fontSize: 12 },
+			backgroundColor: "var(--color-bg-elevated)",
+			borderColor: "var(--color-border)",
+			textStyle: { color: "var(--color-text-primary)", fontSize: 12 },
 			axisPointer: { type: "shadow" },
 		},
 		grid: { top: 8, bottom: 8, containLabel: true },
 		xAxis: {
 			type: "category",
 			data: providerEntries.map(([name]) => name),
-			axisLine: { lineStyle: { color: "oklch(0.28 0.02 260)" } },
+			axisLine: { lineStyle: { color: "var(--color-border)" } },
 			axisLabel: { color: "oklch(0.72 0.02 260)", fontSize: 12 },
 			axisTick: { show: false },
 		},
@@ -190,8 +205,8 @@ export function MetricsPage() {
 			type: "value",
 			minInterval: 1,
 			axisLine: { show: false },
-			splitLine: { lineStyle: { color: "oklch(0.22 0.02 260)" } },
-			axisLabel: { color: "oklch(0.55 0.02 260)", fontSize: 11 },
+			splitLine: { lineStyle: { color: "var(--color-bg-elevated)" } },
+			axisLabel: { color: "var(--color-text-muted)", fontSize: 11 },
 		},
 		series: [
 			{
@@ -209,21 +224,19 @@ export function MetricsPage() {
 	};
 
 	return (
-		<div className="space-y-6 bg-zinc-950 min-h-screen p-6" dir="rtl">
-			{/* Header */}
-			<div>
-				<h1 className="text-xl font-bold text-text-primary">מטריקות</h1>
-				<p className="text-sm text-text-muted mt-0.5">
-					ביצועי שיגור הידרה לפי ספק, סוכן ופרויקט
-				</p>
-			</div>
+		<div className="space-y-6 min-h-screen p-6" dir="rtl">
+			<PageHeader
+				icon={BarChart3}
+				title="מדדים"
+				description="סטטיסטיקות שיגור — ספקים, סוכנים, ופרויקטים"
+			/>
 
 			{/* KPI row */}
-			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 stagger-grid">
 				<KpiCard
 					label="שיגורים כולל"
 					value={data.total_dispatches.toLocaleString("he-IL")}
-					color="oklch(0.65 0.18 250)"
+					color="var(--color-accent-blue)"
 					icon={<Zap size={20} />}
 				/>
 				<KpiCard
@@ -232,7 +245,7 @@ export function MetricsPage() {
 					sub={
 						data.top_agents[0] ? `מוביל: ${data.top_agents[0].name}` : undefined
 					}
-					color="oklch(0.72 0.19 155)"
+					color="var(--color-accent-green)"
 					icon={<Bot size={20} />}
 				/>
 				<KpiCard
@@ -243,7 +256,7 @@ export function MetricsPage() {
 							? `מוביל: ${data.top_projects[0].name}`
 							: undefined
 					}
-					color="oklch(0.75 0.14 200)"
+					color="var(--color-accent-cyan)"
 					icon={<FolderOpen size={20} />}
 				/>
 			</div>
@@ -286,51 +299,60 @@ export function MetricsPage() {
 			)}
 
 			{/* Top agents + Top projects */}
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 stagger-grid">
 				<TopBarChart
 					title="סוכנים מובילים"
 					icon={<Bot size={15} />}
 					items={data.top_agents}
-					color="oklch(0.65 0.18 250)"
+					color="var(--color-accent-blue)"
 					emptyLabel="אין נתוני סוכנים"
 				/>
 				<TopBarChart
 					title="פרויקטים מובילים"
 					icon={<FolderOpen size={15} />}
 					items={data.top_projects}
-					color="oklch(0.75 0.14 200)"
+					color="var(--color-accent-cyan)"
 					emptyLabel="אין נתוני פרויקטים"
 				/>
 			</div>
 
 			{/* Provider events table */}
-			{data.provider_events.length > 0 && (
+			{(data.provider_events ?? []).length > 0 && (
 				<div className="glass-card overflow-hidden">
 					<div className="p-4 border-b border-border flex items-center justify-between">
 						<h2 className="text-sm font-semibold text-text-primary">
 							אירועי ספקים
 						</h2>
 						<span className="text-xs text-text-muted">
-							{data.provider_events.length} רשומות
+							{(data.provider_events ?? []).length} רשומות
 						</span>
 					</div>
 					<div className="overflow-x-auto">
 						<table className="w-full text-start">
 							<thead>
 								<tr className="border-b border-border bg-bg-elevated/50">
-									<th className="py-2.5 ps-4 pe-2 text-start text-xs font-semibold text-text-muted">
+									<th
+										scope="col"
+										className="py-2.5 ps-4 pe-2 text-start text-xs font-semibold text-text-muted"
+									>
 										ספק
 									</th>
-									<th className="py-2.5 px-2 text-start text-xs font-semibold text-text-muted">
+									<th
+										scope="col"
+										className="py-2.5 px-2 text-start text-xs font-semibold text-text-muted"
+									>
 										אירוע
 									</th>
-									<th className="py-2.5 ps-2 pe-4 text-start text-xs font-semibold text-text-muted">
+									<th
+										scope="col"
+										className="py-2.5 ps-2 pe-4 text-start text-xs font-semibold text-text-muted"
+									>
 										כמות
 									</th>
 								</tr>
 							</thead>
 							<tbody>
-								{data.provider_events.map((ev, idx) => (
+								{(data.provider_events ?? []).map((ev, idx) => (
 									<tr
 										// biome-ignore lint/suspicious/noArrayIndexKey: no stable id available
 										key={`${ev.provider}-${ev.event}-${idx}`}
@@ -340,18 +362,9 @@ export function MetricsPage() {
 										)}
 									>
 										<td className="py-2.5 ps-4 pe-2">
-											<div className="flex items-center gap-1.5">
-												<span
-													className="w-2 h-2 rounded-full shrink-0"
-													style={{
-														backgroundColor: getProviderColor(ev.provider),
-													}}
-													aria-hidden="true"
-												/>
-												<span className="text-sm text-text-secondary font-medium">
-													{ev.provider}
-												</span>
-											</div>
+											<Badge variant={getProviderBadgeVariant(ev.provider)}>
+												{ev.provider}
+											</Badge>
 										</td>
 										<td className="py-2.5 px-2">
 											<span className="text-sm text-text-secondary font-mono">
@@ -372,7 +385,7 @@ export function MetricsPage() {
 			)}
 
 			{/* Empty state */}
-			{data.provider_events.length === 0 &&
+			{(data.provider_events ?? []).length === 0 &&
 				data.top_agents.length === 0 &&
 				data.top_projects.length === 0 && (
 					<div className="glass-card p-12 text-center flex flex-col items-center gap-4">
