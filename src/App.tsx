@@ -171,18 +171,13 @@ function PageSkeleton() {
 export default function App() {
 	const { category, page, navigate } = useHashRouter();
 
-	// Redirect empty/root to overview
+	// Redirect empty/root to overview — update URL hash to match
 	useEffect(() => {
-		if (!category || (category === "dashboard" && !page)) {
-			if (
-				window.location.hash === "" ||
-				window.location.hash === "#/" ||
-				window.location.hash === "#"
-			) {
-				navigate("#/dashboard/overview");
-			}
+		const h = window.location.hash;
+		if (!h || h === "#" || h === "#/") {
+			navigate("#/dashboard/overview");
 		}
-	}, [category, page, navigate]);
+	}, [navigate]);
 
 	// Expose navigation for Playwright testing
 	useEffect(() => {

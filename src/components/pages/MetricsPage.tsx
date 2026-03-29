@@ -176,7 +176,7 @@ export function MetricsPage() {
 
 	// Build per-provider total from provider_events
 	const providerTotals: Record<string, number> = {};
-	for (const ev of data.provider_events) {
+	for (const ev of data.provider_events ?? []) {
 		providerTotals[ev.provider] =
 			(providerTotals[ev.provider] ?? 0) + (ev.count ?? 1);
 	}
@@ -317,14 +317,14 @@ export function MetricsPage() {
 			</div>
 
 			{/* Provider events table */}
-			{data.provider_events.length > 0 && (
+			{(data.provider_events ?? []).length > 0 && (
 				<div className="glass-card overflow-hidden">
 					<div className="p-4 border-b border-border flex items-center justify-between">
 						<h2 className="text-sm font-semibold text-text-primary">
 							אירועי ספקים
 						</h2>
 						<span className="text-xs text-text-muted">
-							{data.provider_events.length} רשומות
+							{(data.provider_events ?? []).length} רשומות
 						</span>
 					</div>
 					<div className="overflow-x-auto">
@@ -352,7 +352,7 @@ export function MetricsPage() {
 								</tr>
 							</thead>
 							<tbody>
-								{data.provider_events.map((ev, idx) => (
+								{(data.provider_events ?? []).map((ev, idx) => (
 									<tr
 										// biome-ignore lint/suspicious/noArrayIndexKey: no stable id available
 										key={`${ev.provider}-${ev.event}-${idx}`}
@@ -385,7 +385,7 @@ export function MetricsPage() {
 			)}
 
 			{/* Empty state */}
-			{data.provider_events.length === 0 &&
+			{(data.provider_events ?? []).length === 0 &&
 				data.top_agents.length === 0 &&
 				data.top_projects.length === 0 && (
 					<div className="glass-card p-12 text-center flex flex-col items-center gap-4">
