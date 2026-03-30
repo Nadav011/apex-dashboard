@@ -94,6 +94,21 @@ body {
 	}
 }
 
+@keyframes slide-up {
+	from {
+		opacity: 0;
+		transform: translateY(100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-slide-up {
+	animation: slide-up 0.25s ease-out;
+}
+
 @keyframes pulse-status {
 	0%,
 	100% {
