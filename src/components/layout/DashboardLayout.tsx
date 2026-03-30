@@ -127,7 +127,6 @@ export function DashboardLayout({
 				className={cn(
 					"flex flex-col flex-1 min-h-dvh relative z-10",
 					"transition-all duration-300 ease-in-out",
-					isMobile ? "pb-[calc(env(safe-area-inset-bottom)+60px)]" : "",
 				)}
 				style={!isMobile ? { marginInlineEnd: `${sidebarWidth}px` } : undefined}
 			>
@@ -140,7 +139,15 @@ export function DashboardLayout({
 
 				<main
 					id="main-content"
-					className="flex-1 overflow-y-auto p-3 md:p-5"
+					className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-5"
+					style={
+						isMobile
+							? {
+									paddingBottom:
+										"calc(env(safe-area-inset-bottom, 0px) + 76px)",
+								}
+							: undefined
+					}
 					tabIndex={-1}
 				>
 					{children}
@@ -149,7 +156,11 @@ export function DashboardLayout({
 
 			{/* Mobile bottom bar */}
 			{isMobile && (
-				<MobileTabBar activeCategory={category} activePage={page} onNavigate={navigate} />
+				<MobileTabBar
+					activeCategory={category}
+					activePage={page}
+					onNavigate={navigate}
+				/>
 			)}
 		</div>
 	);
