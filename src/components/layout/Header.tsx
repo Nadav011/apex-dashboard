@@ -59,7 +59,7 @@ export function Header({
 	const routeDef = findRouteByHash(category, page);
 
 	return (
-		<header className="sticky top-0 z-30 flex items-center gap-4 px-5 py-3 bg-bg-secondary/90 backdrop-blur-md border-b border-border">
+		<header className="sticky top-0 z-30 flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 bg-bg-secondary/90 backdrop-blur-md border-b border-border max-w-full overflow-hidden">
 			{/* Breadcrumb */}
 			<nav
 				className="flex items-center gap-1.5 min-w-0 text-sm"
