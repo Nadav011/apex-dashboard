@@ -149,7 +149,7 @@ export function DashboardLayout({
 
 			{/* Mobile bottom bar */}
 			{isMobile && (
-				<MobileTabBar activeCategory={category} onNavigate={navigate} />
+				<MobileTabBar activeCategory={category} activePage={page} onNavigate={navigate} />
 			)}
 		</div>
 	);

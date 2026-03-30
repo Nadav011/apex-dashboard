@@ -289,68 +289,170 @@ function isRouteActive(
 	return parts[0] === activeCategory && parts[1] === activePage;
 }
 
-// ── Mobile Bottom Tab Bar ─────────────────────────────────────────────
+// ── Mobile Bottom Tab Bar + Page Drawer ───────────────────────────────
 
 export function MobileTabBar({
 	activeCategory,
+	activePage,
 	onNavigate,
 }: {
 	activeCategory: string;
+	activePage?: string;
 	onNavigate: (path: string) => void;
 }) {
-	return (
-		<nav
-			aria-label="ניווט תחתון"
-			className={cn(
-				"fixed inset-x-0 bottom-0 z-40",
-				"bg-bg-secondary/95 backdrop-blur-md",
-				"border-t border-border",
-				"flex items-center justify-around",
-				"h-[calc(env(safe-area-inset-bottom)+60px)]",
-				"pb-[env(safe-area-inset-bottom)]",
-			)}
-		>
-			{CATEGORIES.map((cat) => {
-				const isActive = activeCategory === cat.id;
-				const Icon = cat.icon;
-				const firstRoute = getRoutesByCategory(cat.id)[0];
+	const [drawerCat, setDrawerCat] = useState<string | null>(null);
 
-				return (
-					<button
-						key={cat.id}
-						type="button"
-						onClick={() => {
-							if (firstRoute) onNavigate(firstRoute.path);
-						}}
-						aria-current={isActive ? "page" : undefined}
-						title={cat.label}
+	const handleCatClick = (catId: string) => {
+		if (drawerCat === catId) {
+			// Already open → close
+			setDrawerCat(null);
+		} else if (activeCategory === catId) {
+			// Active category tapped → toggle drawer to show sub-pages
+			setDrawerCat(catId);
+		} else {
+			// Different category → navigate to first page + open drawer
+			const firstRoute = getRoutesByCategory(catId as CategoryId)[0];
+			if (firstRoute) onNavigate(firstRoute.path);
+			setDrawerCat(catId);
+		}
+	};
+
+	const handlePageClick = (path: string) => {
+		onNavigate(path);
+		setDrawerCat(null);
+	};
+
+	// Close drawer on category change from outside
+	useEffect(() => {
+		if (drawerCat && drawerCat !== activeCategory) {
+			setDrawerCat(null);
+		}
+	}, [activeCategory, drawerCat]);
+
+	return (
+		<>
+			{/* Page drawer — slides up from bottom bar */}
+			{drawerCat && (
+				<>
+					{/* Backdrop */}
+					<div
+						className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+						onClick={() => setDrawerCat(null)}
+						onKeyDown={(e) => e.key === "Escape" && setDrawerCat(null)}
+						role="presentation"
+					/>
+					{/* Drawer panel */}
+					<div
 						className={cn(
-							"flex flex-col items-center justify-center gap-0.5",
-							"min-w-[44px] min-h-[44px] flex-1 py-1",
-							"transition-all duration-150",
-							isActive
-								? "text-accent-blue"
-								: "text-text-muted hover:text-text-secondary",
+							"fixed inset-x-0 z-40",
+							"bottom-[calc(env(safe-area-inset-bottom)+60px)]",
+							"bg-bg-secondary/98 backdrop-blur-md",
+							"border-t border-border rounded-t-2xl",
+							"max-h-[50dvh] overflow-y-auto",
+							"animate-slide-up",
 						)}
+						dir="rtl"
 					>
-						<div
+						<div className="p-3 space-y-1">
+							<div className="text-xs font-semibold text-text-muted uppercase tracking-wider px-2 pb-2">
+								{CATEGORY_MAP[drawerCat as CategoryId]?.label}
+							</div>
+							{getRoutesByCategory(drawerCat as CategoryId).map((route) => {
+								const Icon = route.icon;
+								const isActive =
+									activeCategory === drawerCat &&
+									route.path.endsWith(`/${activePage}`);
+								return (
+									<button
+										key={route.id}
+										type="button"
+										onClick={() => handlePageClick(route.path)}
+										className={cn(
+											"w-full flex items-center gap-3 rounded-xl px-3 py-3",
+											"transition-all duration-150 text-start",
+											isActive
+												? "bg-accent-blue/12 text-accent-blue"
+												: "text-text-secondary hover:bg-bg-tertiary hover:text-text-primary",
+										)}
+									>
+										<Icon size={18} className="shrink-0" />
+										<div className="flex-1 min-w-0">
+											<div className="text-sm font-medium truncate">
+												{route.title}
+											</div>
+											<div className="text-xs text-text-muted truncate">
+												{route.description}
+											</div>
+										</div>
+										{isActive && (
+											<span className="w-2 h-2 rounded-full bg-accent-blue shrink-0" />
+										)}
+									</button>
+								);
+							})}
+						</div>
+					</div>
+				</>
+			)}
+
+			{/* Bottom tab bar */}
+			<nav
+				aria-label="ניווט תחתון"
+				className={cn(
+					"fixed inset-x-0 bottom-0 z-40",
+					"bg-bg-secondary/95 backdrop-blur-md",
+					"border-t border-border",
+					"flex items-center justify-around",
+					"h-[calc(env(safe-area-inset-bottom)+60px)]",
+					"pb-[env(safe-area-inset-bottom)]",
+				)}
+			>
+				{CATEGORIES.map((cat) => {
+					const isActive = activeCategory === cat.id;
+					const Icon = cat.icon;
+					const isDrawerOpen = drawerCat === cat.id;
+
+					return (
+						<button
+							key={cat.id}
+							type="button"
+							onClick={() => handleCatClick(cat.id)}
+							aria-current={isActive ? "page" : undefined}
+							aria-expanded={isDrawerOpen}
+							title={cat.label}
 							className={cn(
-								"flex items-center justify-center w-10 h-7 rounded-xl",
+								"flex flex-col items-center justify-center gap-0.5",
+								"min-w-[44px] min-h-[44px] flex-1 py-1",
 								"transition-all duration-150",
-								isActive ? "bg-accent-blue/20" : "bg-transparent",
+								isActive
+									? "text-accent-blue"
+									: "text-text-muted hover:text-text-secondary",
 							)}
 						>
-							<Icon
-								size={20}
-								className={cn(isActive ? "text-accent-blue" : "text-current")}
-							/>
-						</div>
-						<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
-							{cat.label}
-						</span>
-					</button>
-				);
-			})}
-		</nav>
+							<div
+								className={cn(
+									"flex items-center justify-center w-10 h-7 rounded-xl",
+									"transition-all duration-150",
+									isActive ? "bg-accent-blue/20" : "bg-transparent",
+								)}
+							>
+								<Icon
+									size={20}
+									className={cn(
+										isActive ? "text-accent-blue" : "text-current",
+									)}
+								/>
+							</div>
+							<span className="text-[10px] font-medium truncate max-w-[56px] text-center">
+								{cat.label}
+							</span>
+							{isDrawerOpen && (
+								<span className="w-1 h-1 rounded-full bg-accent-blue" />
+							)}
+						</button>
+					);
+				})}
+			</nav>
+		</>
 	);
 }
