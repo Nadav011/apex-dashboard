@@ -84,7 +84,10 @@ export function DashboardLayout({
 	}, []);
 
 	return (
-		<div className="min-h-dvh bg-bg-primary flex" dir="rtl">
+		<div
+			className="min-h-dvh bg-bg-primary flex overflow-x-hidden max-w-[100dvw]"
+			dir="rtl"
+		>
 			{/* Skip link */}
 			<a
 				href="#main-content"
