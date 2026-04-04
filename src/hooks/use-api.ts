@@ -19,6 +19,14 @@ export function useAgents() {
 	});
 }
 
+export function useAgentsLive() {
+	return useQuery({
+		queryKey: ["agents", "live"],
+		queryFn: api.agentsLive,
+		refetchInterval: 3_000,
+	});
+}
+
 export function useHydraTasks() {
 	return useQuery({
 		queryKey: ["hydra", "tasks"],
