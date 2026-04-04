@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+	Building2,
 	Activity,
 	BarChart3,
 	Bell,
@@ -179,6 +180,16 @@ export const ROUTES: RouteDef[] = [
 		icon: Network,
 		category: "agents",
 		keywords: ["team", "צוות", "dag", "decompose", "parallel", "wave"],
+	},
+
+	{
+		id: "paperclip",
+		path: "#/agents/paperclip",
+		title: "Paperclip",
+		description: "חברה וירטואלית — CEO, מהנדסים, תקציב, org chart",
+		icon: Building2,
+		category: "agents",
+		keywords: ["paperclip", "company", "חברה", "org", "budget"],
 	},
 
 	// ── DevOps ────────────────────────
