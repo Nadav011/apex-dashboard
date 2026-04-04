@@ -335,11 +335,13 @@ export function MobileTabBar({
 			{drawerCat && (
 				<>
 					{/* Backdrop */}
-					<div
-						className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+					<button
+						type="button"
+						className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm border-none cursor-default"
 						onClick={() => setDrawerCat(null)}
 						onKeyDown={(e) => e.key === "Escape" && setDrawerCat(null)}
-						role="presentation"
+						aria-label="סגור תפריט"
+						tabIndex={-1}
 					/>
 					{/* Drawer panel */}
 					<div
@@ -438,9 +440,7 @@ export function MobileTabBar({
 							>
 								<Icon
 									size={20}
-									className={cn(
-										isActive ? "text-accent-blue" : "text-current",
-									)}
+									className={cn(isActive ? "text-accent-blue" : "text-current")}
 								/>
 							</div>
 							<span className="text-[10px] font-medium truncate max-w-[56px] text-center">

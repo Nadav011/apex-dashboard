@@ -1,0 +1,35 @@
+services:
+  dashboard:
+    build: .
+    container_name: apex-dashboard
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    environment:
+      - TZ=Asia/Jerusalem
+
+  # Optional: run the Python API backend alongside
+  api:
+    image: python:3.13-slim
+    container_name: apex-dashboard-api
+    restart: unless-stopped
+    ports:
+      - "8743:8743"
+    volumes:
+      - ${HOME}/.claude:/root/.claude:ro
+      - ${HOME}/.config/agents:/root/.config/agents:ro
+    working_dir: /app
+    command: >
+      sh -c "pip install -q flask flask-cors &&
+             python dashboard.py"
+    environment:
+      - TZ=Asia/Jerusalem
+    profiles:
+      - with-api

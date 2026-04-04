@@ -14,6 +14,11 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useTeamStatus } from "@/hooks/use-api";
 import { cn } from "@/lib/cn";
 
+interface TeamEvent {
+	ts?: string;
+	message?: string;
+}
+
 // Mock data until API is connected
 const MOCK_TEAMS = [
 	{
@@ -243,7 +248,7 @@ export function TeamModePage() {
 			<GlassCard title="יומן אירועים אחרונים" icon={<Clock size={16} />}>
 				<div className="space-y-2">
 					{events.length > 0 ? (
-						events.map((ev: any, i: number) => (
+						events.map((ev: TeamEvent, i: number) => (
 							<div
 								key={String(i)}
 								className="flex items-center gap-3 text-sm py-1.5"
@@ -272,7 +277,8 @@ export function TeamModePage() {
 				<GlassCard title="מצבי ניתוב אוטומטי" icon={<Zap size={16} />}>
 					<div className="space-y-3">
 						{Object.entries(
-							(teamData as any)?.routing_modes ?? {
+							((teamData as Record<string, unknown> | undefined)
+								?.routing_modes as Record<string, string> | undefined) ?? {
 								direct: "תשובה ישירה — סוכן בודד",
 								debate: "3 ספקים דנים — שאלות ארכיטקטורה",
 								arena: "4 ספקים מתחרים — הערכה",
@@ -300,7 +306,8 @@ export function TeamModePage() {
 				<GlassCard title="ספקים ותפקידים" icon={<Bot size={16} />}>
 					<div className="space-y-3">
 						{Object.entries(
-							(teamData as any)?.provider_roles ?? {
+							((teamData as Record<string, unknown> | undefined)
+								?.provider_roles as Record<string, string> | undefined) ?? {
 								gemini: "research, security",
 								codex: "plan, implement",
 								minimax: "test, docs",

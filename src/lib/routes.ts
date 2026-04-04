@@ -1,12 +1,12 @@
 import type { LucideIcon } from "lucide-react";
 import {
-	Building2,
 	Activity,
 	BarChart3,
 	Bell,
 	BookOpen,
 	Bot,
 	Brain,
+	Building2,
 	Cpu,
 	FileCode2,
 	FolderGit2,
