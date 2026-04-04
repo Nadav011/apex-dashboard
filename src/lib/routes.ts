@@ -170,6 +170,17 @@ export const ROUTES: RouteDef[] = [
 		keywords: ["guide", "מדריך", "dispatch", "שיגור", "routing"],
 	},
 
+	{
+		id: "team-mode",
+		path: "#/agents/team",
+		title: "מצב צוות",
+		description:
+			"ניטור Team Mode — פירוק אוטומטי, DAG execution, quality gates",
+		icon: Network,
+		category: "agents",
+		keywords: ["team", "צוות", "dag", "decompose", "parallel", "wave"],
+	},
+
 	// ── DevOps ────────────────────────
 	{
 		id: "cicd",
