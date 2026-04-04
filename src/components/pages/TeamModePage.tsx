@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
+import { useTeamStatus } from "@/hooks/use-api";
 import { cn } from "@/lib/cn";
 
 // Mock data until API is connected
@@ -86,7 +87,7 @@ const STATUS_LABELS: Record<string, string> = {
 	failed: "נכשל",
 };
 
-function StatusIcon({ status }: { status: string }) {
+function StatusIcon({ status }: { status?: string }) {
 	switch (status) {
 		case "completed":
 			return (
@@ -107,7 +108,10 @@ function StatusIcon({ status }: { status: string }) {
 }
 
 export function TeamModePage() {
-	const teams = MOCK_TEAMS;
+	const { data: teamData } = useTeamStatus();
+	const teams = teamData?.active_teams?.length
+		? teamData.active_teams
+		: MOCK_TEAMS;
 	const totalSubtasks = teams.reduce((s, t) => s + t.total_subtasks, 0);
 	const completedSubtasks = teams.reduce((s, t) => s + t.completed_subtasks, 0);
 	const successRate =
@@ -170,53 +174,65 @@ export function TeamModePage() {
 
 						{/* Subtask list */}
 						<div className="space-y-2">
-							{team.subtasks.map((subtask) => (
-								<div
-									key={subtask.id}
-									className={cn(
-										"flex items-center justify-between gap-3 p-3 rounded-lg",
-										"bg-bg-elevated/50 border border-border/40",
-										"transition-colors duration-150",
-										subtask.status === "in_progress" && "border-accent-blue/30",
-									)}
-								>
-									<div className="flex items-center gap-3 min-w-0">
-										<StatusIcon status={subtask.status} />
-										<div className="min-w-0">
-											<div className="text-sm font-medium text-text-primary truncate">
-												{subtask.title}
-											</div>
-											<div className="text-xs text-text-muted">
-												{STATUS_LABELS[subtask.status] ?? subtask.status}
-												{subtask.depends_on.length > 0 && (
-													<span className="text-text-muted/60">
-														{" "}
-														← {subtask.depends_on.join(", ")}
-													</span>
-												)}
+							{team.subtasks.map(
+								(subtask: {
+									id: string;
+									role: string;
+									title: string;
+									provider_hint: string;
+									depends_on: string[];
+									status?: string;
+								}) => (
+									<div
+										key={subtask.id}
+										className={cn(
+											"flex items-center justify-between gap-3 p-3 rounded-lg",
+											"bg-bg-elevated/50 border border-border/40",
+											"transition-colors duration-150",
+											subtask.status === "in_progress" &&
+												"border-accent-blue/30",
+										)}
+									>
+										<div className="flex items-center gap-3 min-w-0">
+											<StatusIcon status={subtask.status} />
+											<div className="min-w-0">
+												<div className="text-sm font-medium text-text-primary truncate">
+													{subtask.title}
+												</div>
+												<div className="text-xs text-text-muted">
+													{STATUS_LABELS[subtask.status ?? "pending"] ??
+														subtask.status ??
+														"pending"}
+													{subtask.depends_on.length > 0 && (
+														<span className="text-text-muted/60">
+															{" "}
+															← {subtask.depends_on.join(", ")}
+														</span>
+													)}
+												</div>
 											</div>
 										</div>
+										<div className="flex items-center gap-2 shrink-0">
+											<Badge
+												variant="default"
+												className={cn(
+													"text-[10px] border",
+													ROLE_STYLES[subtask.role] ??
+														"bg-gray-500/10 text-gray-400 border-gray-500/20",
+												)}
+											>
+												{ROLE_LABELS[subtask.role] ?? subtask.role}
+											</Badge>
+											<Badge
+												variant="default"
+												className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+											>
+												{subtask.provider_hint}
+											</Badge>
+										</div>
 									</div>
-									<div className="flex items-center gap-2 shrink-0">
-										<Badge
-											variant="default"
-											className={cn(
-												"text-[10px] border",
-												ROLE_STYLES[subtask.role] ??
-													"bg-gray-500/10 text-gray-400 border-gray-500/20",
-											)}
-										>
-											{ROLE_LABELS[subtask.role] ?? subtask.role}
-										</Badge>
-										<Badge
-											variant="default"
-											className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-										>
-											{subtask.provider_hint}
-										</Badge>
-									</div>
-								</div>
-							))}
+								),
+							)}
 						</div>
 					</GlassCard>
 				);
