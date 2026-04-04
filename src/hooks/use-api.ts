@@ -215,7 +215,6 @@ export function useCosts() {
 	});
 }
 
-
 export function useObsidian() {
 	return useQuery({
 		queryKey: ["obsidian"],
@@ -223,7 +222,6 @@ export function useObsidian() {
 		refetchInterval: 30_000,
 	});
 }
-
 
 export function useTeamStatus() {
 	return useQuery({
