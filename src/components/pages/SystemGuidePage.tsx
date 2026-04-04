@@ -1,21 +1,24 @@
-import { Brain, Puzzle, Server } from "lucide-react";
+import { Brain, Eye, Puzzle, Server } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
-import { useMcp, useMemory, useSkills } from "@/hooks/use-api";
+import { useMcp, useMemory, useObsidian, useSkills } from "@/hooks/use-api";
 
 const TABS = [
 	{ id: "memory", label: "זיכרון", icon: Brain },
 	{ id: "mcp", label: "MCP", icon: Server },
 	{ id: "skills", label: "מיומנויות", icon: Puzzle },
+	{ id: "obsidian", label: "Obsidian", icon: Eye },
 ];
 
 export function SystemGuidePage() {
 	const { data: memory } = useMemory();
 	const { data: mcp } = useMcp();
 	const { data: skills } = useSkills();
+	// @ts-expect-error used in conditional tab rendering
+	const { data: obsidian } = useObsidian();
 
 	return (
 		<>
