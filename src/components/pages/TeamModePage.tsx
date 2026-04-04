@@ -242,25 +242,97 @@ export function TeamModePage() {
 			{/* Event Log */}
 			<GlassCard title="יומן אירועים אחרונים" icon={<Clock size={16} />}>
 				<div className="space-y-2">
-					{events.length > 0 ? events.map((ev: any, i: number) => (
-						<div key={String(i)} className="flex items-center gap-3 text-sm py-1.5">
-							<span className="text-text-muted font-mono text-xs tabular-nums shrink-0" dir="ltr">
-								{String(ev.ts ?? "").slice(11, 19)}
-							</span>
-							<span className="text-text-secondary">{String(ev.message ?? JSON.stringify(ev).slice(0, 80))}</span>
+					{events.length > 0 ? (
+						events.map((ev: any, i: number) => (
+							<div
+								key={String(i)}
+								className="flex items-center gap-3 text-sm py-1.5"
+							>
+								<span
+									className="text-text-muted font-mono text-xs tabular-nums shrink-0"
+									dir="ltr"
+								>
+									{String(ev.ts ?? "").slice(11, 19)}
+								</span>
+								<span className="text-text-secondary">
+									{String(ev.message ?? JSON.stringify(ev).slice(0, 80))}
+								</span>
+							</div>
+						))
+					) : (
+						<div className="text-sm text-text-muted text-center py-4">
+							אין אירועים אחרונים
 						</div>
-					)) : (
-						<div className="text-sm text-text-muted text-center py-4">אין אירועים אחרונים</div>
 					)}
 				</div>
 			</GlassCard>
+
+			{/* Routing Modes */}
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<GlassCard title="מצבי ניתוב אוטומטי" icon={<Zap size={16} />}>
+					<div className="space-y-3">
+						{Object.entries(
+							(teamData as any)?.routing_modes ?? {
+								direct: "תשובה ישירה — סוכן בודד",
+								debate: "3 ספקים דנים — שאלות ארכיטקטורה",
+								arena: "4 ספקים מתחרים — הערכה",
+								team: "פירוק ל-DAG — פיצ'רים מורכבים",
+							},
+						).map(([mode, desc]) => (
+							<div
+								key={mode}
+								className="flex items-center justify-between p-2 rounded-lg bg-bg-elevated/30"
+							>
+								<Badge
+									variant="default"
+									className="text-xs bg-accent-blue/10 text-accent-blue border border-accent-blue/20"
+								>
+									{mode}
+								</Badge>
+								<span className="text-xs text-text-secondary">
+									{String(desc)}
+								</span>
+							</div>
+						))}
+					</div>
+				</GlassCard>
+
+				<GlassCard title="ספקים ותפקידים" icon={<Bot size={16} />}>
+					<div className="space-y-3">
+						{Object.entries(
+							(teamData as any)?.provider_roles ?? {
+								gemini: "research, security",
+								codex: "plan, implement",
+								minimax: "test, docs",
+								kimi: "analyze",
+								claude: "review",
+							},
+						).map(([prov, roles]) => (
+							<div
+								key={prov}
+								className="flex items-center justify-between p-2 rounded-lg bg-bg-elevated/30"
+							>
+								<Badge
+									variant="default"
+									className="text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+								>
+									{prov}
+								</Badge>
+								<span className="text-xs text-text-muted font-mono">
+									{String(roles)}
+								</span>
+							</div>
+						))}
+					</div>
+				</GlassCard>
+			</div>
 
 			{/* Empty state when no teams */}
 			{teams.length === 0 && (
 				<div className="glass-card p-12 text-center flex flex-col items-center gap-4">
 					<Network size={40} className="text-text-muted" aria-hidden="true" />
 					<p className="text-sm text-text-muted">
-						אין צוותים פעילים — הרץ שיגור עם team: true בפרונטמטר
+						אין צוותים פעילים — הניתוב האוטומטי יפעיל team mode כשצריך
 					</p>
 				</div>
 			)}
