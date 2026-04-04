@@ -309,13 +309,13 @@ function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 }
 
 function LiveSection() {
-	const { data: liveData } = useAgentsLive();
-	if (!liveData) return null;
+	const { data: liveData, isLoading, isError } = useAgentsLive();
 
-	const agents = liveData.live_agents;
-	const bgRecent = liveData.background_tasks.filter(
-		(t: BackgroundTask) => t.status === "recent",
-	).length;
+	const agents = liveData?.live_agents ?? [];
+	const bgRecent =
+		liveData?.background_tasks?.filter(
+			(t: BackgroundTask) => t.status === "recent",
+		).length ?? 0;
 
 	// Group by type
 	const groups = agents.reduce<Record<string, LiveAgent[]>>((acc, a) => {
@@ -352,7 +352,15 @@ function LiveSection() {
 				)}
 			</div>
 
-			{agents.length === 0 ? (
+			{isLoading ? (
+				<div className="glass-card p-4 text-center text-sm text-text-muted animate-pulse">
+					טוען ניטור סוכנים...
+				</div>
+			) : isError ? (
+				<div className="glass-card p-4 text-center text-sm text-text-muted">
+					ניטור לא זמין — API לא מגיב
+				</div>
+			) : agents.length === 0 ? (
 				<div className="glass-card p-4 text-center text-sm text-text-muted">
 					אין סוכנים פעילים כרגע
 				</div>
