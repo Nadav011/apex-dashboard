@@ -1,9 +1,9 @@
-import { Search, SearchX, Users } from "lucide-react";
+import { Activity, Cpu, Search, SearchX, Users, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { useAgents } from "@/hooks/use-api";
-import type { AgentInfo } from "@/lib/api";
+import { useAgents, useAgentsLive } from "@/hooks/use-api";
+import type { AgentInfo, BackgroundTask, LiveAgent } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
 // ── Category config ──────────────────────────────────────────────────────────
@@ -212,6 +212,178 @@ function CategoryTabs({
 	);
 }
 
+// ── Live Agent Type Colors ──────────────────────────────────────────────────
+
+const LIVE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
+	"claude-subagent": {
+		bg: "bg-[oklch(0.6_0.18_30_/_0.15)]",
+		text: "text-[oklch(0.75_0.18_30)]",
+		dot: "bg-[oklch(0.65_0.2_30)]",
+	},
+	"claude-session": {
+		bg: "bg-[oklch(0.6_0.18_30_/_0.15)]",
+		text: "text-[oklch(0.75_0.18_30)]",
+		dot: "bg-[oklch(0.65_0.2_30)]",
+	},
+	gemini: {
+		bg: "bg-[oklch(0.6_0.15_270_/_0.15)]",
+		text: "text-[oklch(0.75_0.15_270)]",
+		dot: "bg-[oklch(0.65_0.18_270)]",
+	},
+	kimi: {
+		bg: "bg-[oklch(0.6_0.15_160_/_0.15)]",
+		text: "text-[oklch(0.75_0.15_160)]",
+		dot: "bg-[oklch(0.65_0.18_160)]",
+	},
+	codex: {
+		bg: "bg-[oklch(0.6_0.15_200_/_0.15)]",
+		text: "text-[oklch(0.75_0.15_200)]",
+		dot: "bg-[oklch(0.65_0.18_200)]",
+	},
+	minimax: {
+		bg: "bg-[oklch(0.6_0.15_60_/_0.15)]",
+		text: "text-[oklch(0.75_0.15_60)]",
+		dot: "bg-[oklch(0.65_0.18_60)]",
+	},
+	"hydra-watcher": {
+		bg: "bg-[oklch(0.6_0.15_120_/_0.15)]",
+		text: "text-[oklch(0.75_0.15_120)]",
+		dot: "bg-[oklch(0.65_0.18_120)]",
+	},
+	"hydra-executor": {
+		bg: "bg-[oklch(0.6_0.15_120_/_0.15)]",
+		text: "text-[oklch(0.75_0.15_120)]",
+		dot: "bg-[oklch(0.65_0.18_120)]",
+	},
+};
+
+function liveColor(type: string) {
+	return (
+		LIVE_COLORS[type] ?? {
+			bg: "bg-bg-elevated",
+			text: "text-text-muted",
+			dot: "bg-text-muted",
+		}
+	);
+}
+
+function LiveAgentCard({ agent }: { agent: LiveAgent }) {
+	const c = liveColor(agent.type);
+	return (
+		<div className={cn("glass-card p-3 flex items-center gap-3", c.bg)}>
+			<div className="relative">
+				<Cpu size={20} className={c.text} />
+				<span
+					className={cn(
+						"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full animate-pulse",
+						c.dot,
+					)}
+				/>
+			</div>
+			<div className="flex-1 min-w-0">
+				<div className="flex items-center gap-2">
+					<span className={cn("text-sm font-semibold", c.text)}>
+						{agent.type}
+					</span>
+					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+						PID {agent.pid}
+					</span>
+				</div>
+				<p className="text-xs text-text-muted truncate" dir="ltr">
+					{agent.cmd}
+				</p>
+			</div>
+			<div className="text-end shrink-0">
+				<div
+					className="text-xs font-medium text-text-secondary tabular-nums"
+					dir="ltr"
+				>
+					{agent.cpu}% CPU
+				</div>
+				<div className="text-xs text-text-muted" dir="ltr">
+					{agent.started}
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function LiveSection() {
+	const { data: liveData } = useAgentsLive();
+	if (!liveData) return null;
+
+	const agents = liveData.live_agents;
+	const bgRecent = liveData.background_tasks.filter(
+		(t: BackgroundTask) => t.status === "recent",
+	).length;
+
+	// Group by type
+	const groups = agents.reduce<Record<string, LiveAgent[]>>((acc, a) => {
+		if (!acc[a.type]) acc[a.type] = [];
+		acc[a.type].push(a);
+		return acc;
+	}, {});
+
+	return (
+		<div className="flex flex-col gap-3">
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-2">
+					<Activity size={18} className="text-accent-green" />
+					<h2 className="text-base font-semibold text-text-primary">
+						סוכנים פעילים עכשיו
+					</h2>
+					<span
+						className={cn(
+							"text-xs font-bold px-2 py-0.5 rounded-full tabular-nums",
+							agents.length > 0
+								? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
+								: "bg-bg-elevated text-text-muted",
+						)}
+						dir="ltr"
+					>
+						{agents.length}
+					</span>
+				</div>
+				{bgRecent > 0 && (
+					<div className="flex items-center gap-1.5 text-xs text-text-muted">
+						<Zap size={13} className="text-accent-amber" />
+						<span dir="ltr">{bgRecent} background tasks</span>
+					</div>
+				)}
+			</div>
+
+			{agents.length === 0 ? (
+				<div className="glass-card p-4 text-center text-sm text-text-muted">
+					אין סוכנים פעילים כרגע
+				</div>
+			) : (
+				<div className="space-y-2">
+					{Object.entries(groups).map(([type, list]) => (
+						<div key={type}>
+							<div className="flex items-center gap-2 mb-1.5">
+								<span
+									className={cn(
+										"text-xs font-medium px-2 py-0.5 rounded-full",
+										liveColor(type).bg,
+										liveColor(type).text,
+									)}
+								>
+									{type} ({list.length})
+								</span>
+							</div>
+							<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+								{list.map((a) => (
+									<LiveAgentCard key={a.pid} agent={a} />
+								))}
+							</div>
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export function FleetPage() {
@@ -254,6 +426,11 @@ export function FleetPage() {
 				title="צי סוכנים"
 				description="כל הסוכנים המוגדרים במערכת — פנימיים וחיצוניים"
 			/>
+
+			{/* Live Agents — real-time monitoring */}
+			<LiveSection />
+
+			<div className="border-t border-border" />
 
 			{/* Controls */}
 			<div className="flex flex-col gap-3">

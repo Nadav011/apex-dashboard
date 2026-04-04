@@ -65,6 +65,7 @@ export interface ObsidianResponse {
 // ── GET endpoints ──────────────────────────────────────────────────────────────
 export const api = {
 	agents: () => fetchApi<AgentInfo[]>("/agents", STATIC.agents),
+	agentsLive: () => fetchApi<LiveAgentsResponse>("/agents/live"),
 	agentsExternal: () =>
 		fetchApi<ExternalAgentsResponse>("/agents/external", STATIC.agentsExternal),
 	hydraTasks: () => fetchApi<HydraTask[]>("/hydra/tasks", STATIC.hydraTasks),
@@ -195,6 +196,30 @@ export interface AgentInfo {
 	category: string;
 	tools: string[];
 	file: string;
+}
+
+export interface LiveAgent {
+	type: string;
+	pid: number;
+	cpu: number;
+	mem: number;
+	cmd: string;
+	started: string;
+}
+
+export interface BackgroundTask {
+	task_id: string;
+	output_size: number;
+	age_seconds: number;
+	status: string;
+}
+
+export interface LiveAgentsResponse {
+	live_agents: LiveAgent[];
+	live_count: number;
+	background_tasks: BackgroundTask[];
+	background_count: number;
+	timestamp: string;
 }
 
 export interface ExternalAgentsResponse {
