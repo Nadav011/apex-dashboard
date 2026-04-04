@@ -224,6 +224,15 @@ export function useObsidian() {
 	});
 }
 
+
+export function useTeamStatus() {
+	return useQuery({
+		queryKey: ["team", "status"],
+		queryFn: api.teamStatus,
+		refetchInterval: 3_000,
+	});
+}
+
 // ── Control mutations ──────────────────────────────────────────────
 function useControlMutation(actionFn: () => Promise<ControlResponse>) {
 	const qc = useQueryClient();
