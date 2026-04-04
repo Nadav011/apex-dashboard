@@ -112,6 +112,7 @@ export function TeamModePage() {
 	const teams = teamData?.active_teams?.length
 		? teamData.active_teams
 		: MOCK_TEAMS;
+	const events = (teamData?.recent_events ?? []).slice(-10).reverse();
 	const totalSubtasks = teams.reduce((s, t) => s + t.total_subtasks, 0);
 	const completedSubtasks = teams.reduce((s, t) => s + t.completed_subtasks, 0);
 	const successRate =
@@ -241,45 +242,16 @@ export function TeamModePage() {
 			{/* Event Log */}
 			<GlassCard title="יומן אירועים אחרונים" icon={<Clock size={16} />}>
 				<div className="space-y-2">
-					{[
-						{
-							time: "14:30:15",
-							icon: <CheckCircle2 size={14} className="text-status-healthy" />,
-							text: 'משימה auth-schema הושלמה בהצלחה ע"י codex',
-						},
-						{
-							time: "14:28:10",
-							icon: <RefreshCw size={14} className="text-accent-blue" />,
-							text: "התחלת ביצוע auth-schema — codex (Wave 1)",
-						},
-						{
-							time: "14:25:00",
-							icon: <CheckCircle2 size={14} className="text-status-healthy" />,
-							text: 'משימה auth-research הושלמה בהצלחה ע"י gemini',
-						},
-						{
-							time: "14:20:00",
-							icon: <Zap size={14} className="text-accent-amber" />,
-							text: "פירוק אוטומטי: 4 משימות, 3 waves — complexity score: 0.72",
-						},
-					].map((ev, i) => (
-						<div
-							// biome-ignore lint/suspicious/noArrayIndexKey: stable mock list
-							key={i}
-							className="flex items-center gap-3 text-sm py-1.5"
-						>
-							<span
-								className="text-text-muted font-mono text-xs tabular-nums shrink-0"
-								dir="ltr"
-							>
-								{ev.time}
+					{events.length > 0 ? events.map((ev: any, i: number) => (
+						<div key={String(i)} className="flex items-center gap-3 text-sm py-1.5">
+							<span className="text-text-muted font-mono text-xs tabular-nums shrink-0" dir="ltr">
+								{String(ev.ts ?? "").slice(11, 19)}
 							</span>
-							<span className="shrink-0" aria-hidden="true">
-								{ev.icon}
-							</span>
-							<span className="text-text-secondary">{ev.text}</span>
+							<span className="text-text-secondary">{String(ev.message ?? JSON.stringify(ev).slice(0, 80))}</span>
 						</div>
-					))}
+					)) : (
+						<div className="text-sm text-text-muted text-center py-4">אין אירועים אחרונים</div>
+					)}
 				</div>
 			</GlassCard>
 
