@@ -6,10 +6,19 @@ const API_BASE =
 		? "/api"
 		: "https://api.nadavc.ai/api");
 
+// Slow endpoints that need longer timeout (health checks, CI, projects scan GitHub)
+const SLOW_PATHS = new Set([
+	"/hydra/health",
+	"/ci/status",
+	"/ci/summary",
+	"/projects",
+]);
+
 async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
 	try {
 		const ctrl = new AbortController();
-		const timer = setTimeout(() => ctrl.abort(), 2000);
+		const timeout = SLOW_PATHS.has(path) ? 10000 : 3000;
+		const timer = setTimeout(() => ctrl.abort(), timeout);
 		const res = await fetch(`${API_BASE}${path}`, { signal: ctrl.signal });
 		clearTimeout(timer);
 		if (!res.ok) throw new Error(`${res.status}`);
