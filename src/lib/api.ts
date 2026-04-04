@@ -37,7 +37,6 @@ async function postApi<T>(path: string, fallback?: T): Promise<T> {
 	}
 }
 
-
 // /api/obsidian
 export interface ObsidianResponse {
 	installed: boolean;
@@ -103,8 +102,44 @@ export const api = {
 		fetchApi<CiTemplatesResponse>("/ci/templates", STATIC.ciTemplates),
 	ciDeep: () => fetchApi<CiDeepResponse>("/ci/deep", STATIC.ciDeep),
 
+	teamStatus: () =>
+		fetchApi<{
+			active_teams: Array<{
+				task_id: string;
+				total_subtasks: number;
+				completed_subtasks: number;
+				subtasks: Array<{
+					id: string;
+					role: string;
+					title: string;
+					provider_hint: string;
+					depends_on: string[];
+					status?: string;
+				}>;
+				status: string;
+			}>;
+			recent_events: Array<Record<string, unknown>>;
+			team_mode_available: boolean;
+		}>("/team-status", {
+			active_teams: [],
+			recent_events: [],
+			team_mode_available: false,
+		}),
 	obsidian: () =>
-		fetchApi<ObsidianResponse>("/obsidian", { installed: false, vault_path: "", total_files: 0, categories: {}, dashboards: [], plugins: [], running: false, templates: [], wikilinks: 0, tagged_files: 0, sync_active: false, recent_changes: [] }),
+		fetchApi<ObsidianResponse>("/obsidian", {
+			installed: false,
+			vault_path: "",
+			total_files: 0,
+			categories: {},
+			dashboards: [],
+			plugins: [],
+			running: false,
+			templates: [],
+			wikilinks: 0,
+			tagged_files: 0,
+			sync_active: false,
+			recent_changes: [],
+		}),
 	deploysStatus: () =>
 		fetchApi<DeploysStatusResponse>("/deploys/status", STATIC.deploysStatus),
 	projects: () => fetchApi<ProjectsResponse>("/projects", STATIC.projects),
