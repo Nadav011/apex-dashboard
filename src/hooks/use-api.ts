@@ -215,6 +215,15 @@ export function useCosts() {
 	});
 }
 
+
+export function useObsidian() {
+	return useQuery({
+		queryKey: ["obsidian"],
+		queryFn: api.obsidian,
+		refetchInterval: 30_000,
+	});
+}
+
 // ── Control mutations ──────────────────────────────────────────────
 function useControlMutation(actionFn: () => Promise<ControlResponse>) {
 	const qc = useQueryClient();
