@@ -37,6 +37,23 @@ async function postApi<T>(path: string, fallback?: T): Promise<T> {
 	}
 }
 
+
+// /api/obsidian
+export interface ObsidianResponse {
+	installed: boolean;
+	vault_path: string;
+	total_files: number;
+	categories: Record<string, number>;
+	dashboards: string[];
+	plugins: string[];
+	running: boolean;
+	templates: string[];
+	wikilinks: number;
+	tagged_files: number;
+	sync_active: boolean;
+	recent_changes: Array<{ name: string; folder: string; modified: string }>;
+}
+
 // ── GET endpoints ──────────────────────────────────────────────────────────────
 export const api = {
 	agents: () => fetchApi<AgentInfo[]>("/agents", STATIC.agents),
@@ -86,6 +103,8 @@ export const api = {
 		fetchApi<CiTemplatesResponse>("/ci/templates", STATIC.ciTemplates),
 	ciDeep: () => fetchApi<CiDeepResponse>("/ci/deep", STATIC.ciDeep),
 
+	obsidian: () =>
+		fetchApi<ObsidianResponse>("/obsidian", { installed: false, vault_path: "", total_files: 0, categories: {}, dashboards: [], plugins: [], running: false, templates: [], wikilinks: 0, tagged_files: 0, sync_active: false, recent_changes: [] }),
 	deploysStatus: () =>
 		fetchApi<DeploysStatusResponse>("/deploys/status", STATIC.deploysStatus),
 	projects: () => fetchApi<ProjectsResponse>("/projects", STATIC.projects),
