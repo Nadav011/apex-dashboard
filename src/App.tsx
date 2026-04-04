@@ -46,6 +46,11 @@ const AgentsGuidePage = lazy(() =>
 		default: m.AgentsGuidePage,
 	})),
 );
+const TeamModePage = lazy(() =>
+	import("@/components/pages/TeamModePage").then((m) => ({
+		default: m.TeamModePage,
+	})),
+);
 const CiCdPage = lazy(() =>
 	import("@/components/pages/CiCdPage").then((m) => ({ default: m.CiCdPage })),
 );
@@ -139,6 +144,7 @@ const PAGE_COMPONENTS: Record<
 	"agents/hydra": HydraPage,
 	"agents/projects": ProjectsPage,
 	"agents/guide": AgentsGuidePage,
+	"agents/team": TeamModePage,
 	"devops/cicd": CiCdPage,
 	"devops/templates": CiTemplatesPage,
 	"devops/deploys": DeploysPage,
