@@ -50,6 +50,21 @@ void Promise.allSettled([
 	queryClient.prefetchQuery({ queryKey: ["mcp"], queryFn: api.mcp }),
 ]);
 
+// Stale chunk recovery — reload once on dynamic import failure after deploy
+window.addEventListener("error", (e) => {
+	if (
+		e.message?.includes("dynamically imported module") ||
+		e.message?.includes("Failed to fetch")
+	) {
+		const key = "apex-chunk-reload";
+		const last = sessionStorage.getItem(key);
+		if (!last || Date.now() - Number(last) > 30_000) {
+			sessionStorage.setItem(key, String(Date.now()));
+			window.location.reload();
+		}
+	}
+});
+
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element #root not found in DOM");
 
