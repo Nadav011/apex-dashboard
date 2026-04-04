@@ -51,6 +51,11 @@ const TeamModePage = lazy(() =>
 		default: m.TeamModePage,
 	})),
 );
+const PaperclipPage = lazy(() =>
+	import("@/components/pages/PaperclipPage").then((m) => ({
+		default: m.PaperclipPage,
+	})),
+);
 const CiCdPage = lazy(() =>
 	import("@/components/pages/CiCdPage").then((m) => ({ default: m.CiCdPage })),
 );
@@ -145,6 +150,7 @@ const PAGE_COMPONENTS: Record<
 	"agents/projects": ProjectsPage,
 	"agents/guide": AgentsGuidePage,
 	"agents/team": TeamModePage,
+	"agents/paperclip": PaperclipPage,
 	"devops/cicd": CiCdPage,
 	"devops/templates": CiTemplatesPage,
 	"devops/deploys": DeploysPage,
