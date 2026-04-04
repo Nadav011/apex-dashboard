@@ -12,6 +12,7 @@ const SLOW_PATHS = new Set([
 	"/ci/status",
 	"/ci/summary",
 	"/projects",
+	"/agents/live",
 ]);
 
 async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
