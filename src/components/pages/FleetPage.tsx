@@ -1,4 +1,13 @@
-import { Activity, Cpu, Search, SearchX, Users, Zap } from "lucide-react";
+import {
+	Activity,
+	ChevronDown,
+	Copy,
+	Cpu,
+	Search,
+	SearchX,
+	Users,
+	Zap,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -267,57 +276,170 @@ function liveColor(type: string) {
 	);
 }
 
-function LiveAgentCard({ agent }: { agent: LiveAgent }) {
+function LiveAgentCard({
+	agent,
+	expanded,
+	onToggle,
+}: {
+	agent: LiveAgent;
+	expanded: boolean;
+	onToggle: () => void;
+}) {
 	const c = liveColor(agent.type);
 	const desc = agent.description;
 	const uptime = agent.uptime;
 	const status = agent.status;
+	const catBadge = agent.category ? catStyle(agent.category) : null;
+
+	function copyPid() {
+		navigator.clipboard.writeText(String(agent.pid)).catch(() => undefined);
+	}
+
 	return (
-		<div className={cn("glass-card p-3 flex items-center gap-3", c.bg)}>
-			<div className="relative">
-				<Cpu size={20} className={c.text} />
-				<span
-					className={cn(
-						"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full",
-						status === "active" ? "animate-pulse" : "",
-						c.dot,
-					)}
-				/>
-			</div>
-			<div className="flex-1 min-w-0">
-				<div className="flex items-center gap-2">
-					<span className={cn("text-sm font-semibold", c.text)}>
-						{desc || agent.type}
-					</span>
+		<div
+			className={cn(
+				"glass-card flex flex-col transition-colors duration-200",
+				c.bg,
+				expanded ? "ring-1 ring-border-hover" : "",
+			)}
+		>
+			{/* Main row — always visible */}
+			<button
+				type="button"
+				onClick={onToggle}
+				className="flex items-center gap-3 p-3 w-full text-start cursor-pointer"
+				aria-expanded={expanded}
+			>
+				<div className="relative shrink-0">
+					<Cpu size={20} className={c.text} />
+					<span
+						className={cn(
+							"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full",
+							status === "active" ? "animate-pulse" : "",
+							c.dot,
+						)}
+					/>
 				</div>
-				<div className="flex items-center gap-2 mt-0.5">
-					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
-						PID {agent.pid}
-					</span>
-					{uptime && <span className="text-xs text-text-muted">{uptime}</span>}
-					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
-						{agent.cpu}% CPU
-					</span>
+				<div className="flex-1 min-w-0">
+					<div className="flex items-center gap-2">
+						<span className={cn("text-sm font-semibold", c.text)}>
+							{desc || agent.type}
+						</span>
+					</div>
+					<div className="flex items-center gap-2 mt-0.5">
+						<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+							PID {agent.pid}
+						</span>
+						{uptime && (
+							<span className="text-xs text-text-muted">{uptime}</span>
+						)}
+						<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+							{agent.cpu}% CPU
+						</span>
+					</div>
 				</div>
-			</div>
-			<div className="text-end shrink-0">
-				<span
-					className={cn(
-						"text-xs font-medium px-1.5 py-0.5 rounded",
-						status === "active"
-							? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
-							: "bg-bg-elevated text-text-muted",
+				<div className="flex items-center gap-2 shrink-0">
+					<span
+						className={cn(
+							"text-xs font-medium px-1.5 py-0.5 rounded",
+							status === "active"
+								? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
+								: "bg-bg-elevated text-text-muted",
+						)}
+					>
+						{status === "active" ? "פעיל" : "ממתין"}
+					</span>
+					<ChevronDown
+						size={14}
+						className={cn(
+							"text-text-muted transition-transform duration-200",
+							expanded ? "rotate-180" : "",
+						)}
+					/>
+				</div>
+			</button>
+
+			{/* Expanded details */}
+			{expanded && (
+				<div className="border-t border-border px-3 pb-3 pt-2 flex flex-col gap-2">
+					{/* Category badge */}
+					{catBadge && agent.category && (
+						<div className="flex items-center gap-1.5">
+							<span className="text-xs text-text-muted">קטגוריה:</span>
+							<span
+								className={cn(
+									"text-xs font-medium px-2 py-0.5 rounded-full border",
+									catBadge.bg,
+									catBadge.text,
+									catBadge.border,
+								)}
+							>
+								{catLabel(agent.category)}
+							</span>
+						</div>
 					)}
-				>
-					{status === "active" ? "פעיל" : "ממתין"}
-				</span>
-			</div>
+
+					{/* PID with copy */}
+					<div className="flex items-center gap-1.5">
+						<span className="text-xs text-text-muted">PID:</span>
+						<span
+							className="text-xs font-mono text-text-primary tabular-nums"
+							dir="ltr"
+						>
+							{agent.pid}
+						</span>
+						<button
+							type="button"
+							onClick={(e) => {
+								e.stopPropagation();
+								copyPid();
+							}}
+							className="flex items-center gap-0.5 text-xs text-text-muted hover:text-text-secondary transition-colors px-1 py-0.5 rounded hover:bg-bg-elevated"
+							title="העתק PID"
+						>
+							<Copy size={11} />
+						</button>
+					</div>
+
+					{/* Memory */}
+					<div className="flex items-center gap-1.5">
+						<span className="text-xs text-text-muted">זיכרון:</span>
+						<span className="text-xs text-text-primary tabular-nums" dir="ltr">
+							{agent.mem.toFixed(1)}%
+						</span>
+					</div>
+
+					{/* Full command line */}
+					<div className="flex flex-col gap-0.5">
+						<span className="text-xs text-text-muted">פקודה:</span>
+						<code
+							className="text-xs font-mono text-text-secondary bg-bg-elevated rounded px-2 py-1.5 break-all leading-relaxed"
+							dir="ltr"
+						>
+							{agent.cmd}
+						</code>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
 
 function LiveSection() {
 	const { data: liveData, isLoading, isError } = useAgentsLive();
+	const [expandedPids, setExpandedPids] = useState<Set<number>>(new Set());
+
+	function togglePid(pid: number) {
+		setExpandedPids((prev) => {
+			const next = new Set(prev);
+			if (next.has(pid)) {
+				next.delete(pid);
+			} else {
+				next.add(pid);
+			}
+			return next;
+		});
+	}
 
 	// Filter out CI runners — they belong on CI/CD page, not Fleet
 	const agents = (liveData?.live_agents ?? []).filter(
@@ -331,6 +453,17 @@ function LiveSection() {
 	const summaryHe = (liveData as { summary_he?: string } | undefined)
 		?.summary_he;
 
+	// Active = cpu > 0, idle = cpu === 0
+	const activeCount = agents.filter((a) => a.cpu > 0).length;
+	const idleCount = agents.length - activeCount;
+
+	// Per-category counts for summary badges
+	const catCounts = agents.reduce<Record<string, number>>((acc, a) => {
+		const cat = a.category || a.type;
+		acc[cat] = (acc[cat] ?? 0) + 1;
+		return acc;
+	}, {});
+
 	// Group by category (not type) for cleaner display
 	const groups = agents.reduce<Record<string, LiveAgent[]>>((acc, a) => {
 		const cat = a.category || a.type;
@@ -341,25 +474,62 @@ function LiveSection() {
 
 	return (
 		<div className="flex flex-col gap-3">
-			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-2">
-					<Activity size={18} className="text-accent-green" />
-					<h2 className="text-base font-semibold text-text-primary">
-						סוכנים פעילים עכשיו
-					</h2>
-					<span
-						className={cn(
-							"text-xs font-bold px-2 py-0.5 rounded-full tabular-nums",
-							agents.length > 0
-								? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
-								: "bg-bg-elevated text-text-muted",
-						)}
-						dir="ltr"
-					>
-						{agents.length}
-					</span>
+			<div className="flex items-start justify-between gap-3">
+				<div className="flex flex-col gap-1.5">
+					<div className="flex items-center gap-2">
+						<Activity size={18} className="text-accent-green" />
+						<h2 className="text-base font-semibold text-text-primary">
+							סוכנים פעילים עכשיו
+						</h2>
+					</div>
+					{/* Summary counts */}
+					{agents.length > 0 && (
+						<div className="flex items-center gap-1.5 flex-wrap">
+							{/* Active badge */}
+							<span
+								className="text-xs font-medium px-2 py-0.5 rounded-full tabular-nums bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
+								dir="ltr"
+							>
+								{activeCount} פעיל
+							</span>
+							{/* Idle badge */}
+							{idleCount > 0 && (
+								<span
+									className="text-xs font-medium px-2 py-0.5 rounded-full tabular-nums bg-bg-elevated text-text-muted"
+									dir="ltr"
+								>
+									{idleCount} ממתין
+								</span>
+							)}
+							{/* Per-category badges */}
+							{Object.entries(catCounts).map(([cat, count]) => {
+								const s = liveColor(cat);
+								return (
+									<span
+										key={cat}
+										className={cn(
+											"text-xs font-medium px-2 py-0.5 rounded-full tabular-nums",
+											s.bg,
+											s.text,
+										)}
+										dir="ltr"
+									>
+										{cat} {count}
+									</span>
+								);
+							})}
+						</div>
+					)}
+					{agents.length === 0 && !isLoading && !isError && (
+						<span
+							className="text-xs font-bold px-2 py-0.5 rounded-full tabular-nums bg-bg-elevated text-text-muted self-start"
+							dir="ltr"
+						>
+							0
+						</span>
+					)}
 				</div>
-				<div className="flex items-center gap-3">
+				<div className="flex items-center gap-3 shrink-0">
 					{summaryHe && (
 						<span className="text-xs text-text-secondary">{summaryHe}</span>
 					)}
@@ -401,7 +571,12 @@ function LiveSection() {
 							</div>
 							<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
 								{list.map((a) => (
-									<LiveAgentCard key={a.pid} agent={a} />
+									<LiveAgentCard
+										key={a.pid}
+										agent={a}
+										expanded={expandedPids.has(a.pid)}
+										onToggle={() => togglePid(a.pid)}
+									/>
 								))}
 							</div>
 						</div>

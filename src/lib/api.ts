@@ -263,6 +263,7 @@ export interface WatcherEvent {
 	provider?: string;
 	rc?: number;
 	message?: string;
+	node?: string;
 }
 
 // API returns array directly, not wrapped in {events}
