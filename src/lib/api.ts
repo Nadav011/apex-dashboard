@@ -265,9 +265,8 @@ export interface WatcherEvent {
 	message?: string;
 }
 
-export interface WatcherResponse {
-	events: WatcherEvent[];
-}
+// API returns array directly, not wrapped in {events}
+export type WatcherResponse = WatcherEvent[];
 
 // /api/hydra/health
 export interface HealthCheck {
@@ -488,6 +487,12 @@ export interface CiSummaryResponse {
 	failing: number;
 	unknown: number;
 	last_check: string;
+	// Also returned by current API
+	runs?: Array<Record<string, unknown>>;
+	success?: number;
+	failure?: number;
+	in_progress?: number;
+	repos?: CiRepo[];
 }
 
 export interface CiTemplate {

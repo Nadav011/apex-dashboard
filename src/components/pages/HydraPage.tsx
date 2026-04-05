@@ -605,7 +605,9 @@ export function HydraPage() {
 							subtitle="20 אירועים אחרונים"
 							icon={<Clock size={16} />}
 						>
-							<WatcherTimeline events={watcher.data?.events ?? []} />
+							<WatcherTimeline
+								events={Array.isArray(watcher.data) ? watcher.data : []}
+							/>
 						</GlassCard>
 					);
 				}}

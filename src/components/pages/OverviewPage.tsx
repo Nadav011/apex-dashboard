@@ -172,7 +172,9 @@ export function OverviewPage() {
 			? Math.round((healthyCount / healthChecks.length) * 100)
 			: 0;
 
-	const recentEvents = (watcher.data?.events ?? []).slice(-10).reverse();
+	const recentEvents = (Array.isArray(watcher.data) ? watcher.data : [])
+		.slice(-10)
+		.reverse();
 
 	return (
 		<div className="flex flex-col gap-6 min-h-screen p-6">
