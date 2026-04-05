@@ -201,11 +201,15 @@ export interface AgentInfo {
 
 export interface LiveAgent {
 	type: string;
+	category?: string;
+	description?: string;
 	pid: number;
 	cpu: number;
 	mem: number;
 	cmd: string;
 	started: string;
+	uptime?: string;
+	status?: string;
 }
 
 export interface BackgroundTask {
