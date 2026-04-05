@@ -132,6 +132,11 @@ const OpenclawPage = lazy(() =>
 		default: m.OpenclawPage,
 	})),
 );
+const ActivityFeedPage = lazy(() =>
+	import("@/components/pages/ActivityFeedPage").then((m) => ({
+		default: m.ActivityFeedPage,
+	})),
+);
 
 // ── Route → Component mapping ──────────────────────────────────────
 
@@ -164,6 +169,7 @@ const PAGE_COMPONENTS: Record<
 	"ops/metrics": MetricsPage,
 	"ops/logs": LogsPage,
 	"ops/notifications": NotificationsPage,
+	"ops/activity": ActivityFeedPage,
 	"knowledge/system": SystemGuidePage,
 	"knowledge/base": KnowledgePage,
 	"knowledge/openclaw": OpenclawPage,

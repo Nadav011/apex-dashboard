@@ -3,8 +3,11 @@ import {
 	ChevronDown,
 	Copy,
 	Cpu,
+	FileText,
+	RefreshCw,
 	Search,
 	SearchX,
+	Square,
 	Users,
 	Zap,
 } from "lucide-react";
@@ -295,6 +298,44 @@ function LiveAgentCard({
 		navigator.clipboard.writeText(String(agent.pid)).catch(() => undefined);
 	}
 
+	function handleAction(action: "restart" | "stop" | "log", pid: number) {
+		fetch("https://api.nadavc.ai/api/control/agent", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ action, pid }),
+		}).catch(console.error);
+	}
+
+	// Determine which control buttons to show based on agent.type
+	const FULL_CONTROL_TYPES = new Set([
+		"hydra-watcher",
+		"ambient-receiver",
+		"devbot",
+		"memory-inbox",
+		"hermes-gateway",
+		"apex-observer",
+		"dashboard-api",
+	]);
+	const STOP_ONLY_TYPES = new Set(["gemini", "kimi", "codex", "minimax"]);
+	const NO_CONTROL_TYPES = new Set(["gh-runner", "hydra-executor"]);
+	const CLAUDE_TYPES = new Set([
+		"claude-interactive",
+		"claude-subagent",
+		"claude-headless",
+	]);
+
+	const showRestart =
+		FULL_CONTROL_TYPES.has(agent.type) && !NO_CONTROL_TYPES.has(agent.type);
+	const showStop =
+		(FULL_CONTROL_TYPES.has(agent.type) || STOP_ONLY_TYPES.has(agent.type)) &&
+		!NO_CONTROL_TYPES.has(agent.type);
+	const showLog =
+		!NO_CONTROL_TYPES.has(agent.type) &&
+		(FULL_CONTROL_TYPES.has(agent.type) ||
+			STOP_ONLY_TYPES.has(agent.type) ||
+			CLAUDE_TYPES.has(agent.type));
+	const showAnyButton = showRestart || showStop || showLog;
+
 	return (
 		<div
 			className={cn(
@@ -419,6 +460,63 @@ function LiveAgentCard({
 							{agent.cmd}
 						</code>
 					</div>
+
+					{/* Control buttons */}
+					{showAnyButton && (
+						<div className="flex items-center gap-1.5 pt-1 flex-wrap">
+							{showRestart && (
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										handleAction("restart", agent.pid);
+									}}
+									className={cn(
+										"inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium",
+										"bg-[oklch(0.55_0.18_75_/_0.15)] text-[oklch(0.78_0.18_75)] border border-[oklch(0.55_0.18_75_/_0.3)]",
+										"hover:bg-[oklch(0.55_0.18_75_/_0.25)] transition-colors duration-150",
+									)}
+								>
+									<RefreshCw size={11} />
+									הפעל מחדש
+								</button>
+							)}
+							{showStop && (
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										handleAction("stop", agent.pid);
+									}}
+									className={cn(
+										"inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium",
+										"bg-[oklch(0.55_0.2_25_/_0.15)] text-[oklch(0.72_0.2_25)] border border-[oklch(0.55_0.2_25_/_0.3)]",
+										"hover:bg-[oklch(0.55_0.2_25_/_0.25)] transition-colors duration-150",
+									)}
+								>
+									<Square size={11} />
+									עצור
+								</button>
+							)}
+							{showLog && (
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										handleAction("log", agent.pid);
+									}}
+									className={cn(
+										"inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium",
+										"bg-[oklch(0.55_0.15_240_/_0.15)] text-[oklch(0.72_0.15_240)] border border-[oklch(0.55_0.15_240_/_0.3)]",
+										"hover:bg-[oklch(0.55_0.15_240_/_0.25)] transition-colors duration-150",
+									)}
+								>
+									<FileText size={11} />
+									צפה בלוג
+								</button>
+							)}
+						</div>
+					)}
 				</div>
 			)}
 		</div>
