@@ -309,7 +309,7 @@ function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 							: "bg-bg-elevated text-text-muted",
 					)}
 				>
-					{status === "active" ? "פעיל" : status || "—"}
+					{status === "active" ? "פעיל" : "ממתין"}
 				</span>
 			</div>
 		</div>
@@ -319,7 +319,10 @@ function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 function LiveSection() {
 	const { data: liveData, isLoading, isError } = useAgentsLive();
 
-	const agents = liveData?.live_agents ?? [];
+	// Filter out CI runners — they belong on CI/CD page, not Fleet
+	const agents = (liveData?.live_agents ?? []).filter(
+		(a) => a.category !== "ci",
+	);
 	const bgRecent =
 		liveData?.background_tasks?.filter(
 			(t: BackgroundTask) => t.status === "recent",
