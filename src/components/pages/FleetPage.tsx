@@ -269,13 +269,17 @@ function liveColor(type: string) {
 
 function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 	const c = liveColor(agent.type);
+	const desc = agent.description;
+	const uptime = agent.uptime;
+	const status = agent.status;
 	return (
 		<div className={cn("glass-card p-3 flex items-center gap-3", c.bg)}>
 			<div className="relative">
 				<Cpu size={20} className={c.text} />
 				<span
 					className={cn(
-						"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full animate-pulse",
+						"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full",
+						status === "active" ? "animate-pulse" : "",
 						c.dot,
 					)}
 				/>
@@ -283,26 +287,30 @@ function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 			<div className="flex-1 min-w-0">
 				<div className="flex items-center gap-2">
 					<span className={cn("text-sm font-semibold", c.text)}>
-						{agent.type}
+						{desc || agent.type}
 					</span>
+				</div>
+				<div className="flex items-center gap-2 mt-0.5">
 					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
 						PID {agent.pid}
 					</span>
+					{uptime && <span className="text-xs text-text-muted">{uptime}</span>}
+					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+						{agent.cpu}% CPU
+					</span>
 				</div>
-				<p className="text-xs text-text-muted truncate" dir="ltr">
-					{agent.cmd}
-				</p>
 			</div>
 			<div className="text-end shrink-0">
-				<div
-					className="text-xs font-medium text-text-secondary tabular-nums"
-					dir="ltr"
+				<span
+					className={cn(
+						"text-xs font-medium px-1.5 py-0.5 rounded",
+						status === "active"
+							? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
+							: "bg-bg-elevated text-text-muted",
+					)}
 				>
-					{agent.cpu}% CPU
-				</div>
-				<div className="text-xs text-text-muted" dir="ltr">
-					{agent.started}
-				</div>
+					{status === "active" ? "פעיל" : status || "—"}
+				</span>
 			</div>
 		</div>
 	);
@@ -317,10 +325,14 @@ function LiveSection() {
 			(t: BackgroundTask) => t.status === "recent",
 		).length ?? 0;
 
-	// Group by type
+	const summaryHe = (liveData as { summary_he?: string } | undefined)
+		?.summary_he;
+
+	// Group by category (not type) for cleaner display
 	const groups = agents.reduce<Record<string, LiveAgent[]>>((acc, a) => {
-		if (!acc[a.type]) acc[a.type] = [];
-		acc[a.type].push(a);
+		const cat = a.category || a.type;
+		if (!acc[cat]) acc[cat] = [];
+		acc[cat].push(a);
 		return acc;
 	}, {});
 
@@ -344,12 +356,17 @@ function LiveSection() {
 						{agents.length}
 					</span>
 				</div>
-				{bgRecent > 0 && (
-					<div className="flex items-center gap-1.5 text-xs text-text-muted">
-						<Zap size={13} className="text-accent-amber" />
-						<span dir="ltr">{bgRecent} background tasks</span>
-					</div>
-				)}
+				<div className="flex items-center gap-3">
+					{summaryHe && (
+						<span className="text-xs text-text-secondary">{summaryHe}</span>
+					)}
+					{bgRecent > 0 && (
+						<div className="flex items-center gap-1.5 text-xs text-text-muted">
+							<Zap size={13} className="text-accent-amber" />
+							<span dir="ltr">{bgRecent} background tasks</span>
+						</div>
+					)}
+				</div>
 			</div>
 
 			{isLoading ? (
