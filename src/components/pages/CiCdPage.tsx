@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { useCiStatus } from "@/hooks/use-api";
+import { useCiSummary } from "@/hooks/use-api";
 import type { CiRepo, CiRun } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
@@ -257,7 +257,7 @@ function CiPieChart({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export function CiCdPage() {
-	const { data, isLoading, error, dataUpdatedAt } = useCiStatus();
+	const { data, isLoading, error, dataUpdatedAt } = useCiSummary();
 	const qc = useQueryClient();
 
 	const handleRefresh = useCallback(() => {
@@ -265,14 +265,21 @@ export function CiCdPage() {
 	}, [qc]);
 
 	const repos = data?.repos ?? [];
-	const passing = repos.filter((r) => getRepoHealth(r) === "success").length;
-	const failing = repos.filter((r) => getRepoHealth(r) === "failure").length;
-	const unknown = repos.filter(
-		(r) =>
-			getRepoHealth(r) === "unknown" ||
-			getRepoHealth(r) === "cancelled" ||
-			getRepoHealth(r) === "in_progress",
-	).length;
+	const passing =
+		data?.success ?? repos.filter((r) => getRepoHealth(r) === "success").length;
+	const failing =
+		data?.failure ?? repos.filter((r) => getRepoHealth(r) === "failure").length;
+	const unknown =
+		data?.in_progress ??
+		repos.filter(
+			(r) =>
+				getRepoHealth(r) === "unknown" ||
+				getRepoHealth(r) === "cancelled" ||
+				getRepoHealth(r) === "in_progress",
+		).length;
+	const runs = (data as Record<string, unknown> | undefined)?.runs as
+		| Array<Record<string, unknown>>
+		| undefined;
 
 	return (
 		<div className="flex flex-col gap-6 pb-8">
@@ -424,13 +431,53 @@ export function CiCdPage() {
 							<div key={i} className="glass-card p-4 h-32 shimmer" />
 						))}
 					</div>
-				) : repos.length === 0 ? (
+				) : repos.length === 0 && (!runs || runs.length === 0) ? (
 					<div className="glass-card p-8 text-center">
 						<p className="text-text-muted">אין נתונים זמינים</p>
 					</div>
+				) : repos.length === 0 && runs && runs.length > 0 ? (
+					<div className="space-y-2">
+						{runs.slice(0, 20).map((run, i) => (
+							<div
+								key={String(run.databaseId ?? i)}
+								className="glass-card p-3 flex items-center justify-between gap-3"
+							>
+								<div className="flex items-center gap-2">
+									<span
+										className={cn(
+											"w-2 h-2 rounded-full shrink-0",
+											run.conclusion === "success"
+												? "bg-green-500"
+												: run.conclusion === "failure"
+													? "bg-red-500"
+													: "bg-yellow-500",
+										)}
+									/>
+									<span className="text-sm font-medium text-text-primary">
+										{String(run.name ?? "")}
+									</span>
+								</div>
+								<div className="flex items-center gap-3 text-xs text-text-muted">
+									<span>{String(run.headBranch ?? "")}</span>
+									<span
+										className={cn(
+											"px-1.5 py-0.5 rounded font-medium",
+											run.conclusion === "success"
+												? "bg-green-500/15 text-green-400"
+												: run.conclusion === "failure"
+													? "bg-red-500/15 text-red-400"
+													: "bg-yellow-500/15 text-yellow-400",
+										)}
+									>
+										{String(run.conclusion ?? run.status ?? "unknown")}
+									</span>
+								</div>
+							</div>
+						))}
+					</div>
 				) : (
 					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 stagger-grid">
-						{repos.map((repo) => (
+						{repos.map((repo: CiRepo) => (
 							<RepoCard key={repo.full_name} repo={repo} />
 						))}
 					</div>
