@@ -19,49 +19,7 @@ interface TeamEvent {
 	message?: string;
 }
 
-// Mock data until API is connected
-const MOCK_TEAMS = [
-	{
-		task_id: "auth-jwt-rls",
-		total_subtasks: 4,
-		completed_subtasks: 2,
-		status: "in_progress",
-		subtasks: [
-			{
-				id: "auth-research",
-				role: "research",
-				title: "Research JWT patterns",
-				provider_hint: "gemini",
-				depends_on: [] as string[],
-				status: "completed",
-			},
-			{
-				id: "auth-schema",
-				role: "plan",
-				title: "Design auth schema",
-				provider_hint: "codex",
-				depends_on: ["auth-research"],
-				status: "completed",
-			},
-			{
-				id: "auth-impl",
-				role: "implement",
-				title: "Implement JWT middleware",
-				provider_hint: "codex",
-				depends_on: ["auth-schema"],
-				status: "in_progress",
-			},
-			{
-				id: "auth-tests",
-				role: "test",
-				title: "Write auth tests",
-				provider_hint: "minimax",
-				depends_on: ["auth-impl"],
-				status: "pending",
-			},
-		],
-	},
-];
+// No mock data — show real state only
 
 const ROLE_STYLES: Record<string, string> = {
 	research: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
@@ -114,9 +72,7 @@ function StatusIcon({ status }: { status?: string }) {
 
 export function TeamModePage() {
 	const { data: teamData } = useTeamStatus();
-	const teams = teamData?.active_teams?.length
-		? teamData.active_teams
-		: MOCK_TEAMS;
+	const teams = teamData?.active_teams ?? [];
 	const events = (teamData?.recent_events ?? []).slice(-10).reverse();
 	const totalSubtasks = teams.reduce((s, t) => s + t.total_subtasks, 0);
 	const completedSubtasks = teams.reduce((s, t) => s + t.completed_subtasks, 0);
