@@ -48,6 +48,11 @@ const PROVIDERS: Record<string, ProviderMeta> = {
 		color: "var(--color-accent-purple)",
 		colorDim: "oklch(0.62 0.2 290 / 0.2)",
 	},
+	hermes: {
+		label: "Hermes (Claude)",
+		color: "var(--color-accent-amber)",
+		colorDim: "oklch(0.75 0.15 75 / 0.2)",
+	},
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -91,9 +96,15 @@ function eventDotColor(event: string): string {
 function ScoreCard({
 	providerKey,
 	score,
+	successes,
+	failures,
+	total,
 }: {
 	providerKey: string;
 	score: number;
+	successes?: number;
+	failures?: number;
+	total?: number;
 }) {
 	const meta = PROVIDERS[providerKey] ?? {
 		label: providerKey,
@@ -140,6 +151,17 @@ function ScoreCard({
 					{pct}%
 				</span>
 			</div>
+
+			{total !== undefined && (
+				<div
+					className="flex items-center justify-between text-xs text-text-muted mt-1"
+					dir="ltr"
+				>
+					<span className="text-green-400">{successes ?? 0}W</span>
+					<span className="text-red-400">{failures ?? 0}L</span>
+					<span>{total} total</span>
+				</div>
+			)}
 		</div>
 	);
 }
@@ -460,7 +482,7 @@ export function HydraPage() {
 			<PageHeader
 				icon={Zap}
 				title="Hydra — מנוע שיגור"
-				description="ניתוב משימות בין 4 ספקי AI לפי ציון ביינסיאני"
+				description="ניתוב משימות בין 5 ספקי AI לפי ציון ביינסיאני"
 			/>
 
 			<Tabs
@@ -479,12 +501,15 @@ export function HydraPage() {
 									<h2 className="text-sm font-semibold text-text-secondary mb-3">
 										ניקודים בייסיאניים
 									</h2>
-									<div className="grid-cards stagger-grid grid grid-cols-2 lg:grid-cols-4 gap-3">
+									<div className="grid-cards stagger-grid grid grid-cols-2 lg:grid-cols-5 gap-3">
 										{Object.keys(PROVIDERS).map((p) => (
 											<ScoreCard
 												key={p}
 												providerKey={p}
 												score={scoresData[p] ?? 0.5}
+												successes={rawProviders[p]?.successes}
+												failures={rawProviders[p]?.failures}
+												total={rawProviders[p]?.total}
 											/>
 										))}
 									</div>
