@@ -1,10 +1,7 @@
 import { STATIC } from "./static-data";
 
-const API_BASE =
-	import.meta.env.VITE_API_URL ||
-	(typeof window !== "undefined" && window.location.hostname === "localhost"
-		? "/api"
-		: "https://api.nadavc.ai/api");
+// Always use relative /api — CF Pages Functions proxy handles production routing
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
 // Slow endpoints that need longer timeout (health checks, CI, projects scan GitHub)
 const SLOW_PATHS = new Set([
