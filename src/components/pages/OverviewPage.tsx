@@ -1,24 +1,24 @@
 import {
 	Activity,
 	Bot,
-	CheckCircle2,
-	Clock,
 	Cpu,
+	DollarSign,
 	LayoutDashboard,
-	XCircle,
+	Zap,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { MetricGauge } from "@/components/ui/MetricGauge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
 import {
-	useAgents,
-	useHydraHealth,
+	useAgentsLive,
+	useCosts,
 	useHydraTasks,
-	useHydraWatcher,
+	useMetrics,
 	useSystem,
+	useWatcherAll,
 } from "@/hooks/use-api";
-import type { WatcherEvent } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -51,15 +51,72 @@ function eventLabel(event: string): string {
 
 function eventColorClass(event: string): string {
 	if (event.includes("fail") || event.includes("error")) {
-		return "text-status-critical";
+		return "text-amber-500";
 	}
 	if (event.includes("complete") || event.includes("start")) {
-		return "text-status-healthy";
+		return "text-cyan-400";
 	}
-	return "text-text-secondary";
+	return "text-slate-400";
 }
 
 // ── Sub-components ───────────────────────────────────────────────────────────
+
+function LiveBadge() {
+	const [time, setTime] = useState(new Date());
+	useEffect(() => {
+		const timer = setInterval(() => setTime(new Date()), 1000);
+		return () => clearInterval(timer);
+	}, []);
+
+	return (
+		<div className="flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 rounded-full px-3 py-1.5 w-fit shadow-sm">
+			<div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+			<span className="text-xs font-bold text-green-400 tracking-wider">
+				LIVE
+			</span>
+			<span className="text-xs text-zinc-400 font-mono ms-2" dir="ltr">
+				{time.toLocaleTimeString("he-IL", { hour12: false })}
+			</span>
+		</div>
+	);
+}
+
+function ActivityStrip() {
+	const watcherAll = useWatcherAll();
+	const events = Array.isArray(watcherAll.data) ? watcherAll.data : [];
+	const recentEvents = events
+		.filter((e) => e.event !== "idle")
+		.slice(-5)
+		.reverse();
+
+	if (recentEvents.length === 0) return null;
+
+	return (
+		<div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+			{recentEvents.map((ev, i) => (
+				<div
+					// biome-ignore lint/suspicious/noArrayIndexKey: stable list order
+					key={`${ev.ts}-${i}`}
+					className="flex-none bg-slate-900 border border-slate-800 rounded-lg p-3 min-w-[200px] shadow-sm"
+				>
+					<div className="flex items-center justify-between mb-2">
+						<span
+							className={cn("text-xs font-medium", eventColorClass(ev.event))}
+						>
+							{eventLabel(ev.event)}
+						</span>
+						<span className="text-[10px] text-slate-500 font-mono" dir="ltr">
+							{formatTs(ev.ts)}
+						</span>
+					</div>
+					<div className="text-xs text-slate-300 truncate text-start">
+						{ev.task_id ?? ev.provider ?? "—"}
+					</div>
+				</div>
+			))}
+		</div>
+	);
+}
 
 function SystemGauges() {
 	const { data, isLoading } = useSystem();
@@ -70,10 +127,10 @@ function SystemGauges() {
 				{["מעבד", "זיכרון", "דיסק"].map((label) => (
 					<div
 						key={label}
-						className="glass-card card-spotlight p-4 animate-pulse"
+						className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 animate-pulse"
 					>
-						<div className="h-4 bg-bg-elevated rounded w-1/3 mb-3" />
-						<div className="h-2 bg-bg-elevated rounded" />
+						<div className="h-4 bg-slate-800 rounded w-1/3 mb-3" />
+						<div className="h-2 bg-slate-800 rounded" />
 					</div>
 				))}
 			</div>
@@ -101,142 +158,47 @@ function SystemGauges() {
 	);
 }
 
-function WatcherEventRow({ event }: { event: WatcherEvent }) {
-	const isOk = event.rc === undefined || event.rc === 0;
-	return (
-		<tr className="border-b border-border last:border-0 hover:bg-bg-elevated transition-colors duration-100">
-			<td
-				className="py-2 ps-4 pe-2 text-xs text-text-muted tabular-nums whitespace-nowrap"
-				dir="ltr"
-			>
-				{formatTs(event.ts)}
-			</td>
-			<td
-				className={cn(
-					"py-2 px-2 text-xs font-medium",
-					eventColorClass(event.event),
-				)}
-			>
-				{eventLabel(event.event)}
-			</td>
-			<td className="py-2 px-2 text-xs text-text-secondary max-w-32 truncate">
-				{event.task_id ?? "—"}
-			</td>
-			<td className="py-2 px-2 text-xs text-accent-purple">
-				{event.provider ?? "—"}
-			</td>
-			<td className="py-2 ps-2 pe-4 text-xs">
-				{event.rc !== undefined ? (
-					<span
-						dir="ltr"
-						className={cn(
-							"font-mono inline-flex items-center gap-1",
-							isOk ? "text-status-healthy" : "text-status-critical",
-						)}
-					>
-						{isOk ? (
-							<CheckCircle2 size={12} aria-hidden="true" />
-						) : (
-							<XCircle size={12} aria-hidden="true" />
-						)}
-						{event.rc}
-					</span>
-				) : (
-					<span className="text-text-muted">—</span>
-				)}
-			</td>
-		</tr>
-	);
-}
-
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export function OverviewPage() {
-	const agents = useAgents();
+	const agentsLive = useAgentsLive();
 	const tasks = useHydraTasks();
-	const health = useHydraHealth();
-	const watcher = useHydraWatcher();
+	const metrics = useMetrics();
+	const costs = useCosts();
 
-	// Derived stats — agents is AgentInfo[], tasks is HydraTask[]
-	const totalAgents = agents.data?.length ?? 0;
-	const activeTasks = (tasks.data ?? []).filter(
-		(t) => t.status === "in_progress" || t.status === "pending",
-	).length;
-	// metrics no longer has success_rate — derive from top data if available
-	const successRate = 0;
-
-	const healthChecks = health.data?.checks ?? [];
-	const healthyCount = healthChecks.filter((c) => c.ok).length;
-	const healthPct =
-		healthChecks.length > 0
-			? Math.round((healthyCount / healthChecks.length) * 100)
-			: 0;
-
-	const recentEvents = (Array.isArray(watcher.data) ? watcher.data : [])
-		.slice(-10)
-		.reverse();
+	const activeAgents = agentsLive.data?.live_count ?? 0;
+	const tasksToday = tasks.data?.length ?? 0;
+	const dispatches = metrics.data?.total_dispatches ?? 0;
+	const costToday = costs.data?.today_usd ?? 0;
 
 	return (
-		<div className="flex flex-col gap-6 min-h-screen p-6">
-			<PageHeader
-				icon={LayoutDashboard}
-				title="סקירה כללית"
-				description="מבט על כל המערכת — סוכנים, משימות, בריאות, משאבים"
-			/>
+		<div className="flex flex-col gap-6 min-h-screen p-6 bg-zinc-950 text-zinc-100">
+			<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+				<PageHeader
+					icon={LayoutDashboard}
+					title="סקירה כללית"
+					description="מבט על כל המערכת — סוכנים, משימות, פעילות ועלויות"
+				/>
+				<LiveBadge />
+			</div>
+
+			<ActivityStrip />
 
 			{/* Stat Cards */}
 			<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 grid-cards stagger-grid">
-				<StatCard label="סך הסוכנים" value={totalAgents} icon={Bot} />
-				<StatCard label="משימות פעילות" value={activeTasks} icon={Activity} />
+				<StatCard label="סוכנים פעילים" value={activeAgents} icon={Bot} />
+				<StatCard label="משימות היום" value={tasksToday} icon={Activity} />
+				<StatCard label="שיגורים" value={dispatches} icon={Zap} />
 				<StatCard
-					label="אחוז הצלחה"
-					value={`${successRate}%`}
-					icon={CheckCircle2}
+					label="עלות יומית"
+					value={`$${costToday.toFixed(2)}`}
+					icon={DollarSign}
 				/>
-				<StatCard label="בריאות המערכת" value={`${healthPct}%`} icon={Clock} />
 			</div>
 
 			{/* System Gauges */}
 			<GlassCard title="מדדי מערכת" icon={<Cpu size={16} />}>
 				<SystemGauges />
-			</GlassCard>
-
-			{/* Watcher Events */}
-			<GlassCard
-				title="אירועי צופה אחרונים"
-				subtitle="10 האחרונים"
-				icon={<Activity size={16} />}
-			>
-				{recentEvents.length === 0 ? (
-					<p className="text-sm text-text-muted text-center py-6">
-						אין אירועים עדיין
-					</p>
-				) : (
-					<div className="overflow-x-auto -mx-4 -mb-4">
-						{/* responsive-ok — table needs min width, overflow-x-auto handles it */}
-						<table className="w-full min-w-max text-start">
-							<thead>
-								<tr className="border-b border-border">
-									{["שעה", "אירוע", "מזהה משימה", "ספק", "קוד"].map((h) => (
-										<th
-											key={h}
-											scope="col"
-											className="py-2 px-2 first:ps-4 last:pe-4 text-xs font-medium text-text-muted text-start"
-										>
-											{h}
-										</th>
-									))}
-								</tr>
-							</thead>
-							<tbody>
-								{recentEvents.map((ev, i) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: stable list order
-									<WatcherEventRow key={`${ev.ts}-${i}`} event={ev} />
-								))}
-							</tbody>
-						</table>
-					</div>
-				)}
 			</GlassCard>
 		</div>
 	);

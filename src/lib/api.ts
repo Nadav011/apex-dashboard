@@ -20,7 +20,10 @@ async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
 		const ctrl = new AbortController();
 		const timeout = SLOW_PATHS.has(path) ? 10000 : 3000;
 		const timer = setTimeout(() => ctrl.abort(), timeout);
-		const res = await fetch(`${API_BASE}${path}`, { signal: ctrl.signal });
+		const res = await fetch(`${API_BASE}${path}`, {
+			signal: ctrl.signal,
+			credentials: "include",
+		});
 		clearTimeout(timer);
 		if (!res.ok) throw new Error(`${res.status}`);
 		return res.json() as Promise<T>;
@@ -37,6 +40,7 @@ async function postApi<T>(path: string, fallback?: T): Promise<T> {
 		const res = await fetch(`${API_BASE}${path}`, {
 			method: "POST",
 			signal: ctrl.signal,
+			credentials: "include",
 		});
 		clearTimeout(timer);
 		if (!res.ok) throw new Error(`${res.status}`);
@@ -260,8 +264,11 @@ export interface WatcherEvent {
 	ts: string;
 	event: string;
 	task_id?: string;
+	display_name?: string;
+	description_he?: string;
 	provider?: string;
 	rc?: number;
+	node?: string;
 	message?: string;
 }
 

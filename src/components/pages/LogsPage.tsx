@@ -2,26 +2,33 @@ import {
 	AlertTriangle,
 	Archive,
 	BookOpen,
+	CheckCircle2,
 	ChevronDown,
 	ChevronUp,
 	Clock,
 	Database,
+	Eye,
+	EyeOff,
 	FileJson,
 	FileText,
 	Filter,
 	HardDrive,
 	Info,
+	PlayCircle,
 	RefreshCw,
 	RotateCcw,
 	ScrollText,
 	Search,
 	Terminal,
 	Trash2,
+	XCircle,
 	Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Tabs } from "@/components/ui/Tabs";
+import { useWatcherAll } from "@/hooks/use-api";
+import type { WatcherEvent } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
 // ── Accordion ─────────────────────────────────────────────────────────────────
@@ -633,6 +640,300 @@ const BEADS_FIELDS = [
 	},
 ];
 
+// ── Watcher Events Tab ────────────────────────────────────────────────────────
+
+// Determine event display category for color coding
+function eventKind(ev: WatcherEvent): "success" | "failure" | "start" | "info" {
+	if (ev.rc !== undefined && ev.rc !== 0) return "failure";
+	if (ev.rc === 0) return "success";
+	const e = ev.event?.toLowerCase() ?? "";
+	if (e.includes("start") || e.includes("dispatch") || e.includes("pending"))
+		return "start";
+	return "info";
+}
+
+const KIND_STYLE = {
+	success: {
+		bg: "bg-[oklch(0.45_0.18_145_/_0.08)]",
+		border: "border-s-2 border-accent-green",
+		text: "text-accent-green",
+		icon: <CheckCircle2 size={14} />,
+	},
+	failure: {
+		bg: "bg-[oklch(0.45_0.18_25_/_0.08)]",
+		border: "border-s-2 border-accent-red",
+		text: "text-accent-red",
+		icon: <XCircle size={14} />,
+	},
+	start: {
+		bg: "bg-[oklch(0.45_0.18_250_/_0.08)]",
+		border: "border-s-2 border-accent-blue",
+		text: "text-accent-blue",
+		icon: <PlayCircle size={14} />,
+	},
+	info: {
+		bg: "bg-bg-elevated",
+		border: "border-s-2 border-border",
+		text: "text-text-muted",
+		icon: <Info size={14} />,
+	},
+} as const;
+
+// Shorten a task_id that looks like an MD5 hash (32 hex chars) for display
+function shortTaskId(id: string | undefined): string {
+	if (!id) return "—";
+	if (/^[0-9a-f]{32}$/.test(id)) return id.slice(0, 8) + "…";
+	return id;
+}
+
+interface EventRowProps {
+	ev: WatcherEvent & { display_name?: string; description_he?: string };
+}
+
+function EventRow({ ev }: EventRowProps) {
+	const kind = eventKind(ev);
+	const style = KIND_STYLE[kind];
+	// Use display_name from API if available, otherwise shorten MD5 task_id
+	const taskLabel = ev.display_name ?? shortTaskId(ev.task_id);
+	// Format timestamp: keep HH:MM:SS only
+	const time = ev.ts ? ev.ts.slice(11, 19) : "";
+
+	return (
+		<div
+			className={cn(
+				"flex items-start gap-3 px-3 py-2.5 rounded-lg text-xs transition-colors",
+				style.bg,
+				style.border,
+			)}
+		>
+			<span className={cn("shrink-0 mt-0.5", style.text)} aria-hidden="true">
+				{style.icon}
+			</span>
+			<div className="flex-1 min-w-0 space-y-0.5">
+				<div className="flex items-center gap-2 flex-wrap">
+					<span className={cn("font-semibold", style.text)}>{ev.event}</span>
+					{ev.provider && (
+						<span className="font-mono px-1.5 py-0.5 rounded bg-bg-elevated text-text-muted border border-border">
+							{ev.provider}
+						</span>
+					)}
+					{ev.rc !== undefined && (
+						<span
+							className={cn(
+								"font-mono px-1.5 py-0.5 rounded",
+								ev.rc === 0
+									? "bg-[oklch(0.45_0.18_145_/_0.12)] text-accent-green"
+									: "bg-[oklch(0.45_0.18_25_/_0.12)] text-accent-red",
+							)}
+							dir="ltr"
+						>
+							rc={ev.rc}
+						</span>
+					)}
+				</div>
+				{ev.description_he ? (
+					<p className="text-text-secondary">{ev.description_he}</p>
+				) : ev.message ? (
+					<p className="text-text-muted truncate" dir="ltr">
+						{ev.message}
+					</p>
+				) : null}
+			</div>
+			<div className="shrink-0 flex flex-col items-end gap-1">
+				{time && (
+					<span className="text-text-muted font-mono tabular-nums" dir="ltr">
+						{time}
+					</span>
+				)}
+				{ev.task_id && (
+					<span
+						className="text-text-muted font-mono truncate max-w-[120px]"
+						dir="ltr"
+						title={ev.task_id}
+					>
+						{taskLabel}
+					</span>
+				)}
+			</div>
+		</div>
+	);
+}
+
+interface TaskGroupProps {
+	taskId: string;
+	displayName: string;
+	events: Array<
+		WatcherEvent & { display_name?: string; description_he?: string }
+	>;
+}
+
+function TaskGroup({ taskId: _taskId, displayName, events }: TaskGroupProps) {
+	const [open, setOpen] = useState(true);
+	const hasFailure = events.some((e) => e.rc !== undefined && e.rc !== 0);
+	const hasSuccess = events.some((e) => e.rc === 0);
+	const statusColor = hasFailure
+		? "text-accent-red"
+		: hasSuccess
+			? "text-accent-green"
+			: "text-text-muted";
+
+	return (
+		<div className="glass-card overflow-hidden">
+			<button
+				type="button"
+				onClick={() => setOpen((p) => !p)}
+				className="w-full flex items-center gap-2 px-3 py-2.5 text-start hover:bg-bg-tertiary transition-colors cursor-pointer"
+				aria-expanded={open}
+			>
+				<span className={cn("shrink-0", statusColor)} aria-hidden="true">
+					{hasFailure ? (
+						<XCircle size={14} />
+					) : hasSuccess ? (
+						<CheckCircle2 size={14} />
+					) : (
+						<Clock size={14} />
+					)}
+				</span>
+				<span className="flex-1 min-w-0 text-xs font-semibold text-text-primary truncate">
+					{displayName}
+				</span>
+				<span
+					className="text-xs text-text-muted font-mono tabular-nums shrink-0"
+					dir="ltr"
+				>
+					{events.length}
+				</span>
+				<span className="text-text-muted shrink-0" aria-hidden="true">
+					{open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+				</span>
+			</button>
+			{open && (
+				<div className="border-t border-border px-2 py-2 space-y-1.5">
+					{events.map((ev, i) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: stable event list
+						<EventRow key={`${ev.ts}-${i}`} ev={ev} />
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
+function WatcherEventsTab() {
+	const { data: raw, isLoading, isError } = useWatcherAll();
+	const [showIdle, setShowIdle] = useState(false);
+
+	type RichEvent = WatcherEvent & {
+		display_name?: string;
+		description_he?: string;
+	};
+
+	const allEvents: RichEvent[] = (raw as RichEvent[] | undefined) ?? [];
+
+	// Filter idle_tick events unless the user opts in
+	const visible = useMemo(
+		() =>
+			showIdle ? allEvents : allEvents.filter((e) => e.event !== "idle_tick"),
+		[allEvents, showIdle],
+	);
+
+	// Group consecutive events by task_id; events without a task_id get their own singleton group
+	const groups = useMemo(() => {
+		const result: Array<{
+			taskId: string;
+			displayName: string;
+			events: RichEvent[];
+		}> = [];
+		for (const ev of [...visible].reverse()) {
+			const tid = ev.task_id ?? `__no_task_${ev.ts}`;
+			const last = result[result.length - 1];
+			if (last && last.taskId === tid) {
+				last.events.push(ev);
+			} else {
+				const displayName =
+					ev.display_name ?? shortTaskId(ev.task_id) ?? ev.event;
+				result.push({ taskId: tid, displayName, events: [ev] });
+			}
+		}
+		return result;
+	}, [visible]);
+
+	const idleCount = allEvents.filter((e) => e.event === "idle_tick").length;
+
+	return (
+		<div className="space-y-4">
+			{/* Toolbar */}
+			<div className="flex items-center justify-between flex-wrap gap-2">
+				<div className="flex items-center gap-2 text-xs text-text-muted">
+					<Zap size={13} className="text-accent-amber" aria-hidden="true" />
+					<span>
+						{visible.length} אירועים
+						{!showIdle && idleCount > 0 && (
+							<span className="ms-1 text-text-muted">
+								({idleCount} idle_tick מוסתר)
+							</span>
+						)}
+					</span>
+				</div>
+				<button
+					type="button"
+					onClick={() => setShowIdle((p) => !p)}
+					className={cn(
+						"inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-colors cursor-pointer",
+						showIdle
+							? "bg-bg-elevated border-border-hover text-text-secondary"
+							: "bg-bg-primary border-border text-text-muted hover:text-text-secondary hover:border-border-hover",
+					)}
+				>
+					{showIdle ? (
+						<EyeOff size={13} aria-hidden="true" />
+					) : (
+						<Eye size={13} aria-hidden="true" />
+					)}
+					{showIdle ? "הסתר idle_tick" : "הצג idle_tick"}
+				</button>
+			</div>
+
+			{/* Content */}
+			{isLoading ? (
+				<div className="glass-card p-6 text-center text-sm text-text-muted animate-pulse">
+					טוען אירועים...
+				</div>
+			) : isError ? (
+				<div className="glass-card p-6 text-center text-sm text-text-muted">
+					לא ניתן לטעון אירועים — API לא מגיב
+				</div>
+			) : groups.length === 0 ? (
+				<div className="glass-card p-6 text-center text-sm text-text-muted">
+					אין אירועים להצגה
+				</div>
+			) : (
+				<div className="space-y-2">
+					{groups.map(
+						(g: {
+							taskId: string;
+							displayName: string;
+							events: Array<
+								WatcherEvent & {
+									display_name?: string;
+									description_he?: string;
+								}
+							>;
+						}) => (
+							<TaskGroup
+								key={g.taskId}
+								taskId={g.taskId}
+								displayName={g.displayName}
+								events={g.events}
+							/>
+						),
+					)}
+				</div>
+			)}
+		</div>
+	);
+}
+
 // ── Main Page Component ──────────────────────────────────────────────────────
 
 export function LogsPage() {
@@ -707,6 +1008,7 @@ export function LogsPage() {
 
 			<Tabs
 				tabs={[
+					{ id: "events", label: "אירועים" },
 					{ id: "files", label: "קבצי לוג" },
 					{ id: "rotation", label: "סיבוב" },
 					{ id: "search", label: "חיפוש" },
@@ -714,6 +1016,9 @@ export function LogsPage() {
 			>
 				{(activeTab) => (
 					<div className="space-y-8">
+						{/* ── Events tab ── */}
+						{activeTab === "events" && <WatcherEventsTab />}
+
 						{/* ── Section 1: Log Files ── */}
 						{activeTab === "files" && (
 							<AccordionSection

@@ -1673,8 +1673,8 @@ export function ProjectsPage() {
 					active={data.active}
 					archived={data.archived}
 					development={data.development}
-					lenovoCount={data.by_machine?.["Lenovo"] ?? 0}
-					msiCount={data.by_machine?.["MSI"] ?? 0}
+					lenovoCount={data.by_machine?.Lenovo ?? 0}
+					msiCount={data.by_machine?.MSI ?? 0}
 					withGithub={data.with_github ?? 0}
 					byMachine={data.by_machine ?? {}}
 				/>

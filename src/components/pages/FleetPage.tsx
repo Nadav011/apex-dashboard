@@ -1,4 +1,15 @@
-import { Activity, Cpu, Search, SearchX, Users, Zap } from "lucide-react";
+import {
+	Activity,
+	Check,
+	ChevronDown,
+	ChevronUp,
+	Copy,
+	Cpu,
+	Search,
+	SearchX,
+	Users,
+	Zap,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -17,6 +28,13 @@ const CAT_LABELS: Record<string, string> = {
 	performance: "ביצועים",
 	infra: "תשתית",
 	general: "כללי",
+};
+
+// Group labels used in the live agents section
+const LIVE_GROUP_LABELS: Record<string, string> = {
+	infra: "שירותי תשתית",
+	"ai-session": "סשנים פעילים",
+	"ai-agent": "סוכני AI",
 };
 
 const CAT_COLORS: Record<string, { bg: string; text: string; border: string }> =
@@ -72,10 +90,79 @@ function catLabel(cat: string): string {
 	return CAT_LABELS[cat.toLowerCase()] ?? cat;
 }
 
+// ── Copy button ──────────────────────────────────────────────────────────────
+
+function CopyButton({
+	text,
+	label = "העתק",
+}: {
+	text: string;
+	label?: string;
+}) {
+	const [copied, setCopied] = useState(false);
+
+	function handleCopy() {
+		void navigator.clipboard.writeText(text).then(() => {
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		});
+	}
+
+	return (
+		<button
+			type="button"
+			onClick={handleCopy}
+			className={cn(
+				"inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded",
+				"transition-colors duration-150 cursor-pointer shrink-0",
+				copied
+					? "text-accent-green bg-[oklch(0.45_0.18_145_/_0.15)]"
+					: "text-text-muted hover:text-text-secondary hover:bg-bg-elevated",
+			)}
+			aria-label={label}
+		>
+			{copied ? <Check size={11} /> : <Copy size={11} />}
+		</button>
+	);
+}
+
+// ── Detail Row ────────────────────────────────────────────────────────────────
+
+function DetailRow({
+	label,
+	value,
+	mono = false,
+	copyable = false,
+}: {
+	label: string;
+	value: string;
+	mono?: boolean;
+	copyable?: boolean;
+}) {
+	if (!value) return null;
+	return (
+		<div className="flex items-start gap-2 text-xs">
+			<span className="text-text-muted shrink-0 w-28 pt-px">{label}</span>
+			<span
+				className={cn(
+					"flex-1 min-w-0 text-text-secondary break-all leading-relaxed",
+					mono && "font-mono",
+				)}
+				dir="ltr"
+			>
+				{value}
+			</span>
+			{copyable && <CopyButton text={value} />}
+		</div>
+	);
+}
+
 // ── Agent Card ───────────────────────────────────────────────────────────────
 
 function AgentCard({ agent }: { agent: AgentInfo }) {
 	const style = catStyle(agent.category);
+	const [expanded, setExpanded] = useState(false);
+
 	const initials = agent.name
 		.split(/[-_\s]/)
 		.slice(0, 2)
@@ -85,48 +172,99 @@ function AgentCard({ agent }: { agent: AgentInfo }) {
 	return (
 		<div
 			className={cn(
-				"glass-card flex flex-col gap-3 p-4 transition-colors duration-200",
-				"hover:border-border-hover",
+				"glass-card flex flex-col gap-0 transition-colors duration-200",
+				expanded ? "border-border-hover" : "hover:border-border-hover",
 			)}
 		>
-			{/* Avatar + category badge */}
-			<div className="flex items-start justify-between gap-2">
-				<div
-					className={cn(
-						"flex items-center justify-center w-10 h-10 rounded-lg",
-						"text-sm font-bold shrink-0",
-						style.bg,
-						style.text,
-					)}
-					aria-hidden="true"
-				>
-					{initials || "?"}
+			{/* Clickable header */}
+			<button
+				type="button"
+				onClick={() => setExpanded((p) => !p)}
+				className="flex flex-col gap-3 p-4 text-start w-full cursor-pointer"
+				aria-expanded={expanded}
+			>
+				{/* Avatar + category badge + chevron */}
+				<div className="flex items-start justify-between gap-2">
+					<div
+						className={cn(
+							"flex items-center justify-center w-10 h-10 rounded-lg",
+							"text-sm font-bold shrink-0",
+							style.bg,
+							style.text,
+						)}
+						aria-hidden="true"
+					>
+						{initials || "?"}
+					</div>
+					<div className="flex items-center gap-1.5">
+						<span
+							className={cn(
+								"text-xs font-medium px-2 py-0.5 rounded-full border",
+								style.bg,
+								style.text,
+								style.border,
+							)}
+						>
+							{catLabel(agent.category)}
+						</span>
+						<span className="text-text-muted" aria-hidden="true">
+							{expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+						</span>
+					</div>
 				</div>
-				<span
-					className={cn(
-						"text-xs font-medium px-2 py-0.5 rounded-full border",
-						style.bg,
-						style.text,
-						style.border,
+
+				{/* Name */}
+				<div>
+					<h3 className="text-sm font-semibold text-text-primary leading-snug">
+						{agent.name}
+					</h3>
+					<p className="text-xs text-text-muted mt-0.5 truncate" dir="ltr">
+						{agent.file}
+					</p>
+				</div>
+
+				{/* Description (collapsed preview) */}
+				{!expanded && agent.description && (
+					<p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
+						{agent.description}
+					</p>
+				)}
+			</button>
+
+			{/* Expandable detail panel */}
+			{expanded && (
+				<div className="border-t border-border px-4 py-4 flex flex-col gap-3">
+					{/* Full description */}
+					{agent.description && (
+						<p className="text-xs text-text-secondary leading-relaxed">
+							{agent.description}
+						</p>
 					)}
-				>
-					{catLabel(agent.category)}
-				</span>
-			</div>
 
-			{/* Name */}
-			<div>
-				<h3 className="text-sm font-semibold text-text-primary leading-snug">
-					{agent.name}
-				</h3>
-				<p className="text-xs text-text-muted mt-0.5">{agent.file}</p>
-			</div>
-
-			{/* Description */}
-			{agent.description && (
-				<p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
-					{agent.description}
-				</p>
+					{/* Details grid */}
+					<div className="flex flex-col gap-2">
+						<DetailRow label="קובץ הגדרה" value={agent.file} mono copyable />
+						<DetailRow label="קטגוריה" value={catLabel(agent.category)} />
+						{agent.tools && agent.tools.length > 0 && (
+							<div className="flex items-start gap-2 text-xs">
+								<span className="text-text-muted shrink-0 w-28 pt-px">
+									כלים מורשים
+								</span>
+								<div className="flex flex-wrap gap-1 flex-1 min-w-0">
+									{agent.tools.map((tool) => (
+										<span
+											key={tool}
+											className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-bg-elevated text-text-secondary border border-border"
+											dir="ltr"
+										>
+											{tool}
+										</span>
+									))}
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
 			)}
 		</div>
 	);
@@ -316,10 +454,41 @@ function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 	);
 }
 
+// Map a live agent to one of the three display groups
+function liveGroupKey(agent: LiveAgent): string {
+	const cat = (agent.category ?? agent.type ?? "").toLowerCase();
+	if (
+		cat === "infra" ||
+		cat === "hydra-watcher" ||
+		cat === "hydra-executor" ||
+		cat === "hydra"
+	)
+		return "infra";
+	if (
+		cat === "claude-session" ||
+		cat === "ai-session" ||
+		agent.type === "claude-session"
+	)
+		return "ai-session";
+	return "ai-agent";
+}
+
+// Hebrew label for a display group key
+function liveGroupLabel(key: string): string {
+	return LIVE_GROUP_LABELS[key] ?? key;
+}
+
+// Ordered group keys for display
+const LIVE_GROUP_ORDER = ["infra", "ai-session", "ai-agent"] as const;
+
 function LiveSection() {
 	const { data: liveData, isLoading, isError } = useAgentsLive();
 
-	const agents = liveData?.live_agents ?? [];
+	// Filter out CI runner processes — they belong in the CI/CD page
+	const agents = (liveData?.live_agents ?? []).filter(
+		(a) => (a.category ?? a.type ?? "").toLowerCase() !== "ci",
+	);
+
 	const bgRecent =
 		liveData?.background_tasks?.filter(
 			(t: BackgroundTask) => t.status === "recent",
@@ -328,13 +497,18 @@ function LiveSection() {
 	const summaryHe = (liveData as { summary_he?: string } | undefined)
 		?.summary_he;
 
-	// Group by category (not type) for cleaner display
+	// Group by the three display categories
 	const groups = agents.reduce<Record<string, LiveAgent[]>>((acc, a) => {
-		const cat = a.category || a.type;
-		if (!acc[cat]) acc[cat] = [];
-		acc[cat].push(a);
+		const key = liveGroupKey(a);
+		if (!acc[key]) acc[key] = [];
+		acc[key].push(a);
 		return acc;
 	}, {});
+
+	// Only include groups that have agents, preserving the canonical order
+	const orderedGroups = LIVE_GROUP_ORDER.filter(
+		(k) => (groups[k]?.length ?? 0) > 0,
+	);
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -382,27 +556,36 @@ function LiveSection() {
 					אין סוכנים פעילים כרגע
 				</div>
 			) : (
-				<div className="space-y-2">
-					{Object.entries(groups).map(([type, list]) => (
-						<div key={type}>
-							<div className="flex items-center gap-2 mb-1.5">
-								<span
-									className={cn(
-										"text-xs font-medium px-2 py-0.5 rounded-full",
-										liveColor(type).bg,
-										liveColor(type).text,
-									)}
-								>
-									{type} ({list.length})
-								</span>
+				<div className="space-y-4">
+					{orderedGroups.map((groupKey) => {
+						const list = groups[groupKey] ?? [];
+						const c = liveColor(list[0]?.type ?? groupKey);
+						return (
+							<div key={groupKey}>
+								{/* Hebrew group header */}
+								<div className="flex items-center gap-2 mb-2">
+									<span className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+										{liveGroupLabel(groupKey)}
+									</span>
+									<span
+										className={cn(
+											"text-xs font-medium px-1.5 py-0.5 rounded-full tabular-nums",
+											c.bg,
+											c.text,
+										)}
+										dir="ltr"
+									>
+										{list.length}
+									</span>
+								</div>
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+									{list.map((a) => (
+										<LiveAgentCard key={a.pid} agent={a} />
+									))}
+								</div>
 							</div>
-							<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-								{list.map((a) => (
-									<LiveAgentCard key={a.pid} agent={a} />
-								))}
-							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			)}
 		</div>
@@ -417,7 +600,10 @@ export function FleetPage() {
 	const [search, setSearch] = useState("");
 
 	// data is AgentInfo[] (flat array from backend)
-	const allAgents = data ?? [];
+	// CI agents belong in the CI/CD page — filter them out here
+	const allAgents = (data ?? []).filter(
+		(a) => a.category.toLowerCase() !== "ci",
+	);
 
 	// Derive categories count from the array
 	const categories = useMemo<Record<string, number>>(() => {
