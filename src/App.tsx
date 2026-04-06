@@ -112,6 +112,11 @@ const MetricsPage = lazy(() =>
 const LogsPage = lazy(() =>
 	import("@/components/pages/LogsPage").then((m) => ({ default: m.LogsPage })),
 );
+const ActivityFeedPage = lazy(() =>
+	import("@/components/pages/ActivityFeedPage").then((m) => ({
+		default: m.ActivityFeedPage,
+	})),
+);
 const NotificationsPage = lazy(() =>
 	import("@/components/pages/NotificationsPage").then((m) => ({
 		default: m.NotificationsPage,
@@ -161,6 +166,7 @@ const PAGE_COMPONENTS: Record<
 	"ops/rules": RulesExplorerPage,
 	"ops/automation": AutomationPage,
 	"ops/control": ControlPage,
+	"ops/activity": ActivityFeedPage,
 	"ops/metrics": MetricsPage,
 	"ops/logs": LogsPage,
 	"ops/notifications": NotificationsPage,
