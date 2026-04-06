@@ -36,7 +36,8 @@ function formatTs(ts: string): string {
 	}
 }
 
-function eventLabel(event: string): string {
+function eventLabel(event: string | undefined): string {
+	if (!event) return "—";
 	const MAP: Record<string, string> = {
 		task_start: "משימה התחילה",
 		task_complete: "משימה הושלמה",
@@ -49,7 +50,8 @@ function eventLabel(event: string): string {
 	return MAP[event] ?? event;
 }
 
-function eventColorClass(event: string): string {
+function eventColorClass(event: string | undefined): string {
+	if (!event) return "text-slate-400";
 	if (event.includes("fail") || event.includes("error")) {
 		return "text-amber-500";
 	}
@@ -85,7 +87,7 @@ function ActivityStrip() {
 	const watcherAll = useWatcherAll();
 	const events = Array.isArray(watcherAll.data) ? watcherAll.data : [];
 	const recentEvents = events
-		.filter((e) => e.event !== "idle")
+		.filter((e) => e.event != null && e.event !== "idle")
 		.slice(-5)
 		.reverse();
 

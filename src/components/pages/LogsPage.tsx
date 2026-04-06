@@ -696,7 +696,7 @@ function EventRow({ ev }: EventRowProps) {
 	// Use display_name from API if available, otherwise shorten MD5 task_id
 	const taskLabel = ev.display_name ?? shortTaskId(ev.task_id);
 	// Format timestamp: keep HH:MM:SS only
-	const time = ev.ts ? ev.ts.slice(11, 19) : "";
+	const time = ev.ts && typeof ev.ts === "string" ? ev.ts.slice(11, 19) : "";
 
 	return (
 		<div
