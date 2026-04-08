@@ -1,7 +1,9 @@
 name: Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -13,7 +15,7 @@ jobs:
   deploy:
     name: Build & Deploy to CF Pages
     runs-on: [self-hosted, linux, x64, pop-os]
-    needs: []
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

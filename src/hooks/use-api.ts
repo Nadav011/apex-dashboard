@@ -1,6 +1,35 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ControlResponse } from "@/lib/api";
+import type { ApprovalResolutionAction, ControlResponse } from "@/lib/api";
 import { api } from "@/lib/api";
+
+const agentsQueryKey = ["agents"] as const;
+const agentsLiveQueryKey = ["agents", "live"] as const;
+const hydraTasksQueryKey = ["hydra", "tasks"] as const;
+const agentHeartbeatsQueryKey = ["hydra", "agents", "heartbeats"] as const;
+const budgetStatusQueryKey = ["hydra", "budget", "status"] as const;
+const waveHistoryQueryKey = ["hydra", "waves", "history"] as const;
+const approvalsQueryKey = ["hydra", "approvals"] as const;
+
+const hydraOpsQueryKeys = [
+	agentsQueryKey,
+	agentsLiveQueryKey,
+	hydraTasksQueryKey,
+	agentHeartbeatsQueryKey,
+	budgetStatusQueryKey,
+	waveHistoryQueryKey,
+	approvalsQueryKey,
+] as const;
+
+type ApiQueryKey = readonly unknown[];
+
+interface ResolveApprovalVariables {
+	approvalId: string;
+	action: ApprovalResolutionAction;
+}
+
+interface AgentControlVariables {
+	agentId: string;
+}
 
 export function useProjects() {
 	return useQuery({
@@ -239,6 +268,38 @@ export function useTeamStatus() {
 	});
 }
 
+export function useAgentHeartbeats() {
+	return useQuery({
+		queryKey: agentHeartbeatsQueryKey,
+		queryFn: api.fetchAgentHeartbeats,
+		refetchInterval: 5_000,
+	});
+}
+
+export function useBudgetStatus() {
+	return useQuery({
+		queryKey: budgetStatusQueryKey,
+		queryFn: api.fetchBudgetStatus,
+		refetchInterval: 30_000,
+	});
+}
+
+export function useWaveHistory() {
+	return useQuery({
+		queryKey: waveHistoryQueryKey,
+		queryFn: api.fetchWaveHistory,
+		refetchInterval: 10_000,
+	});
+}
+
+export function useApprovals() {
+	return useQuery({
+		queryKey: approvalsQueryKey,
+		queryFn: api.fetchApprovals,
+		refetchInterval: 15_000,
+	});
+}
+
 // ── Control mutations ──────────────────────────────────────────────
 function useControlMutation(actionFn: () => Promise<ControlResponse>) {
 	const qc = useQueryClient();
@@ -247,6 +308,21 @@ function useControlMutation(actionFn: () => Promise<ControlResponse>) {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["hydra"] });
 			qc.invalidateQueries({ queryKey: ["system"] });
+		},
+	});
+}
+
+function useTargetedControlMutation<TVariables>(
+	actionFn: (variables: TVariables) => Promise<ControlResponse>,
+	queryKeys: ReadonlyArray<ApiQueryKey>,
+) {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: actionFn,
+		onSuccess: async () => {
+			await Promise.all(
+				queryKeys.map((queryKey) => qc.invalidateQueries({ queryKey })),
+			);
 		},
 	});
 }
@@ -273,6 +349,35 @@ export function useCleanOrphans() {
 
 export function useSyncMsi() {
 	return useControlMutation(api.syncLenovo);
+}
+
+export function useResolveApproval() {
+	return useTargetedControlMutation(
+		({ approvalId, action }: ResolveApprovalVariables) =>
+			api.resolveApproval(approvalId, action),
+		hydraOpsQueryKeys,
+	);
+}
+
+export function usePauseAgent() {
+	return useTargetedControlMutation(
+		({ agentId }: AgentControlVariables) => api.pauseAgent(agentId),
+		hydraOpsQueryKeys,
+	);
+}
+
+export function useResumeAgent() {
+	return useTargetedControlMutation(
+		({ agentId }: AgentControlVariables) => api.resumeAgent(agentId),
+		hydraOpsQueryKeys,
+	);
+}
+
+export function useTerminateAgent() {
+	return useTargetedControlMutation(
+		({ agentId }: AgentControlVariables) => api.terminateAgent(agentId),
+		hydraOpsQueryKeys,
+	);
 }
 
 // ── Notification hooks ─────────────────────────────────────────────

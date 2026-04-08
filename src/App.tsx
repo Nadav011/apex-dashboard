@@ -137,6 +137,11 @@ const OpenclawPage = lazy(() =>
 		default: m.OpenclawPage,
 	})),
 );
+const HydraV3Page = lazy(() =>
+	import("@/components/pages/HydraV3Page").then((m) => ({
+		default: m.HydraV3Page,
+	})),
+);
 
 // ── Route → Component mapping ──────────────────────────────────────
 
@@ -156,6 +161,7 @@ const PAGE_COMPONENTS: Record<
 	"agents/guide": AgentsGuidePage,
 	"agents/team": TeamModePage,
 	"agents/paperclip": PaperclipPage,
+	"agents/hydra-v3": HydraV3Page,
 	"devops/cicd": CiCdPage,
 	"devops/templates": CiTemplatesPage,
 	"devops/deploys": DeploysPage,

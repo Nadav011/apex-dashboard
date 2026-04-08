@@ -192,6 +192,24 @@ export const ROUTES: RouteDef[] = [
 		keywords: ["paperclip", "company", "חברה", "org", "budget"],
 	},
 
+	{
+		id: "hydra-v3",
+		path: "#/agents/hydra-v3",
+		title: "Hydra v3",
+		description: "ניהול סוכנים בזמן אמת — heartbeat, תקציב, אישורים",
+		icon: Building2,
+		category: "agents",
+		keywords: [
+			"hydra",
+			"v3",
+			"agents",
+			"budget",
+			"approval",
+			"heartbeat",
+			"wave",
+		],
+	},
+
 	// ── DevOps ────────────────────────
 	{
 		id: "cicd",
