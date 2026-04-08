@@ -534,18 +534,18 @@ const hydraHealth: HealthResponse = {
 // ── Hooks ─────────────────────────────────────────────────────────────────────
 
 const hooks: HooksResponse = {
-	total: 75,
+	total: 115,
 	by_event: {
-		PreToolUse: 19,
-		PostToolUse: 12,
-		Stop: 11,
-		UserPromptSubmit: 10,
-		SessionStart: 8,
-		PostCompact: 2,
-		SubagentStop: 2,
-		PostToolUseFailure: 2,
+		PreToolUse: 30,
+		PostToolUse: 19,
+		Stop: 14,
+		UserPromptSubmit: 11,
+		SessionStart: 12,
+		PostCompact: 3,
+		SubagentStop: 6,
+		PostToolUseFailure: 4,
 		SubagentStart: 1,
-		PermissionRequest: 1,
+		PermissionRequest: 2,
 		Notification: 1,
 		ConfigChange: 1,
 		WorktreeCreate: 1,
@@ -553,6 +553,7 @@ const hooks: HooksResponse = {
 		TaskCompleted: 1,
 		TeammateIdle: 1,
 		PreCompact: 1,
+		CwdChanged: 1,
 	},
 	recent: [
 		{
@@ -755,22 +756,30 @@ const rules: RuleInfo[] = [
 // ── Skills ────────────────────────────────────────────────────────────────────
 
 const skills: SkillsResponse = {
-	total: 83,
+	total: 237,
 	categories: {
+		apex: 28,
+		conductor: 18,
+		uipro: 15,
+		skill: 14,
+		hydra: 12,
+		ui: 12,
+		agent: 11,
+		ai: 10,
+		flutter: 9,
+		mobile: 8,
 		code: 12,
-		ui: 10,
-		test: 9,
-		security: 8,
-		devops: 7,
-		review: 6,
-		flutter: 5,
-		frontend: 5,
-		backend: 5,
-		ai: 4,
-		mobile: 5,
-		docs: 3,
+		test: 10,
+		security: 10,
+		devops: 9,
+		review: 8,
+		frontend: 7,
+		backend: 6,
+		docs: 5,
+		plannotator: 3,
+		recall: 3,
 	},
-	plugins_count: 19,
+	plugins_count: 26,
 	plugins: {},
 };
 
@@ -851,18 +860,18 @@ const mcp: McpResponse = {
 			transport: "stdio",
 		},
 	],
-	total: 12,
-	enabled: 11,
-	disabled: 1,
+	total: 16,
+	enabled: 14,
+	disabled: 2,
 	plugins: {},
-	plugins_count: 19,
+	plugins_count: 26,
 };
 
 // ── OpenClaw ──────────────────────────────────────────────────────────────────
 
 const openclaw: OpenclawResponse = {
-	skills: 37,
-	version: "v2026.3.22",
+	skills: 195,
+	version: "v2026.4.9",
 };
 
 const openclawDetails: OpenclawDetailsResponse = {
@@ -958,7 +967,7 @@ const openclawDetails: OpenclawDetailsResponse = {
 			size_kb: 5.3,
 		},
 	],
-	skills_count: 37,
+	skills_count: 195,
 	subagents: [
 		{
 			name: "gsd-executor",

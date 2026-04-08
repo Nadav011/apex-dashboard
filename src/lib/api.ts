@@ -6,6 +6,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "/api";
 // Slow endpoints that need longer timeout (health checks, CI, projects scan GitHub)
 const SLOW_PATHS = new Set([
 	"/hydra/health",
+	"/hydra/agents/live",
 	"/ci/status",
 	"/ci/summary",
 	"/projects",
@@ -30,23 +31,67 @@ async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
 	}
 }
 
-async function postApi<T>(path: string, fallback?: T): Promise<T> {
+async function postApi<TResponse, TBody = undefined>(
+	path: string,
+	options?: {
+		body?: TBody;
+		fallback?: TResponse;
+	},
+): Promise<TResponse> {
 	try {
 		const ctrl = new AbortController();
 		const timer = setTimeout(() => ctrl.abort(), 3000);
+		const hasBody = options?.body !== undefined;
 		const res = await fetch(`${API_BASE}${path}`, {
 			method: "POST",
 			signal: ctrl.signal,
 			credentials: "include",
+			headers: hasBody ? { "Content-Type": "application/json" } : undefined,
+			body: hasBody ? JSON.stringify(options.body) : undefined,
 		});
 		clearTimeout(timer);
 		if (!res.ok) throw new Error(`${res.status}`);
-		return res.json() as Promise<T>;
+		return res.json() as Promise<TResponse>;
 	} catch {
-		if (fallback !== undefined) return fallback;
+		if (options?.fallback !== undefined) return options.fallback;
 		throw new Error(`API unavailable: ${path}`);
 	}
 }
+
+export type ApprovalResolutionAction = "approve" | "reject" | (string & {});
+
+export const fetchAgentHeartbeats = () =>
+	fetchApi<AgentHeartbeat[]>("/hydra/agents/live");
+
+export const fetchBudgetStatus = () =>
+	fetchApi<BudgetStatus[]>("/hydra/budget");
+
+export const fetchWaveHistory = () => fetchApi<WaveEntry[]>("/hydra/waves");
+
+export const fetchApprovals = () =>
+	fetchApi<ApprovalRequest[]>("/hydra/approvals?status=pending");
+
+export const postHeartbeat = (data: AgentHeartbeat) =>
+	postApi<ControlResponse, AgentHeartbeat>("/hydra/heartbeat", {
+		body: data,
+	});
+
+export const resolveApproval = (id: string, action: ApprovalResolutionAction) =>
+	postApi<ControlResponse, { action: ApprovalResolutionAction }>(
+		`/hydra/approvals/${encodeURIComponent(id)}/resolve`,
+		{
+			body: { action },
+		},
+	);
+
+export const pauseAgent = (id: string) =>
+	postApi<ControlResponse>(`/hydra/agents/${encodeURIComponent(id)}/pause`);
+
+export const resumeAgent = (id: string) =>
+	postApi<ControlResponse>(`/hydra/agents/${encodeURIComponent(id)}/resume`);
+
+export const terminateAgent = (id: string) =>
+	postApi<ControlResponse>(`/hydra/agents/${encodeURIComponent(id)}/terminate`);
 
 // /api/obsidian
 export interface ObsidianResponse {
@@ -77,6 +122,10 @@ export const api = {
 		fetchApi<WatcherResponse>("/hydra/watcher", STATIC.hydraWatcher),
 	hydraHealth: () =>
 		fetchApi<HealthResponse>("/hydra/health", STATIC.hydraHealth),
+	fetchAgentHeartbeats,
+	fetchBudgetStatus,
+	fetchWaveHistory,
+	fetchApprovals,
 	hooks: () => fetchApi<HooksResponse>("/hooks", STATIC.hooks),
 	system: () => fetchApi<SystemResponse>("/system", STATIC.system),
 	metrics: () => fetchApi<MetricsResponse>("/metrics", STATIC.metrics),
@@ -174,6 +223,11 @@ export const api = {
 	backup: () => postApi<ControlResponse>("/control/backup"),
 	cleanOrphans: () => postApi<ControlResponse>("/control/clean-orphans"),
 	syncLenovo: () => postApi<ControlResponse>("/control/sync-lenovo"),
+	postHeartbeat,
+	resolveApproval,
+	pauseAgent,
+	resumeAgent,
+	terminateAgent,
 	sendTestNotification: () => postApi<ControlResponse>("/notifications/test"),
 	configureNotifications: (rules: Partial<NotificationRules>) =>
 		fetch("/api/notifications/configure", {
@@ -736,4 +790,45 @@ export interface CostsResponse {
 	daily_history: Array<{ date: string; usd: number }>;
 	budget_remaining_usd: number;
 	daily_budget_usd: number;
+}
+
+export interface AgentHeartbeat {
+	agent_id: string;
+	session: string;
+	provider: string;
+	status: string;
+	last_output: string;
+	runtime_seconds: number;
+	task_id: string;
+	wave_id: string;
+	cost_cents: number;
+}
+
+export interface BudgetStatus {
+	provider: string;
+	daily_spent_cents: number;
+	daily_limit_cents: number;
+	monthly_spent_cents: number;
+	monthly_limit_cents: number;
+}
+
+export interface WaveEntry {
+	wave_id: string;
+	wave_name: string;
+	total_tasks: number;
+	completed: number;
+	failed: number;
+	running: number;
+	total_cost_cents: number;
+	duration_seconds: number;
+	started_at: string;
+}
+
+export interface ApprovalRequest {
+	id: string;
+	type: string;
+	description: string;
+	requested_by: string;
+	status: string;
+	created_at: string;
 }

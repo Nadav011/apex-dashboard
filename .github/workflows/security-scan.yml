@@ -1,0 +1,28 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep:
+    runs-on: [self-hosted, linux, x64, pop-os]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep SAST
+        run: |
+          pip3 install --user semgrep 2>/dev/null || true
+          semgrep scan . --config=auto --error --severity ERROR
+
+  trivy:
+    runs-on: [self-hosted, linux, x64, pop-os]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy vulnerability scan
+        run: trivy fs . --severity HIGH,CRITICAL --exit-code 1
