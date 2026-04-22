@@ -30,7 +30,9 @@ jobs:
         run: pnpm install --frozen-lockfile || pnpm install
 
       - name: Build
-        run: pnpm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: pnpm exec vite build
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
