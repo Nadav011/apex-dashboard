@@ -204,6 +204,7 @@ export const api = {
 	deploysStatus: () =>
 		fetchApi<DeploysStatusResponse>("/deploys/status", STATIC.deploysStatus),
 	projects: () => fetchApi<ProjectsResponse>("/projects", STATIC.projects),
+	paperclipCompany: () => fetchApi<PaperclipCompanyResponse>("/paperclip"),
 	costs: () =>
 		fetchApi<CostsResponse>("/costs", {
 			today_usd: 0,
@@ -831,4 +832,110 @@ export interface ApprovalRequest {
 	requested_by: string;
 	status: string;
 	created_at: string;
+}
+
+// ── Paperclip Company types ───────────────────────────────────────────────────
+
+export interface PaperclipCompany {
+	name: string;
+	mission: string;
+	founded: string;
+	budget_monthly_usd: number;
+	status: string;
+}
+
+export interface PaperclipDepartment {
+	id: string;
+	name: string;
+	name_en: string;
+	head: string;
+	color: string;
+	agents: string[];
+}
+
+export interface PaperclipAgent {
+	id: string;
+	name: string;
+	role: string;
+	title: string;
+	title_en: string;
+	department: string | null;
+	reports_to: string;
+	status: string;
+	capabilities: string[];
+	adapter: string;
+	budget_monthly_usd: number;
+	win_rate: number;
+	cost_today_usd: number;
+	last_active: string;
+	total_tasks?: number;
+}
+
+export interface PaperclipOrgNode {
+	id: string;
+	name: string;
+	role: string;
+	title?: string;
+	status: string;
+	department?: string | null;
+	reports: PaperclipOrgNode[];
+}
+
+export interface PaperclipGoalItem {
+	id: string;
+	title: string;
+	status: string;
+	progress: number;
+	sub_goals?: PaperclipGoalItem[];
+}
+
+export interface PaperclipClaudeSession {
+	session_id: string;
+	started_at: string;
+	cost_usd: number;
+	agents_dispatched: number;
+	active_tasks: string[];
+	live_agents: number;
+}
+
+export interface PaperclipActivity {
+	ts: string;
+	agent: string;
+	action: string;
+	type: string;
+}
+
+export interface PaperclipBudgetIncident {
+	provider: string;
+	scope: string;
+	threshold_type: "warn" | "hard_stop";
+	limit_usd: number;
+	observed_usd: number;
+	pct: number;
+}
+
+export interface PaperclipDispatchStats {
+	total_runs: number;
+	completed: number;
+	failed: number;
+	win_rate: number;
+	by_provider: Record<
+		string,
+		{ total: number; successes: number; failures: number }
+	>;
+}
+
+export interface PaperclipCompanyResponse {
+	running: boolean;
+	version: string;
+	company: PaperclipCompany;
+	departments: PaperclipDepartment[];
+	agents: PaperclipAgent[];
+	agent_count: number;
+	org_tree: PaperclipOrgNode;
+	claude_session: PaperclipClaudeSession;
+	goals: PaperclipGoalItem[];
+	recent_activity: PaperclipActivity[];
+	budget_incidents?: PaperclipBudgetIncident[];
+	dispatch_stats?: PaperclipDispatchStats;
 }

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 
 interface GlassCardProps {
-	title: string;
+	title: React.ReactNode;
 	subtitle?: string;
 	icon: React.ReactNode;
 	children: React.ReactNode;
