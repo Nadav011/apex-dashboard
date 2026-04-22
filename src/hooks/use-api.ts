@@ -252,6 +252,14 @@ export function useCosts() {
 	});
 }
 
+export function usePaperclipCompany() {
+	return useQuery({
+		queryKey: ["paperclip", "company"],
+		queryFn: api.paperclipCompany,
+		refetchInterval: 5_000,
+	});
+}
+
 export function useObsidian() {
 	return useQuery({
 		queryKey: ["obsidian"],

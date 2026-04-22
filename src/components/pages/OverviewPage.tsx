@@ -1,3 +1,4 @@
+import ReactECharts from "echarts-for-react";
 import {
 	Activity,
 	Bot,
@@ -7,6 +8,8 @@ import {
 	Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LiveRunIndicator } from "@/components/company/LiveRunIndicator";
+import { PaperclipDispatchStatsCard } from "@/components/company/PaperclipDispatchStatsCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { MetricGauge } from "@/components/ui/MetricGauge";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -16,6 +19,7 @@ import {
 	useCosts,
 	useHydraTasks,
 	useMetrics,
+	usePaperclipCompany,
 	useSystem,
 	useWatcherAll,
 } from "@/hooks/use-api";
@@ -167,11 +171,55 @@ export function OverviewPage() {
 	const tasks = useHydraTasks();
 	const metrics = useMetrics();
 	const costs = useCosts();
+	const paperclip = usePaperclipCompany();
 
 	const activeAgents = agentsLive.data?.live_count ?? 0;
 	const tasksToday = tasks.data?.length ?? 0;
 	const dispatches = metrics.data?.total_dispatches ?? 0;
 	const costToday = costs.data?.today_usd ?? 0;
+	const ds = paperclip.data?.dispatch_stats;
+	const totalDispatches = ds?.total_runs ?? dispatches;
+	const dispatchWinRate = `${((ds?.win_rate ?? 0) * 100).toFixed(1)}%`;
+	const winRateValue = (ds?.win_rate ?? 0) * 100;
+	const winRateColor =
+		winRateValue >= 80
+			? "text-green-400"
+			: winRateValue >= 50
+				? "text-amber-400"
+				: "text-red-400";
+
+	// Agent status distribution from paperclip data
+	const paperclipAgents = paperclip.data?.agents ?? [];
+	const dispatchStats = paperclip.data?.dispatch_stats;
+	const runningCount = paperclipAgents.filter(
+		(a) => a.status === "running",
+	).length;
+	const idleCount = paperclipAgents.filter((a) => a.status === "idle").length;
+	const errorCount = paperclipAgents.filter((a) => a.status === "error").length;
+
+	const donutOption = {
+		backgroundColor: "transparent",
+		tooltip: { trigger: "item" as const, formatter: "{b}: {c} ({d}%)" },
+		legend: { show: false },
+		series: [
+			{
+				type: "pie",
+				radius: ["55%", "80%"],
+				avoidLabelOverlap: false,
+				label: { show: false },
+				emphasis: { label: { show: false } },
+				data: [
+					{
+						value: runningCount,
+						name: "פעיל",
+						itemStyle: { color: "#22c55e" },
+					},
+					{ value: idleCount, name: "ממתין", itemStyle: { color: "#3b82f6" } },
+					{ value: errorCount, name: "שגיאה", itemStyle: { color: "#f59e0b" } },
+				].filter((d) => d.value > 0),
+			},
+		],
+	};
 
 	return (
 		<div className="flex flex-col gap-6 min-h-screen p-6 bg-zinc-950 text-zinc-100">
@@ -190,13 +238,96 @@ export function OverviewPage() {
 			<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 grid-cards stagger-grid">
 				<StatCard label="סוכנים פעילים" value={activeAgents} icon={Bot} />
 				<StatCard label="משימות היום" value={tasksToday} icon={Activity} />
-				<StatCard label="שיגורים" value={dispatches} icon={Zap} />
+				<StatCard
+					label="שיגורים"
+					value={ds?.total_runs ?? dispatches}
+					icon={Zap}
+				/>
 				<StatCard
 					label="עלות יומית"
 					value={`$${costToday.toFixed(2)}`}
 					icon={DollarSign}
 				/>
 			</div>
+
+			{/* Active Agents Panel + Status Donut */}
+			{paperclipAgents.length > 0 && (
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-4" dir="rtl">
+					<GlassCard title="סוכנים פעילים — APEX" icon={<Bot size={16} />}>
+						<div className="flex items-center gap-4 mb-4">
+							<LiveRunIndicator count={runningCount} />
+						</div>
+						<div className="space-y-2">
+							{[
+								{
+									label: "רץ כעת",
+									count: runningCount,
+									color: "text-green-400",
+								},
+								{ label: "ממתין", count: idleCount, color: "text-blue-400" },
+								{
+									label: "שגיאה",
+									count: errorCount,
+									color: "text-amber-400",
+								},
+							].map(({ label, count, color }) => (
+								<div
+									key={label}
+									className="flex items-center justify-between text-sm"
+								>
+									<span className="text-text-muted">{label}</span>
+									<span className={`font-bold tabular-nums ${color}`}>
+										{count}
+									</span>
+								</div>
+							))}
+							<div className="flex items-center justify-between text-sm">
+								<span className="text-text-muted">שיגורים / הצלחה</span>
+								<span
+									className="font-bold text-text-primary tabular-nums"
+									dir="ltr"
+								>
+									{totalDispatches} / {dispatchWinRate}
+								</span>
+							</div>
+							<div className="flex items-center justify-between text-sm">
+								<span className="text-text-muted">הצלחת שיגורים</span>
+								<span className={`font-bold tabular-nums ${winRateColor}`}>
+									{dispatchWinRate}
+								</span>
+							</div>
+							<div className="flex items-center justify-between text-sm border-t border-border pt-2 mt-2">
+								<span className="text-text-muted font-semibold">סה"כ</span>
+								<span className="font-bold text-text-primary tabular-nums">
+									{paperclipAgents.length}
+								</span>
+							</div>
+						</div>
+					</GlassCard>
+
+					<GlassCard title="התפלגות סטטוס סוכנים" icon={<Activity size={16} />}>
+						{paperclipAgents.length > 0 ? (
+							<ReactECharts
+								option={donutOption}
+								style={{ height: 160 }}
+								opts={{ renderer: "svg" }}
+							/>
+						) : (
+							<p className="text-sm text-text-muted text-center py-8">
+								אין נתונים
+							</p>
+						)}
+					</GlassCard>
+				</div>
+			)}
+
+			{dispatchStats && (
+				<PaperclipDispatchStatsCard
+					stats={dispatchStats}
+					title="ביצועי שיגורים"
+					subtitle={`${dispatchStats.total_runs} שיגורים אחרונים`}
+				/>
+			)}
 
 			{/* System Gauges */}
 			<GlassCard title="מדדי מערכת" icon={<Cpu size={16} />}>

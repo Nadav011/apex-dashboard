@@ -20,6 +20,7 @@ import type {
 	NotificationEvent,
 	OpenclawDetailsResponse,
 	OpenclawResponse,
+	PaperclipCompanyResponse,
 	ProjectsResponse,
 	RuleInfo,
 	SkillsResponse,
@@ -3212,6 +3213,145 @@ const projects: ProjectsResponse = {
 	with_github: 13,
 	with_ci: 13,
 	with_supabase: 9,
+};
+
+// ── Paperclip fallback ────────────────────────────────────────────────────────
+
+export const PAPERCLIP_FALLBACK: PaperclipCompanyResponse = {
+	running: false,
+	version: "0.0.0",
+	company: {
+		name: "APEX Paperclip Inc.",
+		mission: "מקסום ייצור אטבי הנייר בעזרת סוכנים חכמים",
+		founded: "2025-01-01",
+		budget_monthly_usd: 500,
+		status: "active",
+	},
+	departments: [
+		{
+			id: "research",
+			name: "מחקר ופיתוח",
+			name_en: "Research & Development",
+			head: "apex-researcher",
+			color: "#3b82f6",
+			agents: ["apex-researcher", "codex-worker"],
+		},
+		{
+			id: "ops",
+			name: "תפעול",
+			name_en: "Operations",
+			head: "gsd-executor",
+			color: "#10b981",
+			agents: ["gsd-executor", "gsd-planner"],
+		},
+	],
+	agents: [
+		{
+			id: "apex-researcher",
+			name: "apex-researcher",
+			role: "researcher",
+			title: "חוקר ראשי",
+			title_en: "Lead Researcher",
+			department: "research",
+			reports_to: "root",
+			status: "idle",
+			capabilities: ["research", "analysis"],
+			adapter: "claude",
+			budget_monthly_usd: 100,
+			win_rate: 0.85,
+			cost_today_usd: 0,
+			last_active: new Date().toISOString(),
+		},
+		{
+			id: "gsd-executor",
+			name: "gsd-executor",
+			role: "executor",
+			title: "מבצע משימות",
+			title_en: "Task Executor",
+			department: "ops",
+			reports_to: "root",
+			status: "idle",
+			capabilities: ["execute", "verify"],
+			adapter: "claude",
+			budget_monthly_usd: 150,
+			win_rate: 0.9,
+			cost_today_usd: 0,
+			last_active: new Date().toISOString(),
+		},
+	],
+	agent_count: 2,
+	org_tree: {
+		id: "root",
+		name: "APEX CEO",
+		role: "ceo",
+		title: 'מנכ"ל',
+		status: "active",
+		department: null,
+		reports: [
+			{
+				id: "apex-researcher",
+				name: "apex-researcher",
+				role: "researcher",
+				status: "idle",
+				department: "research",
+				reports: [],
+			},
+			{
+				id: "gsd-executor",
+				name: "gsd-executor",
+				role: "executor",
+				status: "idle",
+				department: "ops",
+				reports: [],
+			},
+		],
+	},
+	claude_session: {
+		session_id: "fallback-session",
+		started_at: new Date().toISOString(),
+		cost_usd: 0,
+		agents_dispatched: 0,
+		active_tasks: [],
+		live_agents: 0,
+	},
+	goals: [
+		{
+			id: "g1",
+			title: "הפעלת מערכת APEX",
+			status: "in_progress",
+			progress: 70,
+			sub_goals: [
+				{
+					id: "g1-1",
+					title: "חיבור סוכנים",
+					status: "done",
+					progress: 100,
+				},
+				{
+					id: "g1-2",
+					title: "תזמון אוטומטי",
+					status: "in_progress",
+					progress: 40,
+				},
+			],
+		},
+	],
+	recent_activity: [
+		{
+			ts: new Date().toISOString(),
+			agent: "gsd-executor",
+			action: "המערכת עלתה בהצלחה (fallback data)",
+			type: "watcher",
+		},
+	],
+	budget_incidents: [],
+	dispatch_stats: {
+		total_runs: 0,
+		completed: 0,
+		failed: 0,
+		win_rate: 0,
+		by_provider: {},
+	},
 };
 
 // ── Exported STATIC object ────────────────────────────────────────────────────

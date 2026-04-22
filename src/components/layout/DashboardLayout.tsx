@@ -138,6 +138,7 @@ export function DashboardLayout({
 					page={page}
 					onRefreshAll={handleRefreshAll}
 					onOpenPalette={handleOpenPalette}
+					onNavigate={navigate}
 				/>
 
 				<main

@@ -51,10 +51,12 @@ void Promise.allSettled([
 ]);
 
 // Stale chunk recovery — reload once on dynamic import failure after deploy
-window.addEventListener("error", (e) => {
+function handleChunkError(message: string) {
 	if (
-		e.message?.includes("dynamically imported module") ||
-		e.message?.includes("Failed to fetch")
+		message.includes("dynamically imported module") ||
+		message.includes("Failed to fetch") ||
+		message.includes("ChunkLoadError") ||
+		message.includes("Loading chunk")
 	) {
 		const key = "apex-chunk-reload";
 		const last = sessionStorage.getItem(key);
@@ -63,6 +65,15 @@ window.addEventListener("error", (e) => {
 			window.location.reload();
 		}
 	}
+}
+
+// Catches sync errors (script load failures)
+window.addEventListener("error", (e) => handleChunkError(e.message ?? ""));
+
+// Catches async errors (dynamic import() rejections — the actual failure mode)
+window.addEventListener("unhandledrejection", (e) => {
+	const msg = e.reason?.message ?? String(e.reason ?? "");
+	handleChunkError(msg);
 });
 
 const rootElement = document.getElementById("root");
