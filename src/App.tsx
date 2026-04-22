@@ -112,6 +112,11 @@ const MetricsPage = lazy(() =>
 const LogsPage = lazy(() =>
 	import("@/components/pages/LogsPage").then((m) => ({ default: m.LogsPage })),
 );
+const ActivityFeedPage = lazy(() =>
+	import("@/components/pages/ActivityFeedPage").then((m) => ({
+		default: m.ActivityFeedPage,
+	})),
+);
 const NotificationsPage = lazy(() =>
 	import("@/components/pages/NotificationsPage").then((m) => ({
 		default: m.NotificationsPage,
@@ -132,9 +137,9 @@ const OpenclawPage = lazy(() =>
 		default: m.OpenclawPage,
 	})),
 );
-const ActivityFeedPage = lazy(() =>
-	import("@/components/pages/ActivityFeedPage").then((m) => ({
-		default: m.ActivityFeedPage,
+const HydraV3Page = lazy(() =>
+	import("@/components/pages/HydraV3Page").then((m) => ({
+		default: m.HydraV3Page,
 	})),
 );
 
@@ -156,6 +161,7 @@ const PAGE_COMPONENTS: Record<
 	"agents/guide": AgentsGuidePage,
 	"agents/team": TeamModePage,
 	"agents/paperclip": PaperclipPage,
+	"agents/hydra-v3": HydraV3Page,
 	"devops/cicd": CiCdPage,
 	"devops/templates": CiTemplatesPage,
 	"devops/deploys": DeploysPage,
@@ -166,10 +172,10 @@ const PAGE_COMPONENTS: Record<
 	"ops/rules": RulesExplorerPage,
 	"ops/automation": AutomationPage,
 	"ops/control": ControlPage,
+	"ops/activity": ActivityFeedPage,
 	"ops/metrics": MetricsPage,
 	"ops/logs": LogsPage,
 	"ops/notifications": NotificationsPage,
-	"ops/activity": ActivityFeedPage,
 	"knowledge/system": SystemGuidePage,
 	"knowledge/base": KnowledgePage,
 	"knowledge/openclaw": OpenclawPage,

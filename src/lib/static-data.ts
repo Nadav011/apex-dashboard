@@ -20,6 +20,7 @@ import type {
 	NotificationEvent,
 	OpenclawDetailsResponse,
 	OpenclawResponse,
+	PaperclipCompanyResponse,
 	ProjectsResponse,
 	RuleInfo,
 	SkillsResponse,
@@ -534,18 +535,18 @@ const hydraHealth: HealthResponse = {
 // ── Hooks ─────────────────────────────────────────────────────────────────────
 
 const hooks: HooksResponse = {
-	total: 75,
+	total: 115,
 	by_event: {
-		PreToolUse: 19,
-		PostToolUse: 12,
-		Stop: 11,
-		UserPromptSubmit: 10,
-		SessionStart: 8,
-		PostCompact: 2,
-		SubagentStop: 2,
-		PostToolUseFailure: 2,
+		PreToolUse: 30,
+		PostToolUse: 19,
+		Stop: 14,
+		UserPromptSubmit: 11,
+		SessionStart: 12,
+		PostCompact: 3,
+		SubagentStop: 6,
+		PostToolUseFailure: 4,
 		SubagentStart: 1,
-		PermissionRequest: 1,
+		PermissionRequest: 2,
 		Notification: 1,
 		ConfigChange: 1,
 		WorktreeCreate: 1,
@@ -553,6 +554,7 @@ const hooks: HooksResponse = {
 		TaskCompleted: 1,
 		TeammateIdle: 1,
 		PreCompact: 1,
+		CwdChanged: 1,
 	},
 	recent: [
 		{
@@ -755,22 +757,30 @@ const rules: RuleInfo[] = [
 // ── Skills ────────────────────────────────────────────────────────────────────
 
 const skills: SkillsResponse = {
-	total: 83,
+	total: 237,
 	categories: {
+		apex: 28,
+		conductor: 18,
+		uipro: 15,
+		skill: 14,
+		hydra: 12,
+		ui: 12,
+		agent: 11,
+		ai: 10,
+		flutter: 9,
+		mobile: 8,
 		code: 12,
-		ui: 10,
-		test: 9,
-		security: 8,
-		devops: 7,
-		review: 6,
-		flutter: 5,
-		frontend: 5,
-		backend: 5,
-		ai: 4,
-		mobile: 5,
-		docs: 3,
+		test: 10,
+		security: 10,
+		devops: 9,
+		review: 8,
+		frontend: 7,
+		backend: 6,
+		docs: 5,
+		plannotator: 3,
+		recall: 3,
 	},
-	plugins_count: 19,
+	plugins_count: 26,
 	plugins: {},
 };
 
@@ -851,18 +861,18 @@ const mcp: McpResponse = {
 			transport: "stdio",
 		},
 	],
-	total: 12,
-	enabled: 11,
-	disabled: 1,
+	total: 16,
+	enabled: 14,
+	disabled: 2,
 	plugins: {},
-	plugins_count: 19,
+	plugins_count: 26,
 };
 
 // ── OpenClaw ──────────────────────────────────────────────────────────────────
 
 const openclaw: OpenclawResponse = {
-	skills: 37,
-	version: "v2026.3.22",
+	skills: 195,
+	version: "v2026.4.9",
 };
 
 const openclawDetails: OpenclawDetailsResponse = {
@@ -958,7 +968,7 @@ const openclawDetails: OpenclawDetailsResponse = {
 			size_kb: 5.3,
 		},
 	],
-	skills_count: 37,
+	skills_count: 195,
 	subagents: [
 		{
 			name: "gsd-executor",
@@ -3203,6 +3213,145 @@ const projects: ProjectsResponse = {
 	with_github: 13,
 	with_ci: 13,
 	with_supabase: 9,
+};
+
+// ── Paperclip fallback ────────────────────────────────────────────────────────
+
+export const PAPERCLIP_FALLBACK: PaperclipCompanyResponse = {
+	running: false,
+	version: "0.0.0",
+	company: {
+		name: "APEX Paperclip Inc.",
+		mission: "מקסום ייצור אטבי הנייר בעזרת סוכנים חכמים",
+		founded: "2025-01-01",
+		budget_monthly_usd: 500,
+		status: "active",
+	},
+	departments: [
+		{
+			id: "research",
+			name: "מחקר ופיתוח",
+			name_en: "Research & Development",
+			head: "apex-researcher",
+			color: "#3b82f6",
+			agents: ["apex-researcher", "codex-worker"],
+		},
+		{
+			id: "ops",
+			name: "תפעול",
+			name_en: "Operations",
+			head: "gsd-executor",
+			color: "#10b981",
+			agents: ["gsd-executor", "gsd-planner"],
+		},
+	],
+	agents: [
+		{
+			id: "apex-researcher",
+			name: "apex-researcher",
+			role: "researcher",
+			title: "חוקר ראשי",
+			title_en: "Lead Researcher",
+			department: "research",
+			reports_to: "root",
+			status: "idle",
+			capabilities: ["research", "analysis"],
+			adapter: "claude",
+			budget_monthly_usd: 100,
+			win_rate: 0.85,
+			cost_today_usd: 0,
+			last_active: new Date().toISOString(),
+		},
+		{
+			id: "gsd-executor",
+			name: "gsd-executor",
+			role: "executor",
+			title: "מבצע משימות",
+			title_en: "Task Executor",
+			department: "ops",
+			reports_to: "root",
+			status: "idle",
+			capabilities: ["execute", "verify"],
+			adapter: "claude",
+			budget_monthly_usd: 150,
+			win_rate: 0.9,
+			cost_today_usd: 0,
+			last_active: new Date().toISOString(),
+		},
+	],
+	agent_count: 2,
+	org_tree: {
+		id: "root",
+		name: "APEX CEO",
+		role: "ceo",
+		title: 'מנכ"ל',
+		status: "active",
+		department: null,
+		reports: [
+			{
+				id: "apex-researcher",
+				name: "apex-researcher",
+				role: "researcher",
+				status: "idle",
+				department: "research",
+				reports: [],
+			},
+			{
+				id: "gsd-executor",
+				name: "gsd-executor",
+				role: "executor",
+				status: "idle",
+				department: "ops",
+				reports: [],
+			},
+		],
+	},
+	claude_session: {
+		session_id: "fallback-session",
+		started_at: new Date().toISOString(),
+		cost_usd: 0,
+		agents_dispatched: 0,
+		active_tasks: [],
+		live_agents: 0,
+	},
+	goals: [
+		{
+			id: "g1",
+			title: "הפעלת מערכת APEX",
+			status: "in_progress",
+			progress: 70,
+			sub_goals: [
+				{
+					id: "g1-1",
+					title: "חיבור סוכנים",
+					status: "done",
+					progress: 100,
+				},
+				{
+					id: "g1-2",
+					title: "תזמון אוטומטי",
+					status: "in_progress",
+					progress: 40,
+				},
+			],
+		},
+	],
+	recent_activity: [
+		{
+			ts: new Date().toISOString(),
+			agent: "gsd-executor",
+			action: "המערכת עלתה בהצלחה (fallback data)",
+			type: "watcher",
+		},
+	],
+	budget_incidents: [],
+	dispatch_stats: {
+		total_runs: 0,
+		completed: 0,
+		failed: 0,
+		win_rate: 0,
+		by_provider: {},
+	},
 };
 
 // ── Exported STATIC object ────────────────────────────────────────────────────

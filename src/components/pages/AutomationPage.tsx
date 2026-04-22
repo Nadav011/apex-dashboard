@@ -619,6 +619,7 @@ export function AutomationPage() {
 					{ id: "cron", label: "Cron Jobs" },
 					{ id: "ci", label: "CI אוטומציה" },
 					{ id: "ambient", label: "Ambient Agents" },
+					{ id: "routines", label: "לוח זמנים" },
 				]}
 			>
 				{(activeTab) => (
@@ -1564,6 +1565,212 @@ export function AutomationPage() {
 														</code>
 													</div>
 												))}
+											</div>
+										</div>
+									</div>
+								</div>
+							</section>
+						)}
+
+						{/* ══ Section: לוח זמנים / Routines ══════════════════════════════ */}
+						{activeTab === "routines" && (
+							<section className="space-y-6">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									{/* Heartbeat Reporter */}
+									<div className="glass-card p-5 space-y-3">
+										<div className="flex items-center gap-2 mb-2">
+											<RefreshCw size={16} className="text-accent-blue" />
+											<h3 className="text-sm font-semibold text-text-primary">
+												Heartbeat Reporter
+											</h3>
+										</div>
+										<div className="space-y-2 text-xs">
+											<div className="flex justify-between">
+												<span className="text-text-muted">סקריפט</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													heartbeat-reporter.sh
+												</code>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">תדירות</span>
+												<span className="text-text-primary">כל 60 שניות</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">סטטוס</span>
+												<span className="text-accent-green font-medium">
+													פעיל
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">מדיניות</span>
+												<span className="text-text-primary">
+													coalesce_if_active
+												</span>
+											</div>
+										</div>
+									</div>
+
+									{/* Cost Tracker */}
+									<div className="glass-card p-5 space-y-3">
+										<div className="flex items-center gap-2 mb-2">
+											<Clock size={16} className="text-accent-amber" />
+											<h3 className="text-sm font-semibold text-text-primary">
+												Cost Tracker
+											</h3>
+										</div>
+										<div className="space-y-2 text-xs">
+											<div className="flex justify-between">
+												<span className="text-text-muted">סקריפט</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													cost-tracker.sh
+												</code>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">אירוע</span>
+												<span className="text-text-primary">PostToolUse</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">סטטוס</span>
+												<span className="text-accent-green font-medium">
+													פעיל
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">פלט</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													metrics/costs.jsonl
+												</code>
+											</div>
+										</div>
+									</div>
+
+									{/* Plan Dispatcher */}
+									<div className="glass-card p-5 space-y-3">
+										<div className="flex items-center gap-2 mb-2">
+											<Workflow size={16} className="text-accent-purple" />
+											<h3 className="text-sm font-semibold text-text-primary">
+												Plan Dispatcher
+											</h3>
+										</div>
+										<div className="space-y-2 text-xs">
+											<div className="flex justify-between">
+												<span className="text-text-muted">סקריפט</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													plan-dispatcher.sh
+												</code>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">סוג</span>
+												<span className="text-text-primary">
+													systemd path unit
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">סטטוס</span>
+												<span className="text-accent-amber font-medium">
+													ממתין
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">ניטור</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													handoffs/pending/
+												</code>
+											</div>
+										</div>
+									</div>
+
+									{/* APEX Observer */}
+									<div className="glass-card p-5 space-y-3">
+										<div className="flex items-center gap-2 mb-2">
+											<Sparkles size={16} className="text-accent-cyan" />
+											<h3 className="text-sm font-semibold text-text-primary">
+												APEX Observer Daemon
+											</h3>
+										</div>
+										<div className="space-y-2 text-xs">
+											<div className="flex justify-between">
+												<span className="text-text-muted">סקריפט</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													apex-observer-daemon.py
+												</code>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">סוג</span>
+												<span className="text-text-primary">
+													systemd service
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">סטטוס</span>
+												<span className="text-accent-green font-medium">
+													פעיל
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span className="text-text-muted">פלט</span>
+												<code
+													className="text-text-secondary font-mono"
+													dir="ltr"
+												>
+													learning.db
+												</code>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								{/* Concurrency Policies */}
+								<div className="glass-card p-4">
+									<h4 className="text-xs font-semibold text-text-primary mb-2">
+										מדיניות מקביליות
+									</h4>
+									<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+										<div className="flex items-start gap-2">
+											<div className="size-2 rounded-full bg-accent-green mt-1 shrink-0" />
+											<div>
+												<span className="font-medium text-text-primary">
+													coalesce_if_active
+												</span>
+												<p className="text-text-muted">
+													ממזג ריצות אם כבר פעיל
+												</p>
+											</div>
+										</div>
+										<div className="flex items-start gap-2">
+											<div className="size-2 rounded-full bg-accent-amber mt-1 shrink-0" />
+											<div>
+												<span className="font-medium text-text-primary">
+													skip_if_active
+												</span>
+												<p className="text-text-muted">מדלג אם כבר רץ</p>
+											</div>
+										</div>
+										<div className="flex items-start gap-2">
+											<div className="size-2 rounded-full bg-accent-blue mt-1 shrink-0" />
+											<div>
+												<span className="font-medium text-text-primary">
+													always_enqueue
+												</span>
+												<p className="text-text-muted">תמיד מוסיף לתור</p>
 											</div>
 										</div>
 									</div>

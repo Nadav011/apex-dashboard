@@ -1,13 +1,12 @@
 import {
 	Activity,
+	Check,
 	ChevronDown,
+	ChevronUp,
 	Copy,
 	Cpu,
-	FileText,
-	RefreshCw,
 	Search,
 	SearchX,
-	Square,
 	Users,
 	Zap,
 } from "lucide-react";
@@ -29,6 +28,13 @@ const CAT_LABELS: Record<string, string> = {
 	performance: "ביצועים",
 	infra: "תשתית",
 	general: "כללי",
+};
+
+// Group labels used in the live agents section
+const LIVE_GROUP_LABELS: Record<string, string> = {
+	infra: "שירותי תשתית",
+	"ai-session": "סשנים פעילים",
+	"ai-agent": "סוכני AI",
 };
 
 const CAT_COLORS: Record<string, { bg: string; text: string; border: string }> =
@@ -84,10 +90,79 @@ function catLabel(cat: string): string {
 	return CAT_LABELS[cat.toLowerCase()] ?? cat;
 }
 
+// ── Copy button ──────────────────────────────────────────────────────────────
+
+function CopyButton({
+	text,
+	label = "העתק",
+}: {
+	text: string;
+	label?: string;
+}) {
+	const [copied, setCopied] = useState(false);
+
+	function handleCopy() {
+		void navigator.clipboard.writeText(text).then(() => {
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		});
+	}
+
+	return (
+		<button
+			type="button"
+			onClick={handleCopy}
+			className={cn(
+				"inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded",
+				"transition-colors duration-150 cursor-pointer shrink-0",
+				copied
+					? "text-accent-green bg-[oklch(0.45_0.18_145_/_0.15)]"
+					: "text-text-muted hover:text-text-secondary hover:bg-bg-elevated",
+			)}
+			aria-label={label}
+		>
+			{copied ? <Check size={11} /> : <Copy size={11} />}
+		</button>
+	);
+}
+
+// ── Detail Row ────────────────────────────────────────────────────────────────
+
+function DetailRow({
+	label,
+	value,
+	mono = false,
+	copyable = false,
+}: {
+	label: string;
+	value: string;
+	mono?: boolean;
+	copyable?: boolean;
+}) {
+	if (!value) return null;
+	return (
+		<div className="flex items-start gap-2 text-xs">
+			<span className="text-text-muted shrink-0 w-28 pt-px">{label}</span>
+			<span
+				className={cn(
+					"flex-1 min-w-0 text-text-secondary break-all leading-relaxed",
+					mono && "font-mono",
+				)}
+				dir="ltr"
+			>
+				{value}
+			</span>
+			{copyable && <CopyButton text={value} />}
+		</div>
+	);
+}
+
 // ── Agent Card ───────────────────────────────────────────────────────────────
 
 function AgentCard({ agent }: { agent: AgentInfo }) {
 	const style = catStyle(agent.category);
+	const [expanded, setExpanded] = useState(false);
+
 	const initials = agent.name
 		.split(/[-_\s]/)
 		.slice(0, 2)
@@ -97,48 +172,99 @@ function AgentCard({ agent }: { agent: AgentInfo }) {
 	return (
 		<div
 			className={cn(
-				"glass-card flex flex-col gap-3 p-4 transition-colors duration-200",
-				"hover:border-border-hover",
+				"glass-card flex flex-col gap-0 transition-colors duration-200",
+				expanded ? "border-border-hover" : "hover:border-border-hover",
 			)}
 		>
-			{/* Avatar + category badge */}
-			<div className="flex items-start justify-between gap-2">
-				<div
-					className={cn(
-						"flex items-center justify-center w-10 h-10 rounded-lg",
-						"text-sm font-bold shrink-0",
-						style.bg,
-						style.text,
-					)}
-					aria-hidden="true"
-				>
-					{initials || "?"}
+			{/* Clickable header */}
+			<button
+				type="button"
+				onClick={() => setExpanded((p) => !p)}
+				className="flex flex-col gap-3 p-4 text-start w-full cursor-pointer"
+				aria-expanded={expanded}
+			>
+				{/* Avatar + category badge + chevron */}
+				<div className="flex items-start justify-between gap-2">
+					<div
+						className={cn(
+							"flex items-center justify-center w-10 h-10 rounded-lg",
+							"text-sm font-bold shrink-0",
+							style.bg,
+							style.text,
+						)}
+						aria-hidden="true"
+					>
+						{initials || "?"}
+					</div>
+					<div className="flex items-center gap-1.5">
+						<span
+							className={cn(
+								"text-xs font-medium px-2 py-0.5 rounded-full border",
+								style.bg,
+								style.text,
+								style.border,
+							)}
+						>
+							{catLabel(agent.category)}
+						</span>
+						<span className="text-text-muted" aria-hidden="true">
+							{expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+						</span>
+					</div>
 				</div>
-				<span
-					className={cn(
-						"text-xs font-medium px-2 py-0.5 rounded-full border",
-						style.bg,
-						style.text,
-						style.border,
+
+				{/* Name */}
+				<div>
+					<h3 className="text-sm font-semibold text-text-primary leading-snug">
+						{agent.name}
+					</h3>
+					<p className="text-xs text-text-muted mt-0.5 truncate" dir="ltr">
+						{agent.file}
+					</p>
+				</div>
+
+				{/* Description (collapsed preview) */}
+				{!expanded && agent.description && (
+					<p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
+						{agent.description}
+					</p>
+				)}
+			</button>
+
+			{/* Expandable detail panel */}
+			{expanded && (
+				<div className="border-t border-border px-4 py-4 flex flex-col gap-3">
+					{/* Full description */}
+					{agent.description && (
+						<p className="text-xs text-text-secondary leading-relaxed">
+							{agent.description}
+						</p>
 					)}
-				>
-					{catLabel(agent.category)}
-				</span>
-			</div>
 
-			{/* Name */}
-			<div>
-				<h3 className="text-sm font-semibold text-text-primary leading-snug">
-					{agent.name}
-				</h3>
-				<p className="text-xs text-text-muted mt-0.5">{agent.file}</p>
-			</div>
-
-			{/* Description */}
-			{agent.description && (
-				<p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
-					{agent.description}
-				</p>
+					{/* Details grid */}
+					<div className="flex flex-col gap-2">
+						<DetailRow label="קובץ הגדרה" value={agent.file} mono copyable />
+						<DetailRow label="קטגוריה" value={catLabel(agent.category)} />
+						{agent.tools && agent.tools.length > 0 && (
+							<div className="flex items-start gap-2 text-xs">
+								<span className="text-text-muted shrink-0 w-28 pt-px">
+									כלים מורשים
+								</span>
+								<div className="flex flex-wrap gap-1 flex-1 min-w-0">
+									{agent.tools.map((tool) => (
+										<span
+											key={tool}
+											className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-bg-elevated text-text-secondary border border-border"
+											dir="ltr"
+										>
+											{tool}
+										</span>
+									))}
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
 			)}
 		</div>
 	);
@@ -279,270 +405,90 @@ function liveColor(type: string) {
 	);
 }
 
-function LiveAgentCard({
-	agent,
-	expanded,
-	onToggle,
-}: {
-	agent: LiveAgent;
-	expanded: boolean;
-	onToggle: () => void;
-}) {
+function LiveAgentCard({ agent }: { agent: LiveAgent }) {
 	const c = liveColor(agent.type);
 	const desc = agent.description;
 	const uptime = agent.uptime;
 	const status = agent.status;
-	const catBadge = agent.category ? catStyle(agent.category) : null;
-
-	function copyPid() {
-		navigator.clipboard.writeText(String(agent.pid)).catch(() => undefined);
-	}
-
-	function handleAction(action: "restart" | "stop" | "log", pid: number) {
-		fetch("https://api.nadavc.ai/api/control/agent", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ action, pid }),
-		}).catch(console.error);
-	}
-
-	// Determine which control buttons to show based on agent.type
-	const FULL_CONTROL_TYPES = new Set([
-		"hydra-watcher",
-		"ambient-receiver",
-		"devbot",
-		"memory-inbox",
-		"hermes-gateway",
-		"apex-observer",
-		"dashboard-api",
-	]);
-	const STOP_ONLY_TYPES = new Set(["gemini", "kimi", "codex", "minimax"]);
-	const NO_CONTROL_TYPES = new Set(["gh-runner", "hydra-executor"]);
-	const CLAUDE_TYPES = new Set([
-		"claude-interactive",
-		"claude-subagent",
-		"claude-headless",
-	]);
-
-	const showRestart =
-		FULL_CONTROL_TYPES.has(agent.type) && !NO_CONTROL_TYPES.has(agent.type);
-	const showStop =
-		(FULL_CONTROL_TYPES.has(agent.type) || STOP_ONLY_TYPES.has(agent.type)) &&
-		!NO_CONTROL_TYPES.has(agent.type);
-	const showLog =
-		!NO_CONTROL_TYPES.has(agent.type) &&
-		(FULL_CONTROL_TYPES.has(agent.type) ||
-			STOP_ONLY_TYPES.has(agent.type) ||
-			CLAUDE_TYPES.has(agent.type));
-	const showAnyButton = showRestart || showStop || showLog;
-
 	return (
-		<div
-			className={cn(
-				"glass-card flex flex-col transition-colors duration-200",
-				c.bg,
-				expanded ? "ring-1 ring-border-hover" : "",
-			)}
-		>
-			{/* Main row — always visible */}
-			<button
-				type="button"
-				onClick={onToggle}
-				className="flex items-center gap-3 p-3 w-full text-start cursor-pointer"
-				aria-expanded={expanded}
-			>
-				<div className="relative shrink-0">
-					<Cpu size={20} className={c.text} />
-					<span
-						className={cn(
-							"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full",
-							status === "active" ? "animate-pulse" : "",
-							c.dot,
-						)}
-					/>
-				</div>
-				<div className="flex-1 min-w-0">
-					<div className="flex items-center gap-2">
-						<span className={cn("text-sm font-semibold", c.text)}>
-							{desc || agent.type}
-						</span>
-					</div>
-					<div className="flex items-center gap-2 mt-0.5">
-						<span className="text-xs text-text-muted tabular-nums" dir="ltr">
-							PID {agent.pid}
-						</span>
-						{uptime && (
-							<span className="text-xs text-text-muted">{uptime}</span>
-						)}
-						<span className="text-xs text-text-muted tabular-nums" dir="ltr">
-							{agent.cpu}% CPU
-						</span>
-					</div>
-				</div>
-				<div className="flex items-center gap-2 shrink-0">
-					<span
-						className={cn(
-							"text-xs font-medium px-1.5 py-0.5 rounded",
-							status === "active"
-								? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
-								: "bg-bg-elevated text-text-muted",
-						)}
-					>
-						{status === "active" ? "פעיל" : "ממתין"}
+		<div className={cn("glass-card p-3 flex items-center gap-3", c.bg)}>
+			<div className="relative">
+				<Cpu size={20} className={c.text} />
+				<span
+					className={cn(
+						"absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full",
+						status === "active" ? "animate-pulse" : "",
+						c.dot,
+					)}
+				/>
+			</div>
+			<div className="flex-1 min-w-0">
+				<div className="flex items-center gap-2">
+					<span className={cn("text-sm font-semibold", c.text)}>
+						{desc || agent.type}
 					</span>
-					<ChevronDown
-						size={14}
-						className={cn(
-							"text-text-muted transition-transform duration-200",
-							expanded ? "rotate-180" : "",
-						)}
-					/>
 				</div>
-			</button>
-
-			{/* Expanded details */}
-			{expanded && (
-				<div className="border-t border-border px-3 pb-3 pt-2 flex flex-col gap-2">
-					{/* Category badge */}
-					{catBadge && agent.category && (
-						<div className="flex items-center gap-1.5">
-							<span className="text-xs text-text-muted">קטגוריה:</span>
-							<span
-								className={cn(
-									"text-xs font-medium px-2 py-0.5 rounded-full border",
-									catBadge.bg,
-									catBadge.text,
-									catBadge.border,
-								)}
-							>
-								{catLabel(agent.category)}
-							</span>
-						</div>
-					)}
-
-					{/* PID with copy */}
-					<div className="flex items-center gap-1.5">
-						<span className="text-xs text-text-muted">PID:</span>
-						<span
-							className="text-xs font-mono text-text-primary tabular-nums"
-							dir="ltr"
-						>
-							{agent.pid}
-						</span>
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								copyPid();
-							}}
-							className="flex items-center gap-0.5 text-xs text-text-muted hover:text-text-secondary transition-colors px-1 py-0.5 rounded hover:bg-bg-elevated"
-							title="העתק PID"
-						>
-							<Copy size={11} />
-						</button>
-					</div>
-
-					{/* Memory */}
-					<div className="flex items-center gap-1.5">
-						<span className="text-xs text-text-muted">זיכרון:</span>
-						<span className="text-xs text-text-primary tabular-nums" dir="ltr">
-							{agent.mem.toFixed(1)}%
-						</span>
-					</div>
-
-					{/* Full command line */}
-					<div className="flex flex-col gap-0.5">
-						<span className="text-xs text-text-muted">פקודה:</span>
-						<code
-							className="text-xs font-mono text-text-secondary bg-bg-elevated rounded px-2 py-1.5 break-all leading-relaxed"
-							dir="ltr"
-						>
-							{agent.cmd}
-						</code>
-					</div>
-
-					{/* Control buttons */}
-					{showAnyButton && (
-						<div className="flex items-center gap-1.5 pt-1 flex-wrap">
-							{showRestart && (
-								<button
-									type="button"
-									onClick={(e) => {
-										e.stopPropagation();
-										handleAction("restart", agent.pid);
-									}}
-									className={cn(
-										"inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium",
-										"bg-[oklch(0.55_0.18_75_/_0.15)] text-[oklch(0.78_0.18_75)] border border-[oklch(0.55_0.18_75_/_0.3)]",
-										"hover:bg-[oklch(0.55_0.18_75_/_0.25)] transition-colors duration-150",
-									)}
-								>
-									<RefreshCw size={11} />
-									הפעל מחדש
-								</button>
-							)}
-							{showStop && (
-								<button
-									type="button"
-									onClick={(e) => {
-										e.stopPropagation();
-										handleAction("stop", agent.pid);
-									}}
-									className={cn(
-										"inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium",
-										"bg-[oklch(0.55_0.2_25_/_0.15)] text-[oklch(0.72_0.2_25)] border border-[oklch(0.55_0.2_25_/_0.3)]",
-										"hover:bg-[oklch(0.55_0.2_25_/_0.25)] transition-colors duration-150",
-									)}
-								>
-									<Square size={11} />
-									עצור
-								</button>
-							)}
-							{showLog && (
-								<button
-									type="button"
-									onClick={(e) => {
-										e.stopPropagation();
-										handleAction("log", agent.pid);
-									}}
-									className={cn(
-										"inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium",
-										"bg-[oklch(0.55_0.15_240_/_0.15)] text-[oklch(0.72_0.15_240)] border border-[oklch(0.55_0.15_240_/_0.3)]",
-										"hover:bg-[oklch(0.55_0.15_240_/_0.25)] transition-colors duration-150",
-									)}
-								>
-									<FileText size={11} />
-									צפה בלוג
-								</button>
-							)}
-						</div>
-					)}
+				<div className="flex items-center gap-2 mt-0.5">
+					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+						PID {agent.pid}
+					</span>
+					{uptime && <span className="text-xs text-text-muted">{uptime}</span>}
+					<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+						{agent.cpu}% CPU
+					</span>
 				</div>
-			)}
+			</div>
+			<div className="text-end shrink-0">
+				<span
+					className={cn(
+						"text-xs font-medium px-1.5 py-0.5 rounded",
+						status === "active"
+							? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
+							: "bg-bg-elevated text-text-muted",
+					)}
+				>
+					{status === "active" ? "פעיל" : status || "—"}
+				</span>
+			</div>
 		</div>
 	);
 }
 
+// Map a live agent to one of the three display groups
+function liveGroupKey(agent: LiveAgent): string {
+	const cat = (agent.category ?? agent.type ?? "").toLowerCase();
+	if (
+		cat === "infra" ||
+		cat === "hydra-watcher" ||
+		cat === "hydra-executor" ||
+		cat === "hydra"
+	)
+		return "infra";
+	if (
+		cat === "claude-session" ||
+		cat === "ai-session" ||
+		agent.type === "claude-session"
+	)
+		return "ai-session";
+	return "ai-agent";
+}
+
+// Hebrew label for a display group key
+function liveGroupLabel(key: string): string {
+	return LIVE_GROUP_LABELS[key] ?? key;
+}
+
+// Ordered group keys for display
+const LIVE_GROUP_ORDER = ["infra", "ai-session", "ai-agent"] as const;
+
 function LiveSection() {
 	const { data: liveData, isLoading, isError } = useAgentsLive();
-	const [expandedPids, setExpandedPids] = useState<Set<number>>(new Set());
 
-	function togglePid(pid: number) {
-		setExpandedPids((prev) => {
-			const next = new Set(prev);
-			if (next.has(pid)) {
-				next.delete(pid);
-			} else {
-				next.add(pid);
-			}
-			return next;
-		});
-	}
-
-	// Filter out CI runners — they belong on CI/CD page, not Fleet
+	// Filter out CI runner processes — they belong in the CI/CD page
 	const agents = (liveData?.live_agents ?? []).filter(
-		(a) => a.category !== "ci",
+		(a) => (a.category ?? a.type ?? "").toLowerCase() !== "ci",
 	);
+
 	const bgRecent =
 		liveData?.background_tasks?.filter(
 			(t: BackgroundTask) => t.status === "recent",
@@ -551,83 +497,40 @@ function LiveSection() {
 	const summaryHe = (liveData as { summary_he?: string } | undefined)
 		?.summary_he;
 
-	// Active = cpu > 0, idle = cpu === 0
-	const activeCount = agents.filter((a) => a.cpu > 0).length;
-	const idleCount = agents.length - activeCount;
-
-	// Per-category counts for summary badges
-	const catCounts = agents.reduce<Record<string, number>>((acc, a) => {
-		const cat = a.category || a.type;
-		acc[cat] = (acc[cat] ?? 0) + 1;
-		return acc;
-	}, {});
-
-	// Group by category (not type) for cleaner display
+	// Group by the three display categories
 	const groups = agents.reduce<Record<string, LiveAgent[]>>((acc, a) => {
-		const cat = a.category || a.type;
-		if (!acc[cat]) acc[cat] = [];
-		acc[cat].push(a);
+		const key = liveGroupKey(a);
+		if (!acc[key]) acc[key] = [];
+		acc[key].push(a);
 		return acc;
 	}, {});
+
+	// Only include groups that have agents, preserving the canonical order
+	const orderedGroups = LIVE_GROUP_ORDER.filter(
+		(k) => (groups[k]?.length ?? 0) > 0,
+	);
 
 	return (
 		<div className="flex flex-col gap-3">
-			<div className="flex items-start justify-between gap-3">
-				<div className="flex flex-col gap-1.5">
-					<div className="flex items-center gap-2">
-						<Activity size={18} className="text-accent-green" />
-						<h2 className="text-base font-semibold text-text-primary">
-							סוכנים פעילים עכשיו
-						</h2>
-					</div>
-					{/* Summary counts */}
-					{agents.length > 0 && (
-						<div className="flex items-center gap-1.5 flex-wrap">
-							{/* Active badge */}
-							<span
-								className="text-xs font-medium px-2 py-0.5 rounded-full tabular-nums bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
-								dir="ltr"
-							>
-								{activeCount} פעיל
-							</span>
-							{/* Idle badge */}
-							{idleCount > 0 && (
-								<span
-									className="text-xs font-medium px-2 py-0.5 rounded-full tabular-nums bg-bg-elevated text-text-muted"
-									dir="ltr"
-								>
-									{idleCount} ממתין
-								</span>
-							)}
-							{/* Per-category badges */}
-							{Object.entries(catCounts).map(([cat, count]) => {
-								const s = liveColor(cat);
-								return (
-									<span
-										key={cat}
-										className={cn(
-											"text-xs font-medium px-2 py-0.5 rounded-full tabular-nums",
-											s.bg,
-											s.text,
-										)}
-										dir="ltr"
-									>
-										{cat} {count}
-									</span>
-								);
-							})}
-						</div>
-					)}
-					{agents.length === 0 && !isLoading && !isError && (
-						<span
-							className="text-xs font-bold px-2 py-0.5 rounded-full tabular-nums bg-bg-elevated text-text-muted self-start"
-							dir="ltr"
-						>
-							0
-						</span>
-					)}
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-2">
+					<Activity size={18} className="text-accent-green" />
+					<h2 className="text-base font-semibold text-text-primary">
+						סוכנים פעילים עכשיו
+					</h2>
+					<span
+						className={cn(
+							"text-xs font-bold px-2 py-0.5 rounded-full tabular-nums",
+							agents.length > 0
+								? "bg-[oklch(0.45_0.18_145_/_0.2)] text-accent-green"
+								: "bg-bg-elevated text-text-muted",
+						)}
+						dir="ltr"
+					>
+						{agents.length}
+					</span>
 				</div>
-				<div className="flex items-center gap-3 shrink-0">
+				<div className="flex items-center gap-3">
 					{summaryHe && (
 						<span className="text-xs text-text-secondary">{summaryHe}</span>
 					)}
@@ -653,32 +556,36 @@ function LiveSection() {
 					אין סוכנים פעילים כרגע
 				</div>
 			) : (
-				<div className="space-y-2">
-					{Object.entries(groups).map(([type, list]) => (
-						<div key={type}>
-							<div className="flex items-center gap-2 mb-1.5">
-								<span
-									className={cn(
-										"text-xs font-medium px-2 py-0.5 rounded-full",
-										liveColor(type).bg,
-										liveColor(type).text,
-									)}
-								>
-									{type} ({list.length})
-								</span>
+				<div className="space-y-4">
+					{orderedGroups.map((groupKey) => {
+						const list = groups[groupKey] ?? [];
+						const c = liveColor(list[0]?.type ?? groupKey);
+						return (
+							<div key={groupKey}>
+								{/* Hebrew group header */}
+								<div className="flex items-center gap-2 mb-2">
+									<span className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
+										{liveGroupLabel(groupKey)}
+									</span>
+									<span
+										className={cn(
+											"text-xs font-medium px-1.5 py-0.5 rounded-full tabular-nums",
+											c.bg,
+											c.text,
+										)}
+										dir="ltr"
+									>
+										{list.length}
+									</span>
+								</div>
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+									{list.map((a) => (
+										<LiveAgentCard key={a.pid} agent={a} />
+									))}
+								</div>
 							</div>
-							<div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-								{list.map((a) => (
-									<LiveAgentCard
-										key={a.pid}
-										agent={a}
-										expanded={expandedPids.has(a.pid)}
-										onToggle={() => togglePid(a.pid)}
-									/>
-								))}
-							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			)}
 		</div>
@@ -693,7 +600,10 @@ export function FleetPage() {
 	const [search, setSearch] = useState("");
 
 	// data is AgentInfo[] (flat array from backend)
-	const allAgents = data ?? [];
+	// CI agents belong in the CI/CD page — filter them out here
+	const allAgents = (data ?? []).filter(
+		(a) => a.category.toLowerCase() !== "ci",
+	);
 
 	// Derive categories count from the array
 	const categories = useMemo<Record<string, number>>(() => {

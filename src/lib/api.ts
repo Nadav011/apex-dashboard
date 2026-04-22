@@ -1,14 +1,12 @@
 import { STATIC } from "./static-data";
 
-const API_BASE =
-	import.meta.env.VITE_API_URL ||
-	(typeof window !== "undefined" && window.location.hostname === "localhost"
-		? "/api"
-		: "https://api.nadavc.ai/api");
+// Always use relative /api — CF Pages Functions proxy handles production routing
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
 // Slow endpoints that need longer timeout (health checks, CI, projects scan GitHub)
 const SLOW_PATHS = new Set([
 	"/hydra/health",
+	"/hydra/agents/live",
 	"/ci/status",
 	"/ci/summary",
 	"/projects",
@@ -20,23 +18,9 @@ async function fetchApi<T>(path: string, fallback?: T): Promise<T> {
 		const ctrl = new AbortController();
 		const timeout = SLOW_PATHS.has(path) ? 10000 : 3000;
 		const timer = setTimeout(() => ctrl.abort(), timeout);
-		const res = await fetch(`${API_BASE}${path}`, { signal: ctrl.signal });
-		clearTimeout(timer);
-		if (!res.ok) throw new Error(`${res.status}`);
-		return res.json() as Promise<T>;
-	} catch {
-		if (fallback !== undefined) return fallback;
-		throw new Error(`API unavailable: ${path}`);
-	}
-}
-
-async function postApi<T>(path: string, fallback?: T): Promise<T> {
-	try {
-		const ctrl = new AbortController();
-		const timer = setTimeout(() => ctrl.abort(), 3000);
 		const res = await fetch(`${API_BASE}${path}`, {
-			method: "POST",
 			signal: ctrl.signal,
+			credentials: "include",
 		});
 		clearTimeout(timer);
 		if (!res.ok) throw new Error(`${res.status}`);
@@ -46,6 +30,68 @@ async function postApi<T>(path: string, fallback?: T): Promise<T> {
 		throw new Error(`API unavailable: ${path}`);
 	}
 }
+
+async function postApi<TResponse, TBody = undefined>(
+	path: string,
+	options?: {
+		body?: TBody;
+		fallback?: TResponse;
+	},
+): Promise<TResponse> {
+	try {
+		const ctrl = new AbortController();
+		const timer = setTimeout(() => ctrl.abort(), 3000);
+		const hasBody = options?.body !== undefined;
+		const res = await fetch(`${API_BASE}${path}`, {
+			method: "POST",
+			signal: ctrl.signal,
+			credentials: "include",
+			headers: hasBody ? { "Content-Type": "application/json" } : undefined,
+			body: hasBody ? JSON.stringify(options.body) : undefined,
+		});
+		clearTimeout(timer);
+		if (!res.ok) throw new Error(`${res.status}`);
+		return res.json() as Promise<TResponse>;
+	} catch {
+		if (options?.fallback !== undefined) return options.fallback;
+		throw new Error(`API unavailable: ${path}`);
+	}
+}
+
+export type ApprovalResolutionAction = "approve" | "reject" | (string & {});
+
+export const fetchAgentHeartbeats = () =>
+	fetchApi<AgentHeartbeat[]>("/hydra/agents/live");
+
+export const fetchBudgetStatus = () =>
+	fetchApi<BudgetStatus[]>("/hydra/budget");
+
+export const fetchWaveHistory = () => fetchApi<WaveEntry[]>("/hydra/waves");
+
+export const fetchApprovals = () =>
+	fetchApi<ApprovalRequest[]>("/hydra/approvals?status=pending");
+
+export const postHeartbeat = (data: AgentHeartbeat) =>
+	postApi<ControlResponse, AgentHeartbeat>("/hydra/heartbeat", {
+		body: data,
+	});
+
+export const resolveApproval = (id: string, action: ApprovalResolutionAction) =>
+	postApi<ControlResponse, { action: ApprovalResolutionAction }>(
+		`/hydra/approvals/${encodeURIComponent(id)}/resolve`,
+		{
+			body: { action },
+		},
+	);
+
+export const pauseAgent = (id: string) =>
+	postApi<ControlResponse>(`/hydra/agents/${encodeURIComponent(id)}/pause`);
+
+export const resumeAgent = (id: string) =>
+	postApi<ControlResponse>(`/hydra/agents/${encodeURIComponent(id)}/resume`);
+
+export const terminateAgent = (id: string) =>
+	postApi<ControlResponse>(`/hydra/agents/${encodeURIComponent(id)}/terminate`);
 
 // /api/obsidian
 export interface ObsidianResponse {
@@ -76,6 +122,10 @@ export const api = {
 		fetchApi<WatcherResponse>("/hydra/watcher", STATIC.hydraWatcher),
 	hydraHealth: () =>
 		fetchApi<HealthResponse>("/hydra/health", STATIC.hydraHealth),
+	fetchAgentHeartbeats,
+	fetchBudgetStatus,
+	fetchWaveHistory,
+	fetchApprovals,
 	hooks: () => fetchApi<HooksResponse>("/hooks", STATIC.hooks),
 	system: () => fetchApi<SystemResponse>("/system", STATIC.system),
 	metrics: () => fetchApi<MetricsResponse>("/metrics", STATIC.metrics),
@@ -154,6 +204,7 @@ export const api = {
 	deploysStatus: () =>
 		fetchApi<DeploysStatusResponse>("/deploys/status", STATIC.deploysStatus),
 	projects: () => fetchApi<ProjectsResponse>("/projects", STATIC.projects),
+	paperclipCompany: () => fetchApi<PaperclipCompanyResponse>("/paperclip"),
 	costs: () =>
 		fetchApi<CostsResponse>("/costs", {
 			today_usd: 0,
@@ -173,6 +224,11 @@ export const api = {
 	backup: () => postApi<ControlResponse>("/control/backup"),
 	cleanOrphans: () => postApi<ControlResponse>("/control/clean-orphans"),
 	syncLenovo: () => postApi<ControlResponse>("/control/sync-lenovo"),
+	postHeartbeat,
+	resolveApproval,
+	pauseAgent,
+	resumeAgent,
+	terminateAgent,
 	sendTestNotification: () => postApi<ControlResponse>("/notifications/test"),
 	configureNotifications: (rules: Partial<NotificationRules>) =>
 		fetch("/api/notifications/configure", {
@@ -260,10 +316,12 @@ export interface WatcherEvent {
 	ts: string;
 	event: string;
 	task_id?: string;
+	display_name?: string;
+	description_he?: string;
 	provider?: string;
 	rc?: number;
-	message?: string;
 	node?: string;
+	message?: string;
 }
 
 // API returns array directly, not wrapped in {events}
@@ -733,4 +791,151 @@ export interface CostsResponse {
 	daily_history: Array<{ date: string; usd: number }>;
 	budget_remaining_usd: number;
 	daily_budget_usd: number;
+}
+
+export interface AgentHeartbeat {
+	agent_id: string;
+	session: string;
+	provider: string;
+	status: string;
+	last_output: string;
+	runtime_seconds: number;
+	task_id: string;
+	wave_id: string;
+	cost_cents: number;
+}
+
+export interface BudgetStatus {
+	provider: string;
+	daily_spent_cents: number;
+	daily_limit_cents: number;
+	monthly_spent_cents: number;
+	monthly_limit_cents: number;
+}
+
+export interface WaveEntry {
+	wave_id: string;
+	wave_name: string;
+	total_tasks: number;
+	completed: number;
+	failed: number;
+	running: number;
+	total_cost_cents: number;
+	duration_seconds: number;
+	started_at: string;
+}
+
+export interface ApprovalRequest {
+	id: string;
+	type: string;
+	description: string;
+	requested_by: string;
+	status: string;
+	created_at: string;
+}
+
+// ── Paperclip Company types ───────────────────────────────────────────────────
+
+export interface PaperclipCompany {
+	name: string;
+	mission: string;
+	founded: string;
+	budget_monthly_usd: number;
+	status: string;
+}
+
+export interface PaperclipDepartment {
+	id: string;
+	name: string;
+	name_en: string;
+	head: string;
+	color: string;
+	agents: string[];
+}
+
+export interface PaperclipAgent {
+	id: string;
+	name: string;
+	role: string;
+	title: string;
+	title_en: string;
+	department: string | null;
+	reports_to: string;
+	status: string;
+	capabilities: string[];
+	adapter: string;
+	budget_monthly_usd: number;
+	win_rate: number;
+	cost_today_usd: number;
+	last_active: string;
+	total_tasks?: number;
+}
+
+export interface PaperclipOrgNode {
+	id: string;
+	name: string;
+	role: string;
+	title?: string;
+	status: string;
+	department?: string | null;
+	reports: PaperclipOrgNode[];
+}
+
+export interface PaperclipGoalItem {
+	id: string;
+	title: string;
+	status: string;
+	progress: number;
+	sub_goals?: PaperclipGoalItem[];
+}
+
+export interface PaperclipClaudeSession {
+	session_id: string;
+	started_at: string;
+	cost_usd: number;
+	agents_dispatched: number;
+	active_tasks: string[];
+	live_agents: number;
+}
+
+export interface PaperclipActivity {
+	ts: string;
+	agent: string;
+	action: string;
+	type: string;
+}
+
+export interface PaperclipBudgetIncident {
+	provider: string;
+	scope: string;
+	threshold_type: "warn" | "hard_stop";
+	limit_usd: number;
+	observed_usd: number;
+	pct: number;
+}
+
+export interface PaperclipDispatchStats {
+	total_runs: number;
+	completed: number;
+	failed: number;
+	win_rate: number;
+	by_provider: Record<
+		string,
+		{ total: number; successes: number; failures: number }
+	>;
+}
+
+export interface PaperclipCompanyResponse {
+	running: boolean;
+	version: string;
+	company: PaperclipCompany;
+	departments: PaperclipDepartment[];
+	agents: PaperclipAgent[];
+	agent_count: number;
+	org_tree: PaperclipOrgNode;
+	claude_session: PaperclipClaudeSession;
+	goals: PaperclipGoalItem[];
+	recent_activity: PaperclipActivity[];
+	budget_incidents?: PaperclipBudgetIncident[];
+	dispatch_stats?: PaperclipDispatchStats;
 }

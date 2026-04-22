@@ -192,6 +192,24 @@ export const ROUTES: RouteDef[] = [
 		keywords: ["paperclip", "company", "חברה", "org", "budget"],
 	},
 
+	{
+		id: "hydra-v3",
+		path: "#/agents/hydra-v3",
+		title: "Hydra v3",
+		description: "ניהול סוכנים בזמן אמת — heartbeat, תקציב, אישורים",
+		icon: Building2,
+		category: "agents",
+		keywords: [
+			"hydra",
+			"v3",
+			"agents",
+			"budget",
+			"approval",
+			"heartbeat",
+			"wave",
+		],
+	},
+
 	// ── DevOps ────────────────────────
 	{
 		id: "cicd",
@@ -302,6 +320,15 @@ export const ROUTES: RouteDef[] = [
 		icon: ScrollText,
 		category: "ops",
 		keywords: ["logs", "לוגים", "watcher", "events"],
+	},
+	{
+		id: "activity",
+		path: "#/ops/activity",
+		title: "פיד פעילות",
+		description: "כל האירועים ממקורות שונים — watcher, התראות, סוכנים",
+		icon: Activity,
+		category: "ops",
+		keywords: ["activity", "פעילות", "feed", "events", "אירועים"],
 	},
 	{
 		id: "notifications",
