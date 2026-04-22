@@ -79,6 +79,8 @@ function eventLabel(event: string): string {
 		watcher_stop: "צופה נעצר",
 		health_check: "בריאות",
 		import_error: "שגיאה",
+		dispatch_start: "התחלת שיגור",
+		dispatch_done: "שיגור הסתיים",
 	};
 	return MAP[event] ?? event;
 }
@@ -178,21 +180,31 @@ function TaskRow({ task, status }: { task: HydraTask; status: string }) {
 	};
 
 	return (
-		<div className="flex items-center gap-2 py-2 border-b border-border last:border-0">
+		<div className="flex items-start gap-2 py-2 border-b border-border last:border-0">
 			<span
-				className={cn("text-xs font-medium shrink-0", statusColors[status])}
+				className={cn(
+					"text-xs font-medium shrink-0 mt-0.5",
+					statusColors[status],
+				)}
 			>
 				{task.status}
 			</span>
-			<span
-				className="text-xs text-text-secondary truncate flex-1 font-mono"
-				dir="ltr"
-			>
-				{task.display_name ?? task.id}
-			</span>
+			<div className="flex flex-col min-w-0 flex-1">
+				<span className="text-xs font-medium text-text-primary truncate">
+					{task.display_name ?? task.id}
+				</span>
+				{task.display_name && (
+					<span
+						className="text-[10px] text-text-muted font-mono truncate"
+						dir="ltr"
+					>
+						{task.id}
+					</span>
+				)}
+			</div>
 			{task.steps !== undefined && (
 				<span
-					className="text-xs text-text-muted shrink-0 tabular-nums"
+					className="text-xs text-text-muted shrink-0 tabular-nums mt-0.5"
 					dir="ltr"
 				>
 					{task.steps}s
@@ -219,56 +231,84 @@ function WatcherTimeline({ events }: { events: WatcherEvent[] }) {
 
 	return (
 		<div className="flex flex-col">
-			{recent.map((ev) => (
-				<div
-					key={`${ev.ts}-${ev.event}`}
-					className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
-				>
-					{/* Timeline dot */}
-					<div className="flex flex-col items-center pt-1 shrink-0">
-						<span
-							className={cn(
-								"w-2 h-2 rounded-full shrink-0",
-								eventDotColor(ev.event),
-							)}
-						/>
-					</div>
-					<div className="flex-1 min-w-0">
-						<div className="flex items-center gap-2 flex-wrap">
-							<span className="text-xs font-medium text-text-primary">
-								{eventLabel(ev.event)}
-							</span>
-							{ev.provider && (
-								<span className="text-xs text-accent-purple">
-									{ev.provider}
-								</span>
-							)}
-							{ev.task_id && (
-								<span
-									className="text-xs text-text-muted font-mono truncate"
-									dir="ltr"
-								>
-									{ev.task_id}
-								</span>
-							)}
+			{recent.map((ev) => {
+				const isGraphEvent = ev.event === "graph_event";
+				const isDispatchDone = ev.event === "dispatch_done";
+				const shortTaskId = ev.task_id ? ev.task_id.slice(0, 8) : null;
+
+				return (
+					<div
+						key={`${ev.ts}-${ev.event}`}
+						className="flex items-start gap-3 py-2.5 border-b border-border last:border-0"
+					>
+						{/* Timeline dot */}
+						<div className="flex flex-col items-center pt-1 shrink-0">
+							<span
+								className={cn(
+									"w-2 h-2 rounded-full shrink-0",
+									eventDotColor(ev.event),
+								)}
+							/>
 						</div>
-						<span className="text-xs text-text-muted tabular-nums" dir="ltr">
-							{formatTs(ev.ts)}
-						</span>
+						<div className="flex-1 min-w-0">
+							<div className="flex items-center gap-2 flex-wrap">
+								{/* Primary label */}
+								<span className="text-xs font-medium text-text-primary">
+									{isGraphEvent && ev.node ? ev.node : eventLabel(ev.event)}
+								</span>
+								{/* Provider badge */}
+								{ev.provider && (
+									<span className="text-xs text-accent-purple">
+										{ev.provider}
+									</span>
+								)}
+								{/* rc code for dispatch_done */}
+								{isDispatchDone && ev.rc !== undefined && (
+									<span
+										className={cn(
+											"text-xs font-mono font-semibold",
+											ev.rc === 0
+												? "text-status-healthy"
+												: "text-status-critical",
+										)}
+										dir="ltr"
+									>
+										rc={ev.rc}
+									</span>
+								)}
+								{/* Short task ID */}
+								{shortTaskId && (
+									<span
+										className="text-[10px] text-text-muted font-mono"
+										dir="ltr"
+									>
+										{shortTaskId}
+									</span>
+								)}
+							</div>
+							<span className="text-xs text-text-muted tabular-nums" dir="ltr">
+								{formatTs(ev.ts)}
+							</span>
+						</div>
+						{/* Status icon — only for non-dispatch_done events that have rc */}
+						{ev.rc !== undefined && !isDispatchDone && (
+							<span
+								aria-hidden="true"
+								className={cn(
+									"shrink-0 mt-0.5",
+									ev.rc === 0 ? "text-status-healthy" : "text-status-critical",
+								)}
+							>
+								{ev.rc === 0 ? (
+									<CheckCircle2 size={13} />
+								) : (
+									<XCircle size={13} />
+								)}
+							</span>
+						)}
 					</div>
-					{ev.rc !== undefined && (
-						<span
-							aria-hidden="true"
-							className={cn(
-								"shrink-0 mt-0.5",
-								ev.rc === 0 ? "text-status-healthy" : "text-status-critical",
-							)}
-						>
-							{ev.rc === 0 ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
-						</span>
-					)}
-				</div>
-			))}
+				);
+			})}
 		</div>
 	);
 }

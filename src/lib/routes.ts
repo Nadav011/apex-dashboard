@@ -339,6 +339,15 @@ export const ROUTES: RouteDef[] = [
 		category: "ops",
 		keywords: ["notifications", "התראות", "telegram", "alerts"],
 	},
+	{
+		id: "activity",
+		path: "#/ops/activity",
+		title: "פיד פעילות",
+		description: "כל האירועים במערכת בזמן אמת",
+		icon: Activity,
+		category: "ops",
+		keywords: ["activity", "feed", "events", "פעילות", "אירועים"],
+	},
 
 	// ── Knowledge ─────────────────────
 	{

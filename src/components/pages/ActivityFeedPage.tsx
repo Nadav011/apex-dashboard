@@ -1,245 +1,384 @@
-import { Activity, AlertCircle, CheckCircle2, Clock, Zap } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Activity, RefreshCw } from "lucide-react";
+import { useMemo, useRef } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 import {
 	useAgentsLive,
 	useHydraWatcher,
 	useNotificationsLog,
 } from "@/hooks/use-api";
-import type { LiveAgentsResponse } from "@/lib/api";
+import type { LiveAgent, NotificationEvent, WatcherEvent } from "@/lib/api";
+import { cn } from "@/lib/cn";
 
-// ── Types ─────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-interface UnifiedEvent {
+type EventColor = "green" | "red" | "blue" | "yellow";
+
+interface FeedEvent {
 	id: string;
 	ts: string;
-	source: "watcher" | "notification" | "agent";
-	type: string;
-	title: string;
-	detail: string;
-	status: "success" | "error" | "info" | "warning";
+	tsMs: number;
+	color: EventColor;
+	badgeLabel: string;
+	description: string;
+	meta?: string;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────
-
-const EVENT_LABELS: Record<string, string> = {
-	dispatch_start: "שיגור משימה",
-	dispatch_done: "משימה הסתיימה",
-	graph_event: "אירוע גרף",
-	watcher_start: "מנוע הופעל",
-	state_transition: "מעבר מצב",
-	idle_shutdown: "כיבוי אוטומ��י",
-};
-
-function statusColor(s: UnifiedEvent["status"]): string {
-	switch (s) {
-		case "success":
-			return "text-emerald-400";
-		case "error":
-			return "text-red-400";
-		case "warning":
-			return "text-amber-400";
-		default:
-			return "text-sky-400";
-	}
-}
-
-function statusIcon(s: UnifiedEvent["status"]) {
-	switch (s) {
-		case "success":
-			return <CheckCircle2 size={14} />;
-		case "error":
-			return <AlertCircle size={14} />;
-		case "warning":
-			return <Zap size={14} />;
-		default:
-			return <Clock size={14} />;
-	}
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatTime(ts: string): string {
-	if (!ts) return "—";
 	try {
 		const d = new Date(ts);
+		if (Number.isNaN(d.getTime())) return ts;
 		return d.toLocaleTimeString("he-IL", {
 			hour: "2-digit",
 			minute: "2-digit",
 			second: "2-digit",
+			hour12: false,
 		});
 	} catch {
-		return ts.slice(11, 19);
+		return ts;
 	}
 }
 
-// ── Component ─────────────────────────────────────────────────────────
+function toMs(ts: string): number {
+	try {
+		return new Date(ts).getTime();
+	} catch {
+		return 0;
+	}
+}
+
+function watcherEventColor(event: WatcherEvent): EventColor {
+	const e = event.event ?? "";
+	if (e === "dispatch_done" || e === "graph_event") {
+		if (event.rc !== undefined && event.rc !== 0) return "red";
+		return "green";
+	}
+	if (e === "dispatch_start") return "blue";
+	if (event.rc !== undefined && event.rc !== 0) return "red";
+	return "blue";
+}
+
+function watcherBadgeLabel(event: WatcherEvent): string {
+	const e = event.event ?? "";
+	if (e === "dispatch_start") return "שיגור";
+	if (e === "dispatch_done") return "אירוע";
+	if (e === "graph_event") return "גרף";
+	if (e === "watcher_start") return "הפעלה";
+	if (e === "watcher_stop") return "עצירה";
+	return "אירוע";
+}
+
+function watcherDescription(event: WatcherEvent): string {
+	const e = event.event ?? "";
+	const parts: string[] = [];
+
+	if (e === "dispatch_start") {
+		parts.push("שיגור משימה");
+		if (event.provider) parts.push(`ספק: ${event.provider}`);
+	} else if (e === "dispatch_done") {
+		const success = event.rc === 0 || event.rc === undefined;
+		parts.push(
+			success ? "משימה הושלמה" : `משימה נכשלה (rc=${event.rc ?? "?"})`,
+		);
+		if (event.provider) parts.push(`ספק: ${event.provider}`);
+	} else if (e === "graph_event") {
+		parts.push(event.node ? `צומת: ${event.node}` : "אירוע גרף");
+		if (event.provider) parts.push(`ספק: ${event.provider}`);
+	} else if (e === "watcher_start") {
+		parts.push("Watcher הופעל");
+	} else if (e === "watcher_stop") {
+		parts.push("Watcher נעצר");
+	} else {
+		parts.push(event.message ?? e);
+	}
+
+	return parts.join(" — ");
+}
+
+function notificationEventColor(event: NotificationEvent): EventColor {
+	if (!event.sent) return "yellow";
+	const e = event.event ?? "";
+	if (e.includes("fail") || e.includes("critical") || e.includes("error"))
+		return "red";
+	if (e.includes("warn") || e.includes("high") || e.includes("unreachable"))
+		return "yellow";
+	return "blue";
+}
+
+function notificationBadgeLabel(_event: NotificationEvent): string {
+	return "התראה";
+}
+
+function agentDescription(agent: LiveAgent, action: "start" | "stop"): string {
+	const label = agent.type || "סוכן";
+	return action === "start" ? `סוכן הופעל: ${label}` : `סוכן נעצר: ${label}`;
+}
+
+// ── Color dot ────────────────────────────────────────────────────────────────
+
+const COLOR_CLASSES: Record<EventColor, string> = {
+	green: "bg-accent-green",
+	red: "bg-accent-red",
+	blue: "bg-accent-blue",
+	yellow: "bg-accent-amber",
+};
+
+const COLOR_BADGE_BG: Record<EventColor, string> = {
+	green: "oklch(from var(--color-accent-green) l c h / 0.12)",
+	red: "oklch(from var(--color-accent-red) l c h / 0.12)",
+	blue: "oklch(from var(--color-accent-blue) l c h / 0.12)",
+	yellow: "oklch(from var(--color-accent-amber) l c h / 0.12)",
+};
+
+const COLOR_BADGE_BORDER: Record<EventColor, string> = {
+	green: "oklch(from var(--color-accent-green) l c h / 0.3)",
+	red: "oklch(from var(--color-accent-red) l c h / 0.3)",
+	blue: "oklch(from var(--color-accent-blue) l c h / 0.3)",
+	yellow: "oklch(from var(--color-accent-amber) l c h / 0.3)",
+};
+
+// ── Feed Row ─────────────────────────────────────────────────────────────────
+
+function FeedRow({ event }: { event: FeedEvent }) {
+	return (
+		<div
+			className={cn(
+				"flex items-start gap-3 px-4 py-3",
+				"border-b border-border last:border-b-0",
+				"hover:bg-bg-tertiary transition-colors duration-100",
+			)}
+		>
+			{/* Timeline dot + line */}
+			<div className="flex flex-col items-center gap-1 shrink-0 mt-1">
+				<span
+					className={cn(
+						"w-2.5 h-2.5 rounded-full shrink-0",
+						COLOR_CLASSES[event.color],
+					)}
+					aria-hidden="true"
+				/>
+			</div>
+
+			{/* Time */}
+			<span
+				className="text-xs font-mono text-text-muted w-20 shrink-0 mt-0.5 tabular-nums"
+				dir="ltr"
+			>
+				{formatTime(event.ts)}
+			</span>
+
+			{/* Badge */}
+			<span
+				className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium shrink-0 mt-0.5"
+				style={{
+					background: COLOR_BADGE_BG[event.color],
+					color: `var(--color-accent-${event.color === "yellow" ? "amber" : event.color})`,
+					border: `1px solid ${COLOR_BADGE_BORDER[event.color]}`,
+				}}
+			>
+				{event.badgeLabel}
+			</span>
+
+			{/* Description */}
+			<span className="flex-1 text-sm text-text-primary leading-relaxed min-w-0">
+				{event.description}
+			</span>
+
+			{/* Meta */}
+			{event.meta && (
+				<span className="text-xs text-text-muted shrink-0 mt-0.5 font-mono truncate max-w-32">
+					{event.meta}
+				</span>
+			)}
+		</div>
+	);
+}
+
+// ── Status bar ───────────────────────────────────────────────────────────────
+
+function StatusBar({
+	total,
+	isLoading,
+	lastUpdate,
+}: {
+	total: number;
+	isLoading: boolean;
+	lastUpdate: string;
+}) {
+	return (
+		<div className="flex items-center justify-between px-4 py-2 border-b border-border bg-bg-secondary/60">
+			<div className="flex items-center gap-2 text-xs text-text-muted">
+				<span
+					className="w-2 h-2 rounded-full bg-accent-green animate-pulse"
+					aria-hidden="true"
+				/>
+				<span>עדכון אוטומטי כל 3 שניות</span>
+			</div>
+			<div className="flex items-center gap-3 text-xs text-text-muted">
+				{isLoading && (
+					<RefreshCw
+						size={12}
+						className="animate-spin text-accent-blue"
+						aria-hidden="true"
+					/>
+				)}
+				<span>{total} אירועים</span>
+				{lastUpdate && (
+					<span className="font-mono" dir="ltr">
+						{lastUpdate}
+					</span>
+				)}
+			</div>
+		</div>
+	);
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 
 export function ActivityFeedPage() {
-	const watcher = useHydraWatcher();
-	const notifications = useNotificationsLog();
-	const agents = useAgentsLive();
+	const watcherQuery = useHydraWatcher();
+	const notifQuery = useNotificationsLog();
+	const agentsQuery = useAgentsLive();
 
-	// Merge all sources into unified events
-	const events: UnifiedEvent[] = [];
+	// Track previous agent PIDs to detect starts/stops
+	const prevAgentPids = useRef<Set<number>>(new Set());
 
-	// Watcher events (filter out idle_tick)
-	const watcherData = Array.isArray(watcher.data) ? watcher.data : [];
-	for (const e of watcherData) {
-		if (e.event === "idle_tick") continue;
+	const isLoading =
+		watcherQuery.isFetching || notifQuery.isFetching || agentsQuery.isFetching;
 
-		const evt = e.event;
-		const taskId = e.task_id ?? "";
-		const displayName =
-			((e as unknown as Record<string, unknown>).display_name as string) ?? "";
-		const rc = e.rc;
-		const provider = e.provider ?? "";
-		const ts = e.ts;
+	const feed = useMemo<FeedEvent[]>(() => {
+		const events: FeedEvent[] = [];
 
-		const label = EVENT_LABELS[evt] ?? evt;
-		const taskLabel = displayName || (taskId ? taskId.slice(0, 8) : "");
+		// ── Watcher events ─────────────────────────────────────────────
+		const watcherData = watcherQuery.data ?? [];
+		for (let i = 0; i < watcherData.length; i++) {
+			const ev = watcherData[i];
+			events.push({
+				id: `watcher-${i}-${ev.ts}`,
+				ts: ev.ts,
+				tsMs: toMs(ev.ts),
+				color: watcherEventColor(ev),
+				badgeLabel: watcherBadgeLabel(ev),
+				description: watcherDescription(ev),
+				meta: ev.task_id,
+			});
+		}
 
-		events.push({
-			id: `w-${ts}-${taskId}`,
-			ts,
-			source: "watcher",
-			type: evt,
-			title: label,
-			detail: [taskLabel, provider, rc != null ? `rc=${rc}` : ""]
-				.filter(Boolean)
-				.join(" · "),
-			status:
-				evt === "dispatch_done" ? (rc === 0 ? "success" : "error") : "info",
-		});
-	}
+		// ── Notification events ────────────────────────────────────────
+		const notifData = notifQuery.data ?? [];
+		for (let i = 0; i < notifData.length; i++) {
+			const ev = notifData[i];
+			events.push({
+				id: `notif-${i}-${ev.ts}`,
+				ts: ev.ts,
+				tsMs: toMs(ev.ts),
+				color: notificationEventColor(ev),
+				badgeLabel: notificationBadgeLabel(ev),
+				description: ev.message || ev.event,
+				meta: ev.sent ? "נשלח" : "לא נשלח",
+			});
+		}
 
-	// Notification log
-	const notifData = Array.isArray(notifications.data) ? notifications.data : [];
-	for (const n of notifData) {
-		events.push({
-			id: `n-${n.ts}`,
-			ts: n.ts,
-			source: "notification",
-			type: "notification",
-			title: n.event ?? "התראה",
-			detail: n.message,
-			status: "info",
-		});
-	}
+		// ── Agent start/stop events (diff against prev set) ───────────
+		const liveAgents = agentsQuery.data?.live_agents ?? [];
+		const currentPids = new Set<number>(
+			liveAgents.map((a: LiveAgent) => a.pid),
+		);
 
-	// Sort newest first, cap at 100
-	events.sort((a, b) => (b.ts > a.ts ? 1 : -1));
-	const feed = events.slice(0, 100);
+		// Detect newly started agents (pids in current but not prev)
+		for (const agent of liveAgents) {
+			if (!prevAgentPids.current.has(agent.pid)) {
+				const started = agent.started ?? new Date().toISOString();
+				events.push({
+					id: `agent-start-${agent.pid}`,
+					ts: started,
+					tsMs: toMs(started),
+					color: "green",
+					badgeLabel: "סוכן",
+					description: agentDescription(agent, "start"),
+					meta: `pid ${agent.pid}`,
+				});
+			}
+		}
 
-	// Stats
-	const liveCount =
-		(agents.data as LiveAgentsResponse | undefined)?.live_count ?? 0;
+		// Detect stopped agents (pids in prev but not current)
+		if (prevAgentPids.current.size > 0) {
+			for (const pid of prevAgentPids.current) {
+				if (!currentPids.has(pid)) {
+					const now = new Date().toISOString();
+					events.push({
+						id: `agent-stop-${pid}-${Date.now()}`,
+						ts: now,
+						tsMs: toMs(now),
+						color: "yellow",
+						badgeLabel: "סוכן",
+						description: `סוכן נעצר (pid ${pid})`,
+						meta: `pid ${pid}`,
+					});
+				}
+			}
+		}
+
+		// Update ref for next render
+		prevAgentPids.current = currentPids;
+
+		// Sort newest first, take last 100
+		events.sort((a, b) => b.tsMs - a.tsMs);
+		return events.slice(0, 100);
+	}, [watcherQuery.data, notifQuery.data, agentsQuery.data]);
+
+	const lastUpdate = useMemo(() => {
+		if (!feed.length) return "";
+		const newest = feed[0];
+		return formatTime(newest.ts);
+	}, [feed]);
+
+	const hasError =
+		watcherQuery.isError && notifQuery.isError && agentsQuery.isError;
 
 	return (
-		<div className="space-y-4">
-			{/* Header */}
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-lg font-bold text-[var(--color-text-primary)]">
-						פיד פעילות
-					</h1>
-					<p className="text-xs text-[var(--color-text-muted)]">
-						כל האירועים ממקורות שונים — watcher, התראות, סוכנים
-					</p>
-				</div>
-				<div className="flex items-center gap-3">
-					<span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs text-emerald-400">
-						<span className="size-2 animate-pulse rounded-full bg-emerald-400" />
-						LIVE
-					</span>
-					<span className="rounded-full bg-[var(--color-bg-elevated)] px-3 py-1 text-xs text-[var(--color-text-muted)]">
-						{String(liveCount)} סוכנים פעילים
-					</span>
-				</div>
-			</div>
+		<div dir="rtl" className="flex flex-col gap-6">
+			<PageHeader
+				title="פיד פעילות"
+				description="כל האירועים במערכת בזמן אמת"
+				icon={Activity}
+			/>
 
-			{/* Summary badges */}
-			<div className="flex flex-wrap gap-2">
-				{[
-					{
-						label: "watcher",
-						count: feed.filter((e) => e.source === "watcher").length,
-						color: "bg-sky-500/10 text-sky-400",
-					},
-					{
-						label: "התראות",
-						count: feed.filter((e) => e.source === "notification").length,
-						color: "bg-amber-500/10 text-amber-400",
-					},
-					{
-						label: "הצלחות",
-						count: feed.filter((e) => e.status === "success").length,
-						color: "bg-emerald-500/10 text-emerald-400",
-					},
-					{
-						label: "שגיאות",
-						count: feed.filter((e) => e.status === "error").length,
-						color: "bg-red-500/10 text-red-400",
-					},
-				].map((b) => (
-					<span
-						key={b.label}
-						className={`rounded-full px-2.5 py-0.5 text-xs ${b.color}`}
-					>
-						{b.label}: {b.count}
-					</span>
-				))}
-			</div>
+			<div className="glass-card overflow-hidden">
+				<StatusBar
+					total={feed.length}
+					isLoading={isLoading}
+					lastUpdate={lastUpdate}
+				/>
 
-			{/* Feed */}
-			<GlassCard title="אירועים אחרונים" icon={<Activity size={16} />}>
-				{feed.length === 0 ? (
-					<p className="py-8 text-center text-sm text-[var(--color-text-muted)]">
-						אין אירועים
-					</p>
+				{hasError ? (
+					<div className="px-4 py-8">
+						<EmptyState
+							icon={Activity}
+							title="שגיאה בטעינת אירועים"
+							description="לא ניתן לטעון נתונים מהשרת. בדוק שהשרת פועל."
+						/>
+					</div>
+				) : feed.length === 0 ? (
+					<div className="px-4 py-8">
+						<EmptyState
+							icon={Activity}
+							title="אין אירועים עדיין"
+							description="האירועים יופיעו כאן בזמן אמת ברגע שיתרחשו."
+						/>
+					</div>
 				) : (
-					<ul className="divide-y divide-[var(--color-border)]">
-						{feed.map((e) => (
-							<li
-								key={e.id}
-								className="flex items-start gap-3 py-2.5 first:pt-0 last:pb-0"
-							>
-								{/* Time */}
-								<span className="w-16 shrink-0 font-mono text-xs text-[var(--color-text-muted)]">
-									{formatTime(e.ts)}
-								</span>
-
-								{/* Status dot */}
-								<span className={`mt-0.5 shrink-0 ${statusColor(e.status)}`}>
-									{statusIcon(e.status)}
-								</span>
-
-								{/* Content */}
-								<div className="min-w-0 flex-1">
-									<div className="flex items-center gap-2">
-										<span className="text-sm font-medium text-[var(--color-text-primary)]">
-											{e.title}
-										</span>
-										<span
-											className={`rounded px-1.5 py-0.5 text-[10px] ${
-												e.source === "watcher"
-													? "bg-sky-500/10 text-sky-400"
-													: e.source === "notification"
-														? "bg-amber-500/10 text-amber-400"
-														: "bg-purple-500/10 text-purple-400"
-											}`}
-										>
-											{e.source}
-										</span>
-									</div>
-									{e.detail && (
-										<p className="mt-0.5 truncate text-xs text-[var(--color-text-muted)]">
-											{e.detail}
-										</p>
-									)}
-								</div>
+					<ul className="list-none m-0 p-0" aria-label="פיד פעילות">
+						{feed.map((event) => (
+							<li key={event.id}>
+								<FeedRow event={event} />
 							</li>
 						))}
 					</ul>
 				)}
-			</GlassCard>
+			</div>
 		</div>
 	);
 }

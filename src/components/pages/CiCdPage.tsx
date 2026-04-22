@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { useCiSummary } from "@/hooks/use-api";
-import type { CiRepo, CiRun } from "@/lib/api";
+import { useAgentsLive, useCiSummary } from "@/hooks/use-api";
+import type { CiRepo, CiRun, LiveAgent, LiveAgentsResponse } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -254,6 +254,72 @@ function CiPieChart({
 	);
 }
 
+// ── CI Runners Section ────────────────────────────────────────────────────────
+
+function CiRunnersSection() {
+	const { data } = useAgentsLive();
+	const liveData = data as LiveAgentsResponse | undefined;
+	const runners: LiveAgent[] = (liveData?.live_agents ?? []).filter(
+		(a: LiveAgent) => a.category === "ci",
+	);
+	const activeCount = runners.filter((r) => r.cpu > 0).length;
+
+	if (runners.length === 0) return null;
+
+	return (
+		<div>
+			<h2 className="text-sm font-semibold text-text-secondary mb-3">
+				CI Runners — {activeCount} פעילים
+			</h2>
+			<div className="glass-card card-spotlight divide-y divide-border">
+				{runners.map((runner) => {
+					const isActive = runner.cpu > 0;
+					const name = runner.description ?? runner.cmd;
+					return (
+						<div
+							key={runner.pid}
+							className="flex items-center justify-between gap-3 px-4 py-2.5"
+						>
+							<div className="flex items-center gap-2 min-w-0">
+								<span
+									className={cn(
+										"size-2 rounded-full shrink-0",
+										isActive
+											? "bg-accent-green animate-pulse-status"
+											: "bg-[var(--color-text-muted)]",
+									)}
+									aria-hidden="true"
+								/>
+								<span className="text-sm text-text-primary truncate">
+									{name}
+								</span>
+							</div>
+							<div className="flex items-center gap-3 shrink-0">
+								<span
+									className={cn(
+										"inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium",
+										isActive
+											? "bg-[oklch(0.72_0.19_155_/_0.15)] text-accent-green"
+											: "bg-[oklch(0.55_0.02_260_/_0.12)] text-text-muted",
+									)}
+								>
+									{isActive ? "פעיל" : "ממתין"}
+								</span>
+								<span
+									className="text-xs text-text-muted tabular-nums"
+									dir="ltr"
+								>
+									{runner.cpu.toFixed(1)}%
+								</span>
+							</div>
+						</div>
+					);
+				})}
+			</div>
+		</div>
+	);
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export function CiCdPage() {
@@ -418,6 +484,9 @@ export function CiCdPage() {
 					</div>
 				</div>
 			)}
+
+			{/* CI Runners */}
+			<CiRunnersSection />
 
 			{/* Repo grid */}
 			<div>
